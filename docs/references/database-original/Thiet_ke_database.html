@@ -1,0 +1,327 @@
+<!doctype html><html lang="vi"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Thiết kế database Campus Events</title><style>
+body{font:15px/1.7 Arial,sans-serif;color:#243047;background:#f5f7fb;margin:0}main{max-width:1100px;margin:auto;background:white;padding:50px}h1{font-size:32px;margin:6px 0}h2{font-size:23px;color:#244d91;margin-top:35px}.label{color:#64809e;font-size:12px;letter-spacing:2px}table{border-collapse:collapse;width:100%;font-size:13px;margin:20px 0}td,th{border:1px solid #dce2ec;text-align:left;padding:11px;vertical-align:top}th{background:#edf2fa}tr:nth-child(even){background:#fafbfd}a{color:#315de5}code{font-size:12px;overflow-wrap:anywhere}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f4f6fa;padding:22px;font:13px/1.7 monospace}section{padding-top:10px;border-top:1px solid #e1e6f0;margin-top:30px}summary{cursor:pointer;color:#315de5}@media(max-width:650px){main{padding:18px}table{font-size:11px}td,th{padding:6px}}@media print{body{background:white}main{padding:0}section{break-inside:avoid}}
+</style><main><div class="label">SOFTWARE PROJECT MANAGEMENT · DATABASE DESIGN</div><h1>Hệ thống đăng ký và quản lý sự kiện</h1><p>Thiết kế quan hệ cho 24 use case · PostgreSQL 15+ · 03/11/2026</p><p><b>15 bảng và 1 view báo cáo.</b> Đăng ký và điểm danh được lưu riêng; thứ tự chờ và số liệu báo cáo được tính từ dữ liệu hiện hành. Các quy tắc A1–A7 trong tài liệu nguồn vẫn là đề xuất cần rà soát.</p><h2>Danh mục bảng</h2><table><tr><th>Bảng</th><th>Mục đích</th><th>Use case</th></tr><tr><td><a href="#departments">departments</a></td><td>Danh mục khoa</td><td>UC-01, UC-06, UC-12/13</td></tr><tr><td><a href="#organization_units">organization_units</a></td><td>Đơn vị tổ chức: khoa, phòng ban hoặc CLB</td><td>UC-12/13, UC-22</td></tr><tr><td><a href="#users">users</a></td><td>Tài khoản và vai trò hiện hành</td><td>UC-01–03, UC-21–24</td></tr><tr><td><a href="#student_profiles">student_profiles</a></td><td>Hồ sơ sinh viên; quan hệ 1–0..1 với users</td><td>UC-01, UC-06/07</td></tr><tr><td><a href="#auth_sessions">auth_sessions</a></td><td>Phiên đăng nhập có thể thu hồi</td><td>UC-02/03, UC-23/24</td></tr><tr><td><a href="#events">events</a></td><td>Sự kiện và người tổ chức phụ trách</td><td>UC-04/05, UC-12–14</td></tr><tr><td><a href="#event_departments">event_departments</a></td><td>Các khoa được tham gia sự kiện</td><td>UC-06/07, UC-12/13</td></tr><tr><td><a href="#event_study_years">event_study_years</a></td><td>Các năm học được tham gia sự kiện</td><td>UC-06/07, UC-12/13</td></tr><tr><td><a href="#registrations">registrations</a></td><td>Đăng ký chính thức, danh sách chờ hoặc đã hủy</td><td>UC-06–10, UC-15</td></tr><tr><td><a href="#registration_history">registration_history</a></td><td>Lịch sử đăng ký, hủy, chuyển chờ và lý do bỏ qua</td><td>UC-06–09</td></tr><tr><td><a href="#attendance_sessions">attendance_sessions</a></td><td>Phiên QR của một sự kiện</td><td>UC-11, UC-16</td></tr><tr><td><a href="#attendance">attendance</a></td><td>Kết quả điểm danh hiện hành, tối đa một dòng/đăng ký</td><td>UC-11, UC-17/18</td></tr><tr><td><a href="#attendance_history">attendance_history</a></td><td>Snapshot trước/sau mỗi lần ghi hoặc sửa điểm danh</td><td>UC-11, UC-17/18</td></tr><tr><td><a href="#email_outbox">email_outbox</a></td><td>Hàng đợi gửi email có retry, tách khỏi kết quả nghiệp vụ</td><td>UC-06, UC-09, UC-13</td></tr><tr><td><a href="#account_history">account_history</a></td><td>Lịch sử cấp tài khoản, khóa/mở và đổi vai trò</td><td>UC-22–24</td></tr></table><h2>Quan hệ chính</h2><ul><li>users 1 — 0..1 student_profiles; users 1 — N auth_sessions.</li><li>users 1 — N events với vai trò người tổ chức (kiểm tra vai trò ở backend).</li><li>events N — N departments qua event_departments.</li><li>student_profiles N — N events qua registrations.</li><li>registrations 1 — 0..1 attendance; registrations 1 — N registration_history.</li><li>events 1 — N attendance_sessions, nhưng tối đa một phiên chưa đóng.</li><li>attendance_sessions 1 — N attendance; liên kết phiên là tùy chọn với điểm danh thủ công.</li><li>attendance 1 — N attendance_history; events 1 — N email_outbox.</li></ul><p>Sơ đồ Mermaid đầy đủ nằm trong <code>03_erd.mmd</code>. Những FK chỉ người thao tác được lược bớt trên sơ đồ để dễ đọc; SQL có đầy đủ.</p><h2>Phân biệt ba loại trạng thái</h2><table><tr><th>Đối tượng</th><th>Trạng thái lưu</th><th>Cách diễn giải</th></tr><tr><td>Sự kiện</td><td>DRAFT, PUBLISHED</td><td>Chưa mở/đóng đăng ký, sắp diễn ra/đã kết thúc suy ra từ thời gian.</td></tr><tr><td>Đăng ký</td><td>REGISTERED, WAITLISTED, CANCELLED</td><td>Đăng ký chính thức, đang chờ hoặc đã hủy.</td></tr><tr><td>Điểm danh</td><td>PRESENT, NOT_RECORDED</td><td>Không có bản ghi cũng là chưa ghi nhận. Vắng mặt chỉ suy ra sau sự kiện.</td></tr></table><section id="departments"><h2>departments</h2><p>Danh mục khoa · UC-01, UC-06, UC-12/13</p><table><thead><tr><th>Trường</th><th>Kiểu</th><th>Cho NULL</th><th>Ràng buộc / ghi chú</th></tr></thead><tbody><tr><td><code>id</code></td><td>bigint</td><td>Không</td><td><code> GENERATED ALWAYS AS IDENTITY PRIMARY KEY</code></td></tr><tr><td><code>code</code></td><td>varchar(30)</td><td>Không</td><td><code> NOT NULL UNIQUE</code></td></tr><tr><td><code>name</code></td><td>varchar(150)</td><td>Không</td><td><code> NOT NULL</code></td></tr></tbody></table><details><summary>DDL đầy đủ và ràng buộc liên bảng</summary><pre>CREATE TABLE departments (
+ id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+ code varchar(30) NOT NULL UNIQUE,
+ name varchar(150) NOT NULL
+);</pre></details></section><section id="organization_units"><h2>organization_units</h2><p>Đơn vị tổ chức: khoa, phòng ban hoặc CLB · UC-12/13, UC-22</p><table><thead><tr><th>Trường</th><th>Kiểu</th><th>Cho NULL</th><th>Ràng buộc / ghi chú</th></tr></thead><tbody><tr><td><code>id</code></td><td>bigint</td><td>Không</td><td><code> GENERATED ALWAYS AS IDENTITY PRIMARY KEY</code></td></tr><tr><td><code>name</code></td><td>varchar(150)</td><td>Không</td><td><code> NOT NULL UNIQUE</code></td></tr></tbody></table><details><summary>DDL đầy đủ và ràng buộc liên bảng</summary><pre>CREATE TABLE organization_units (
+ id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+ name varchar(150) NOT NULL UNIQUE
+);</pre></details></section><section id="users"><h2>users</h2><p>Tài khoản và vai trò hiện hành · UC-01–03, UC-21–24</p><table><thead><tr><th>Trường</th><th>Kiểu</th><th>Cho NULL</th><th>Ràng buộc / ghi chú</th></tr></thead><tbody><tr><td><code>id</code></td><td>bigint</td><td>Không</td><td><code> GENERATED ALWAYS AS IDENTITY PRIMARY KEY</code></td></tr><tr><td><code>full_name</code></td><td>varchar(150)</td><td>Không</td><td><code> NOT NULL CHECK (btrim(full_name) &lt;&gt; &#x27;&#x27;)</code></td></tr><tr><td><code>email</code></td><td>varchar(254)</td><td>Không</td><td><code> NOT NULL CHECK (email = lower(btrim(email)) AND email &lt;&gt; &#x27;&#x27;)</code></td></tr><tr><td><code>password_hash</code></td><td>text</td><td>Không</td><td><code> NOT NULL</code></td></tr><tr><td><code>role</code></td><td>varchar(15)</td><td>Không</td><td><code> NOT NULL CHECK (role IN (&#x27;STUDENT&#x27;,&#x27;ORGANIZER&#x27;,&#x27;ADMIN&#x27;))</code></td></tr><tr><td><code>status</code></td><td>varchar(10)</td><td>Không</td><td><code> NOT NULL DEFAULT &#x27;ACTIVE&#x27; CHECK (status IN (&#x27;ACTIVE&#x27;,&#x27;LOCKED&#x27;))</code></td></tr><tr><td><code>organization_unit_id</code></td><td>bigint</td><td>Có</td><td><code> REFERENCES organization_units(id)</code></td></tr><tr><td><code>must_change_password</code></td><td>boolean</td><td>Không</td><td><code> NOT NULL DEFAULT false</code></td></tr><tr><td><code>auth_version</code></td><td>integer</td><td>Không</td><td><code> NOT NULL DEFAULT 1 CHECK (auth_version &gt; 0)</code></td></tr><tr><td><code>version</code></td><td>integer</td><td>Không</td><td><code> NOT NULL DEFAULT 1 CHECK (version &gt; 0)</code></td></tr><tr><td><code>created_at</code></td><td>timestamptz</td><td>Không</td><td><code> NOT NULL DEFAULT now()</code></td></tr><tr><td><code>updated_at</code></td><td>timestamptz</td><td>Không</td><td><code> NOT NULL DEFAULT now()</code></td></tr></tbody></table><details><summary>DDL đầy đủ và ràng buộc liên bảng</summary><pre>CREATE TABLE users (
+ id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+ full_name varchar(150) NOT NULL CHECK (btrim(full_name) &lt;&gt; &#x27;&#x27;),
+ email varchar(254) NOT NULL CHECK (email = lower(btrim(email)) AND email &lt;&gt; &#x27;&#x27;),
+ password_hash text NOT NULL,
+ role varchar(15) NOT NULL CHECK (role IN (&#x27;STUDENT&#x27;,&#x27;ORGANIZER&#x27;,&#x27;ADMIN&#x27;)),
+ status varchar(10) NOT NULL DEFAULT &#x27;ACTIVE&#x27; CHECK (status IN (&#x27;ACTIVE&#x27;,&#x27;LOCKED&#x27;)),
+ organization_unit_id bigint REFERENCES organization_units(id),
+ must_change_password boolean NOT NULL DEFAULT false,
+ auth_version integer NOT NULL DEFAULT 1 CHECK (auth_version &gt; 0),
+ version integer NOT NULL DEFAULT 1 CHECK (version &gt; 0),
+ created_at timestamptz NOT NULL DEFAULT now(),
+ updated_at timestamptz NOT NULL DEFAULT now(),
+ UNIQUE (email)
+);</pre></details></section><section id="student_profiles"><h2>student_profiles</h2><p>Hồ sơ sinh viên; quan hệ 1–0..1 với users · UC-01, UC-06/07</p><table><thead><tr><th>Trường</th><th>Kiểu</th><th>Cho NULL</th><th>Ràng buộc / ghi chú</th></tr></thead><tbody><tr><td><code>user_id</code></td><td>bigint</td><td>Không</td><td><code> PRIMARY KEY REFERENCES users(id)</code></td></tr><tr><td><code>student_code</code></td><td>varchar(30)</td><td>Không</td><td><code> NOT NULL UNIQUE CHECK (student_code = upper(btrim(student_code)) AND student_code &lt;&gt; &#x27;&#x27;)</code></td></tr><tr><td><code>department_id</code></td><td>bigint</td><td>Không</td><td><code> NOT NULL REFERENCES departments(id)</code></td></tr><tr><td><code>study_year</code></td><td>smallint</td><td>Không</td><td><code> NOT NULL CHECK (study_year &gt; 0)</code></td></tr></tbody></table><details><summary>DDL đầy đủ và ràng buộc liên bảng</summary><pre>CREATE TABLE student_profiles (
+ user_id bigint PRIMARY KEY REFERENCES users(id),
+ student_code varchar(30) NOT NULL UNIQUE CHECK (student_code = upper(btrim(student_code)) AND student_code &lt;&gt; &#x27;&#x27;),
+ department_id bigint NOT NULL REFERENCES departments(id),
+ study_year smallint NOT NULL CHECK (study_year &gt; 0)
+);</pre></details></section><section id="auth_sessions"><h2>auth_sessions</h2><p>Phiên đăng nhập có thể thu hồi · UC-02/03, UC-23/24</p><table><thead><tr><th>Trường</th><th>Kiểu</th><th>Cho NULL</th><th>Ràng buộc / ghi chú</th></tr></thead><tbody><tr><td><code>id</code></td><td>bigint</td><td>Không</td><td><code> GENERATED ALWAYS AS IDENTITY PRIMARY KEY</code></td></tr><tr><td><code>user_id</code></td><td>bigint</td><td>Không</td><td><code> NOT NULL REFERENCES users(id)</code></td></tr><tr><td><code>token_hash</code></td><td>text</td><td>Không</td><td><code> NOT NULL UNIQUE</code></td></tr><tr><td><code>auth_version</code></td><td>integer</td><td>Không</td><td><code> NOT NULL CHECK (auth_version &gt; 0)</code></td></tr><tr><td><code>created_at</code></td><td>timestamptz</td><td>Không</td><td><code> NOT NULL DEFAULT now()</code></td></tr><tr><td><code>expires_at</code></td><td>timestamptz</td><td>Không</td><td><code> NOT NULL</code></td></tr><tr><td><code>revoked_at</code></td><td>timestamptz</td><td>Có</td><td><code></code></td></tr></tbody></table><details><summary>DDL đầy đủ và ràng buộc liên bảng</summary><pre>CREATE TABLE auth_sessions (
+ id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+ user_id bigint NOT NULL REFERENCES users(id),
+ token_hash text NOT NULL UNIQUE,
+ auth_version integer NOT NULL CHECK (auth_version &gt; 0),
+ created_at timestamptz NOT NULL DEFAULT now(),
+ expires_at timestamptz NOT NULL,
+ revoked_at timestamptz,
+ CHECK (expires_at &gt; created_at),
+ CHECK (revoked_at IS NULL OR revoked_at &gt;= created_at)
+);</pre></details></section><section id="events"><h2>events</h2><p>Sự kiện và người tổ chức phụ trách · UC-04/05, UC-12–14</p><table><thead><tr><th>Trường</th><th>Kiểu</th><th>Cho NULL</th><th>Ràng buộc / ghi chú</th></tr></thead><tbody><tr><td><code>id</code></td><td>bigint</td><td>Không</td><td><code> GENERATED ALWAYS AS IDENTITY PRIMARY KEY</code></td></tr><tr><td><code>organizer_id</code></td><td>bigint</td><td>Không</td><td><code> NOT NULL REFERENCES users(id)</code></td></tr><tr><td><code>organization_unit_id</code></td><td>bigint</td><td>Không</td><td><code> NOT NULL REFERENCES organization_units(id)</code></td></tr><tr><td><code>title</code></td><td>varchar(250)</td><td>Không</td><td><code> NOT NULL CHECK (btrim(title) &lt;&gt; &#x27;&#x27;)</code></td></tr><tr><td><code>description</code></td><td>text</td><td>Không</td><td><code> NOT NULL</code></td></tr><tr><td><code>location</code></td><td>varchar(250)</td><td>Không</td><td><code> NOT NULL CHECK (btrim(location) &lt;&gt; &#x27;&#x27;)</code></td></tr><tr><td><code>registration_opens_at</code></td><td>timestamptz</td><td>Không</td><td><code> NOT NULL</code></td></tr><tr><td><code>registration_closes_at</code></td><td>timestamptz</td><td>Không</td><td><code> NOT NULL</code></td></tr><tr><td><code>starts_at</code></td><td>timestamptz</td><td>Không</td><td><code> NOT NULL</code></td></tr><tr><td><code>ends_at</code></td><td>timestamptz</td><td>Không</td><td><code> NOT NULL</code></td></tr><tr><td><code>capacity</code></td><td>integer</td><td>Có</td><td><code> CHECK (capacity &gt; 0), -- NULL = unlimited; never use zero.</code></td></tr><tr><td><code>status</code></td><td>varchar(10)</td><td>Không</td><td><code> NOT NULL DEFAULT &#x27;DRAFT&#x27; CHECK (status IN (&#x27;DRAFT&#x27;,&#x27;PUBLISHED&#x27;))</code></td></tr><tr><td><code>published_at</code></td><td>timestamptz</td><td>Có</td><td><code></code></td></tr><tr><td><code>version</code></td><td>integer</td><td>Không</td><td><code> NOT NULL DEFAULT 1 CHECK (version &gt; 0)</code></td></tr><tr><td><code>created_at</code></td><td>timestamptz</td><td>Không</td><td><code> NOT NULL DEFAULT now()</code></td></tr><tr><td><code>updated_at</code></td><td>timestamptz</td><td>Không</td><td><code> NOT NULL DEFAULT now()</code></td></tr></tbody></table><details><summary>DDL đầy đủ và ràng buộc liên bảng</summary><pre>CREATE TABLE events (
+ id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+ organizer_id bigint NOT NULL REFERENCES users(id),
+ organization_unit_id bigint NOT NULL REFERENCES organization_units(id),
+ title varchar(250) NOT NULL CHECK (btrim(title) &lt;&gt; &#x27;&#x27;),
+ description text NOT NULL,
+ location varchar(250) NOT NULL CHECK (btrim(location) &lt;&gt; &#x27;&#x27;),
+ registration_opens_at timestamptz NOT NULL,
+ registration_closes_at timestamptz NOT NULL,
+ starts_at timestamptz NOT NULL,
+ ends_at timestamptz NOT NULL,
+ capacity integer CHECK (capacity &gt; 0), -- NULL = unlimited; never use zero.
+ status varchar(10) NOT NULL DEFAULT &#x27;DRAFT&#x27; CHECK (status IN (&#x27;DRAFT&#x27;,&#x27;PUBLISHED&#x27;)),
+ published_at timestamptz,
+ version integer NOT NULL DEFAULT 1 CHECK (version &gt; 0),
+ created_at timestamptz NOT NULL DEFAULT now(),
+ updated_at timestamptz NOT NULL DEFAULT now(),
+ CHECK (registration_opens_at &lt; registration_closes_at AND registration_closes_at &lt;= starts_at AND starts_at &lt; ends_at),
+ CHECK ((status = &#x27;DRAFT&#x27; AND published_at IS NULL) OR (status = &#x27;PUBLISHED&#x27; AND published_at IS NOT NULL))
+);</pre></details></section><section id="event_departments"><h2>event_departments</h2><p>Các khoa được tham gia sự kiện · UC-06/07, UC-12/13</p><table><thead><tr><th>Trường</th><th>Kiểu</th><th>Cho NULL</th><th>Ràng buộc / ghi chú</th></tr></thead><tbody><tr><td><code>event_id</code></td><td>bigint</td><td>Không</td><td><code> NOT NULL REFERENCES events(id)</code></td></tr><tr><td><code>department_id</code></td><td>bigint</td><td>Không</td><td><code> NOT NULL REFERENCES departments(id)</code></td></tr></tbody></table><details><summary>DDL đầy đủ và ràng buộc liên bảng</summary><pre>CREATE TABLE event_departments (
+ event_id bigint NOT NULL REFERENCES events(id),
+ department_id bigint NOT NULL REFERENCES departments(id),
+ PRIMARY KEY(event_id,department_id)
+);</pre></details></section><section id="event_study_years"><h2>event_study_years</h2><p>Các năm học được tham gia sự kiện · UC-06/07, UC-12/13</p><table><thead><tr><th>Trường</th><th>Kiểu</th><th>Cho NULL</th><th>Ràng buộc / ghi chú</th></tr></thead><tbody><tr><td><code>event_id</code></td><td>bigint</td><td>Không</td><td><code> NOT NULL REFERENCES events(id)</code></td></tr><tr><td><code>study_year</code></td><td>smallint</td><td>Không</td><td><code> NOT NULL CHECK (study_year &gt; 0)</code></td></tr></tbody></table><details><summary>DDL đầy đủ và ràng buộc liên bảng</summary><pre>CREATE TABLE event_study_years (
+ event_id bigint NOT NULL REFERENCES events(id),
+ study_year smallint NOT NULL CHECK (study_year &gt; 0),
+ PRIMARY KEY(event_id,study_year)
+);</pre></details></section><section id="registrations"><h2>registrations</h2><p>Đăng ký chính thức, danh sách chờ hoặc đã hủy · UC-06–10, UC-15</p><table><thead><tr><th>Trường</th><th>Kiểu</th><th>Cho NULL</th><th>Ràng buộc / ghi chú</th></tr></thead><tbody><tr><td><code>id</code></td><td>bigint</td><td>Không</td><td><code> GENERATED ALWAYS AS IDENTITY PRIMARY KEY</code></td></tr><tr><td><code>event_id</code></td><td>bigint</td><td>Không</td><td><code> NOT NULL REFERENCES events(id)</code></td></tr><tr><td><code>student_id</code></td><td>bigint</td><td>Không</td><td><code> NOT NULL REFERENCES student_profiles(user_id)</code></td></tr><tr><td><code>status</code></td><td>varchar(12)</td><td>Không</td><td><code> NOT NULL CHECK (status IN (&#x27;REGISTERED&#x27;,&#x27;WAITLISTED&#x27;,&#x27;CANCELLED&#x27;))</code></td></tr><tr><td><code>waitlisted_at</code></td><td>timestamptz</td><td>Có</td><td><code></code></td></tr><tr><td><code>registered_at</code></td><td>timestamptz</td><td>Có</td><td><code></code></td></tr><tr><td><code>cancelled_at</code></td><td>timestamptz</td><td>Có</td><td><code></code></td></tr><tr><td><code>version</code></td><td>integer</td><td>Không</td><td><code> NOT NULL DEFAULT 1 CHECK (version &gt; 0)</code></td></tr><tr><td><code>created_at</code></td><td>timestamptz</td><td>Không</td><td><code> NOT NULL DEFAULT now()</code></td></tr><tr><td><code>updated_at</code></td><td>timestamptz</td><td>Không</td><td><code> NOT NULL DEFAULT now()</code></td></tr></tbody></table><details><summary>DDL đầy đủ và ràng buộc liên bảng</summary><pre>CREATE TABLE registrations (
+ id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+ event_id bigint NOT NULL REFERENCES events(id),
+ student_id bigint NOT NULL REFERENCES student_profiles(user_id),
+ status varchar(12) NOT NULL CHECK (status IN (&#x27;REGISTERED&#x27;,&#x27;WAITLISTED&#x27;,&#x27;CANCELLED&#x27;)),
+ waitlisted_at timestamptz,
+ registered_at timestamptz,
+ cancelled_at timestamptz,
+ version integer NOT NULL DEFAULT 1 CHECK (version &gt; 0),
+ created_at timestamptz NOT NULL DEFAULT now(),
+ updated_at timestamptz NOT NULL DEFAULT now(),
+ UNIQUE(event_id,student_id),
+ UNIQUE(id,event_id),
+ CHECK (
+   (status=&#x27;WAITLISTED&#x27; AND waitlisted_at IS NOT NULL AND registered_at IS NULL AND cancelled_at IS NULL)
+   OR (status=&#x27;REGISTERED&#x27; AND registered_at IS NOT NULL AND cancelled_at IS NULL)
+   OR (status=&#x27;CANCELLED&#x27; AND cancelled_at IS NOT NULL)
+ )
+);</pre></details></section><section id="registration_history"><h2>registration_history</h2><p>Lịch sử đăng ký, hủy, chuyển chờ và lý do bỏ qua · UC-06–09</p><table><thead><tr><th>Trường</th><th>Kiểu</th><th>Cho NULL</th><th>Ràng buộc / ghi chú</th></tr></thead><tbody><tr><td><code>id</code></td><td>bigint</td><td>Không</td><td><code> GENERATED ALWAYS AS IDENTITY PRIMARY KEY</code></td></tr><tr><td><code>registration_id</code></td><td>bigint</td><td>Không</td><td><code> NOT NULL REFERENCES registrations(id)</code></td></tr><tr><td><code>actor_id</code></td><td>bigint</td><td>Có</td><td><code> REFERENCES users(id), -- NULL for automated promotion/skip.</code></td></tr><tr><td><code>action</code></td><td>varchar(20)</td><td>Không</td><td><code> NOT NULL CHECK (action IN (&#x27;REGISTER&#x27;,&#x27;JOIN_WAITLIST&#x27;,&#x27;CANCEL&#x27;,&#x27;PROMOTE&#x27;,&#x27;SKIP&#x27;,&#x27;REREGISTER&#x27;))</code></td></tr><tr><td><code>old_status</code></td><td>varchar(12)</td><td>Có</td><td><code> CHECK (old_status IN (&#x27;REGISTERED&#x27;,&#x27;WAITLISTED&#x27;,&#x27;CANCELLED&#x27;))</code></td></tr><tr><td><code>new_status</code></td><td>varchar(12)</td><td>Không</td><td><code> NOT NULL CHECK (new_status IN (&#x27;REGISTERED&#x27;,&#x27;WAITLISTED&#x27;,&#x27;CANCELLED&#x27;))</code></td></tr><tr><td><code>reason</code></td><td>text</td><td>Có</td><td><code></code></td></tr><tr><td><code>changed_at</code></td><td>timestamptz</td><td>Không</td><td><code> NOT NULL DEFAULT clock_timestamp()</code></td></tr></tbody></table><details><summary>DDL đầy đủ và ràng buộc liên bảng</summary><pre>CREATE TABLE registration_history (
+ id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+ registration_id bigint NOT NULL REFERENCES registrations(id),
+ actor_id bigint REFERENCES users(id), -- NULL for automated promotion/skip.
+ action varchar(20) NOT NULL CHECK (action IN (&#x27;REGISTER&#x27;,&#x27;JOIN_WAITLIST&#x27;,&#x27;CANCEL&#x27;,&#x27;PROMOTE&#x27;,&#x27;SKIP&#x27;,&#x27;REREGISTER&#x27;)),
+ old_status varchar(12) CHECK (old_status IN (&#x27;REGISTERED&#x27;,&#x27;WAITLISTED&#x27;,&#x27;CANCELLED&#x27;)),
+ new_status varchar(12) NOT NULL CHECK (new_status IN (&#x27;REGISTERED&#x27;,&#x27;WAITLISTED&#x27;,&#x27;CANCELLED&#x27;)),
+ reason text,
+ changed_at timestamptz NOT NULL DEFAULT clock_timestamp(),
+ CHECK (action &lt;&gt; &#x27;SKIP&#x27; OR (reason IS NOT NULL AND btrim(reason) &lt;&gt; &#x27;&#x27;))
+);</pre></details></section><section id="attendance_sessions"><h2>attendance_sessions</h2><p>Phiên QR của một sự kiện · UC-11, UC-16</p><table><thead><tr><th>Trường</th><th>Kiểu</th><th>Cho NULL</th><th>Ràng buộc / ghi chú</th></tr></thead><tbody><tr><td><code>id</code></td><td>bigint</td><td>Không</td><td><code> GENERATED ALWAYS AS IDENTITY PRIMARY KEY</code></td></tr><tr><td><code>event_id</code></td><td>bigint</td><td>Không</td><td><code> NOT NULL REFERENCES events(id)</code></td></tr><tr><td><code>opened_by</code></td><td>bigint</td><td>Không</td><td><code> NOT NULL REFERENCES users(id)</code></td></tr><tr><td><code>opened_at</code></td><td>timestamptz</td><td>Không</td><td><code> NOT NULL DEFAULT clock_timestamp()</code></td></tr><tr><td><code>expires_at</code></td><td>timestamptz</td><td>Không</td><td><code> NOT NULL</code></td></tr><tr><td><code>closed_at</code></td><td>timestamptz</td><td>Có</td><td><code></code></td></tr><tr><td><code>closed_by</code></td><td>bigint</td><td>Có</td><td><code> REFERENCES users(id)</code></td></tr><tr><td><code>token_hash</code></td><td>text</td><td>Không</td><td><code> NOT NULL UNIQUE</code></td></tr><tr><td><code>token_ciphertext</code></td><td>text</td><td>Không</td><td><code> NOT NULL, -- Encrypted QR token, to redisplay same session; key is outside DB.</code></td></tr></tbody></table><details><summary>DDL đầy đủ và ràng buộc liên bảng</summary><pre>CREATE TABLE attendance_sessions (
+ id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+ event_id bigint NOT NULL REFERENCES events(id),
+ opened_by bigint NOT NULL REFERENCES users(id),
+ opened_at timestamptz NOT NULL DEFAULT clock_timestamp(),
+ expires_at timestamptz NOT NULL,
+ closed_at timestamptz,
+ closed_by bigint REFERENCES users(id),
+ token_hash text NOT NULL UNIQUE,
+ token_ciphertext text NOT NULL, -- Encrypted QR token, to redisplay same session; key is outside DB.
+ UNIQUE(id,event_id),
+ CHECK (expires_at &gt; opened_at),
+ CHECK (closed_at IS NULL OR closed_at &gt;= opened_at),
+ CHECK (closed_at IS NOT NULL OR closed_by IS NULL)
+);</pre></details></section><section id="attendance"><h2>attendance</h2><p>Kết quả điểm danh hiện hành, tối đa một dòng/đăng ký · UC-11, UC-17/18</p><table><thead><tr><th>Trường</th><th>Kiểu</th><th>Cho NULL</th><th>Ràng buộc / ghi chú</th></tr></thead><tbody><tr><td><code>registration_id</code></td><td>bigint</td><td>Không</td><td><code> PRIMARY KEY</code></td></tr><tr><td><code>event_id</code></td><td>bigint</td><td>Không</td><td><code> NOT NULL</code></td></tr><tr><td><code>result</code></td><td>varchar(15)</td><td>Không</td><td><code> NOT NULL CHECK (result IN (&#x27;PRESENT&#x27;,&#x27;NOT_RECORDED&#x27;))</code></td></tr><tr><td><code>method</code></td><td>varchar(10)</td><td>Không</td><td><code> NOT NULL CHECK (method IN (&#x27;QR&#x27;,&#x27;MANUAL&#x27;))</code></td></tr><tr><td><code>session_id</code></td><td>bigint</td><td>Có</td><td><code></code></td></tr><tr><td><code>recorded_by</code></td><td>bigint</td><td>Không</td><td><code> NOT NULL REFERENCES users(id)</code></td></tr><tr><td><code>recorded_at</code></td><td>timestamptz</td><td>Không</td><td><code> NOT NULL DEFAULT clock_timestamp()</code></td></tr><tr><td><code>reason</code></td><td>text</td><td>Có</td><td><code></code></td></tr><tr><td><code>version</code></td><td>integer</td><td>Không</td><td><code> NOT NULL DEFAULT 1 CHECK (version &gt; 0)</code></td></tr></tbody></table><details><summary>DDL đầy đủ và ràng buộc liên bảng</summary><pre>CREATE TABLE attendance (
+ registration_id bigint PRIMARY KEY,
+ event_id bigint NOT NULL,
+ result varchar(15) NOT NULL CHECK (result IN (&#x27;PRESENT&#x27;,&#x27;NOT_RECORDED&#x27;)),
+ method varchar(10) NOT NULL CHECK (method IN (&#x27;QR&#x27;,&#x27;MANUAL&#x27;)),
+ session_id bigint,
+ recorded_by bigint NOT NULL REFERENCES users(id),
+ recorded_at timestamptz NOT NULL DEFAULT clock_timestamp(),
+ reason text,
+ version integer NOT NULL DEFAULT 1 CHECK (version &gt; 0),
+ FOREIGN KEY(registration_id,event_id) REFERENCES registrations(id,event_id),
+ FOREIGN KEY(session_id,event_id) REFERENCES attendance_sessions(id,event_id),
+ CHECK ((method=&#x27;QR&#x27; AND session_id IS NOT NULL AND result=&#x27;PRESENT&#x27;) OR
+        (method=&#x27;MANUAL&#x27; AND session_id IS NULL AND reason IS NOT NULL AND btrim(reason) &lt;&gt; &#x27;&#x27;))
+);</pre></details></section><section id="attendance_history"><h2>attendance_history</h2><p>Snapshot trước/sau mỗi lần ghi hoặc sửa điểm danh · UC-11, UC-17/18</p><table><thead><tr><th>Trường</th><th>Kiểu</th><th>Cho NULL</th><th>Ràng buộc / ghi chú</th></tr></thead><tbody><tr><td><code>id</code></td><td>bigint</td><td>Không</td><td><code> GENERATED ALWAYS AS IDENTITY PRIMARY KEY</code></td></tr><tr><td><code>registration_id</code></td><td>bigint</td><td>Không</td><td><code> NOT NULL REFERENCES attendance(registration_id)</code></td></tr><tr><td><code>actor_id</code></td><td>bigint</td><td>Không</td><td><code> NOT NULL REFERENCES users(id)</code></td></tr><tr><td><code>old_result</code></td><td>varchar(15)</td><td>Có</td><td><code> CHECK (old_result IN (&#x27;PRESENT&#x27;,&#x27;NOT_RECORDED&#x27;))</code></td></tr><tr><td><code>new_result</code></td><td>varchar(15)</td><td>Không</td><td><code> NOT NULL CHECK (new_result IN (&#x27;PRESENT&#x27;,&#x27;NOT_RECORDED&#x27;))</code></td></tr><tr><td><code>before_data</code></td><td>jsonb</td><td>Có</td><td><code></code></td></tr><tr><td><code>after_data</code></td><td>jsonb</td><td>Không</td><td><code> NOT NULL</code></td></tr><tr><td><code>reason</code></td><td>text</td><td>Không</td><td><code> NOT NULL CHECK (btrim(reason) &lt;&gt; &#x27;&#x27;)</code></td></tr><tr><td><code>changed_at</code></td><td>timestamptz</td><td>Không</td><td><code> NOT NULL DEFAULT clock_timestamp()</code></td></tr></tbody></table><details><summary>DDL đầy đủ và ràng buộc liên bảng</summary><pre>CREATE TABLE attendance_history (
+ id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+ registration_id bigint NOT NULL REFERENCES attendance(registration_id),
+ actor_id bigint NOT NULL REFERENCES users(id),
+ old_result varchar(15) CHECK (old_result IN (&#x27;PRESENT&#x27;,&#x27;NOT_RECORDED&#x27;)),
+ new_result varchar(15) NOT NULL CHECK (new_result IN (&#x27;PRESENT&#x27;,&#x27;NOT_RECORDED&#x27;)),
+ before_data jsonb,
+ after_data jsonb NOT NULL,
+ reason text NOT NULL CHECK (btrim(reason) &lt;&gt; &#x27;&#x27;),
+ changed_at timestamptz NOT NULL DEFAULT clock_timestamp()
+);</pre></details></section><section id="email_outbox"><h2>email_outbox</h2><p>Hàng đợi gửi email có retry, tách khỏi kết quả nghiệp vụ · UC-06, UC-09, UC-13</p><table><thead><tr><th>Trường</th><th>Kiểu</th><th>Cho NULL</th><th>Ràng buộc / ghi chú</th></tr></thead><tbody><tr><td><code>id</code></td><td>bigint</td><td>Không</td><td><code> GENERATED ALWAYS AS IDENTITY PRIMARY KEY</code></td></tr><tr><td><code>event_id</code></td><td>bigint</td><td>Không</td><td><code> NOT NULL REFERENCES events(id)</code></td></tr><tr><td><code>registration_id</code></td><td>bigint</td><td>Có</td><td><code></code></td></tr><tr><td><code>recipient_user_id</code></td><td>bigint</td><td>Không</td><td><code> NOT NULL REFERENCES users(id)</code></td></tr><tr><td><code>recipient_email</code></td><td>varchar(254)</td><td>Không</td><td><code> NOT NULL</code></td></tr><tr><td><code>kind</code></td><td>varchar(25)</td><td>Không</td><td><code> NOT NULL CHECK (kind IN (&#x27;REGISTRATION_CONFIRMED&#x27;,&#x27;WAITLIST_PROMOTED&#x27;,&#x27;EVENT_CHANGED&#x27;))</code></td></tr><tr><td><code>dedupe_key</code></td><td>varchar(200)</td><td>Không</td><td><code> NOT NULL UNIQUE</code></td></tr><tr><td><code>payload</code></td><td>jsonb</td><td>Không</td><td><code> NOT NULL</code></td></tr><tr><td><code>status</code></td><td>varchar(12)</td><td>Không</td><td><code> NOT NULL DEFAULT &#x27;PENDING&#x27; CHECK (status IN (&#x27;PENDING&#x27;,&#x27;PROCESSING&#x27;,&#x27;SENT&#x27;,&#x27;FAILED&#x27;))</code></td></tr><tr><td><code>attempts</code></td><td>integer</td><td>Không</td><td><code> NOT NULL DEFAULT 0 CHECK (attempts &gt;= 0)</code></td></tr><tr><td><code>next_attempt_at</code></td><td>timestamptz</td><td>Không</td><td><code> NOT NULL DEFAULT now()</code></td></tr><tr><td><code>locked_until</code></td><td>timestamptz</td><td>Có</td><td><code></code></td></tr><tr><td><code>sent_at</code></td><td>timestamptz</td><td>Có</td><td><code></code></td></tr><tr><td><code>last_error</code></td><td>text</td><td>Có</td><td><code></code></td></tr><tr><td><code>created_at</code></td><td>timestamptz</td><td>Không</td><td><code> NOT NULL DEFAULT now()</code></td></tr></tbody></table><details><summary>DDL đầy đủ và ràng buộc liên bảng</summary><pre>CREATE TABLE email_outbox (
+ id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+ event_id bigint NOT NULL REFERENCES events(id),
+ registration_id bigint,
+ recipient_user_id bigint NOT NULL REFERENCES users(id),
+ recipient_email varchar(254) NOT NULL,
+ kind varchar(25) NOT NULL CHECK (kind IN (&#x27;REGISTRATION_CONFIRMED&#x27;,&#x27;WAITLIST_PROMOTED&#x27;,&#x27;EVENT_CHANGED&#x27;)),
+ dedupe_key varchar(200) NOT NULL UNIQUE,
+ payload jsonb NOT NULL,
+ status varchar(12) NOT NULL DEFAULT &#x27;PENDING&#x27; CHECK (status IN (&#x27;PENDING&#x27;,&#x27;PROCESSING&#x27;,&#x27;SENT&#x27;,&#x27;FAILED&#x27;)),
+ attempts integer NOT NULL DEFAULT 0 CHECK (attempts &gt;= 0),
+ next_attempt_at timestamptz NOT NULL DEFAULT now(),
+ locked_until timestamptz,
+ sent_at timestamptz,
+ last_error text,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ FOREIGN KEY(registration_id,event_id) REFERENCES registrations(id,event_id),
+ CHECK ((status=&#x27;SENT&#x27; AND sent_at IS NOT NULL) OR (status&lt;&gt;&#x27;SENT&#x27; AND sent_at IS NULL)),
+ CHECK (status&lt;&gt;&#x27;PROCESSING&#x27; OR locked_until IS NOT NULL)
+);</pre></details></section><section id="account_history"><h2>account_history</h2><p>Lịch sử cấp tài khoản, khóa/mở và đổi vai trò · UC-22–24</p><table><thead><tr><th>Trường</th><th>Kiểu</th><th>Cho NULL</th><th>Ràng buộc / ghi chú</th></tr></thead><tbody><tr><td><code>id</code></td><td>bigint</td><td>Không</td><td><code> GENERATED ALWAYS AS IDENTITY PRIMARY KEY</code></td></tr><tr><td><code>target_user_id</code></td><td>bigint</td><td>Không</td><td><code> NOT NULL REFERENCES users(id)</code></td></tr><tr><td><code>actor_id</code></td><td>bigint</td><td>Không</td><td><code> NOT NULL REFERENCES users(id)</code></td></tr><tr><td><code>action</code></td><td>varchar(20)</td><td>Không</td><td><code> NOT NULL CHECK (action IN (&#x27;CREATE_ORGANIZER&#x27;,&#x27;LOCK&#x27;,&#x27;UNLOCK&#x27;,&#x27;CHANGE_ROLE&#x27;))</code></td></tr><tr><td><code>before_data</code></td><td>jsonb</td><td>Có</td><td><code></code></td></tr><tr><td><code>after_data</code></td><td>jsonb</td><td>Không</td><td><code> NOT NULL</code></td></tr><tr><td><code>reason</code></td><td>text</td><td>Không</td><td><code> NOT NULL CHECK (btrim(reason) &lt;&gt; &#x27;&#x27;)</code></td></tr><tr><td><code>changed_at</code></td><td>timestamptz</td><td>Không</td><td><code> NOT NULL DEFAULT clock_timestamp()</code></td></tr></tbody></table><details><summary>DDL đầy đủ và ràng buộc liên bảng</summary><pre>CREATE TABLE account_history (
+ id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+ target_user_id bigint NOT NULL REFERENCES users(id),
+ actor_id bigint NOT NULL REFERENCES users(id),
+ action varchar(20) NOT NULL CHECK (action IN (&#x27;CREATE_ORGANIZER&#x27;,&#x27;LOCK&#x27;,&#x27;UNLOCK&#x27;,&#x27;CHANGE_ROLE&#x27;)),
+ before_data jsonb,
+ after_data jsonb NOT NULL,
+ reason text NOT NULL CHECK (btrim(reason) &lt;&gt; &#x27;&#x27;),
+ changed_at timestamptz NOT NULL DEFAULT clock_timestamp()
+);</pre></details></section><section><h2>Quy tắc triển khai và hướng dẫn sử dụng</h2><pre>THIẾT KẾ DATABASE CAMPUS EVENTS
+Nguồn: DacTa_UseCase_HeThongSuKien(1).docx, 24 use case UC-01–UC-24.
+Phiên bản thiết kế: 03/11/2026. Hệ quản trị lựa chọn: PostgreSQL 15+.
+
+1. CÁCH SỬ DỤNG
+Mở Thiet_ke_database.html bằng trình duyệt để đọc thiết kế và từ điển dữ liệu.
+Tạo một database rỗng trên PostgreSQL rồi chạy 01_schema.sql trong pgAdmin,
+hoặc: psql -d campus_events -v ON_ERROR_STOP=1 -f 01_schema.sql
+Script tạo schema campus; không xóa dữ liệu và không chạy lại trên schema đã có.
+02_queries.sql chứa các truy vấn PREPARE mẫu, chạy trong cùng phiên nếu muốn EXECUTE.
+03_erd.mmd là mã Mermaid của sơ đồ quan hệ, có thể nhập vào công cụ hỗ trợ Mermaid.
+
+2. CÁC QUYẾT ĐỊNH THIẾT KẾ
+- Một tài khoản có một vai trò hiện hành theo A1. Không cần bảng roles/user_roles
+  cho mô hình 3 vai trò cố định này. Sinh viên có thêm student_profiles.
+- Giữ hồ sơ sinh viên khi đổi vai trò để không mất đăng ký lịch sử. Chỉ tài khoản
+  có vai trò STUDENT hiện tại được đăng ký mới. Chuyển sang STUDENT cần hồ sơ đủ dữ liệu.
+- Một sự kiện có một người tổ chức chịu trách nhiệm (giả định MVP). Nếu cần nhiều
+  người đồng quản lý, đổi sang event_organizers; không tự thêm vào phạm vi hiện tại.
+- Đơn vị tổ chức tách khỏi khoa: một CLB/phòng ban cũng có thể tổ chức sự kiện.
+- Bản nháp trong script vẫn yêu cầu đủ trường cơ bản và thời gian hợp lệ.
+- Không giới hạn sức chứa dùng capacity=NULL; không dùng 0.
+- Không có dòng event_departments nghĩa là tất cả khoa. Không có dòng
+  event_study_years nghĩa là tất cả năm. Hai điều kiện kết hợp bằng AND.
+- Đăng ký/chờ/hủy là 3 trạng thái của cùng một bảng registrations.
+  UNIQUE(event_id,student_id) bảo đảm một dòng hiện hành cho mỗi cặp.
+- Không lưu waitlist_position: tính theo waitlisted_at rồi id. Gán waitlisted_at
+  bằng clock_timestamp() SAU KHI đã khóa sự kiện để phản ánh thứ tự tiếp nhận.
+- Đăng ký lại sau hủy: tái sử dụng dòng, reset cancelled_at/registered_at/
+  waitlisted_at cho lượt mới, tăng version, ghi registration_history. Không giữ
+  ưu tiên chờ cũ. Đây là lựa chọn bổ sung cần nhóm xác nhận.
+- Người chờ không còn hợp lệ được bỏ qua và ghi SKIP với lý do; giữ WAITLISTED
+  theo A3. Hiển thị thứ tự thô có thể bao gồm người bị bỏ qua. Nếu nhóm muốn loại
+  khỏi hàng chờ thì cần chốt quy tắc trạng thái riêng, không âm thầm đổi thành hủy.
+- Attendance là kết quả riêng. Chưa có dòng hoặc NOT_RECORDED đều là chưa ghi nhận.
+  PRESENT là có mặt. Không lưu ABSENT: chỉ suy ra sau khi sự kiện kết thúc.
+- QR/Manual lưu phương thức của lần ghi hiện hành; sửa kết quả dùng MANUAL,
+  session_id=NULL, reason bắt buộc. Nhật ký giữ snapshot cũ gồm QR/session gốc.
+- Không có check-out; không tự đăng ký sinh viên khi điểm danh thủ công.
+- Đề xuất bổ sung: không đổi trạng thái/định danh đăng ký khi đã có attendance.
+  Điều này bảo toàn kết quả; phải rà soát nếu muốn cho hủy sau khi mở điểm danh sớm.
+- Không tạo bảng reports hoặc exports cho MVP. View event_report tính dữ liệu;
+  xuất CSV/XLSX là chức năng backend, trong cùng snapshot đọc.
+- Không thêm SMS, MyBK, điểm rèn luyện, recommendation hoặc báo cáo học kỳ.
+
+3. RANH GIỚI DATABASE VÀ BACKEND
+Database đã có PK, FK, UNIQUE, CHECK, index, kiểm tra thứ tự thời gian,
+chống QR khác sự kiện bằng FK kép, một phiên chưa đóng/sự kiện, một attendance/
+registration. Trigger kiểm tra REGISTERED và hiệu lực phiên QR khi ghi.
+Database CHƯA tự kiểm tra quyền Người tổ chức/Admin, sức chứa, điều kiện đối tượng,
+hạn đăng ký, quy trình đôn chờ, gửi email, bảo vệ Admin cuối cùng, hay tạo lịch sử.
+Những việc này bắt buộc nằm trong service/backend, không chỉ kiểm tra trên UI.
+Version và updated_at không có trigger tự tăng: backend cập nhật chúng rõ ràng.
+Các bảng lịch sử/outbox phải được ghi cùng transaction với thay đổi tương ứng.
+JSON snapshot chỉ gồm dữ liệu nghiệp vụ, không chứa password_hash hoặc token.
+Không cấp quyền truy cập database trực tiếp cho trình duyệt/sinh viên.
+
+4. QUY TRÌNH TRANSACTION BẮT BUỘC
+Thống nhất thứ tự khóa: sự kiện -&gt; tài khoản liên quan (id tăng dần) -&gt; đăng ký
+-&gt; phiên QR -&gt; attendance. Giữ thứ tự này ở mọi endpoint; retry khi deadlock.
+
+Đăng ký UC-06/07:
+BEGIN; SELECT sự kiện FOR UPDATE; đọc/khóa tài khoản và hồ sơ cần kiểm tra.
+Kiểm tra ACTIVE, STUDENT, Published, thời gian mở/đóng, khoa/năm, trạng thái cũ.
+Nếu đã Registered/Waitlisted, trả trạng thái cũ. Nếu hết chỗ, CHỈ tạo Waitlisted
+khi sinh viên đã xác nhận đồng ý. Không cho người mới vượt người chờ hợp lệ.
+Nếu còn chỗ nhưng có người chờ hợp lệ, ưu tiên xử lý chờ theo chính sách nhóm;
+không âm thầm đôn người mới. Quy trình xử lý chỗ trống tồn dư cần nhóm chốt.
+Đếm Registered khi đang giữ khóa sự kiện; ghi đăng ký, lịch sử, outbox nếu
+Registered; COMMIT. Hủy khi lỗi. Không gọi nhà cung cấp email trong transaction.
+
+Hủy + chuyển chờ UC-08/09:
+Khóa sự kiện trước; kiểm tra chủ đăng ký, trước starts_at và trạng thái còn hiệu lực.
+Ghi Cancelled và lịch sử. Nếu hủy Waitlisted, không giải phóng chỗ.
+Nếu hủy Registered, chọn người chờ theo waitlisted_at,id; kiểm tra lại tài khoản,
+đối tượng và thời gian; ghi SKIP nếu không hợp lệ, tiếp tục người kế tiếp.
+Đổi người hợp lệ sang Registered, giữ waitlisted_at để truy vết, đặt registered_at,
+ghi PROMOTE + email_outbox trong CÙNG transaction với hủy. COMMIT.
+A3 hiện cho phép chuyển sau hạn nhận đăng ký nhưng trước starts_at; cần xác nhận.
+
+Sửa sự kiện UC-13:
+Khóa sự kiện; kiểm tra quyền quản lý. UPDATE ... WHERE id=? AND version=?;
+0 dòng bị cập nhật nghĩa là xung đột, trả 409 và yêu cầu tải lại.
+Không giảm capacity dưới số Registered, không tăng capacity khi còn Waitlisted
+(kể cả đổi sang không giới hạn), không sửa đối tượng làm mất điều kiện người
+Registered. Thay đổi thời gian cần kiểm tra các phiên điểm danh đang tồn tại.
+Nếu Published và thay đổi thời gian/địa điểm: ghi một outbox/người Registered,
+payload chụp nội dung thay đổi; dedupe_key gồm event_id + version + recipient_id.
+Thêm loại thay đổi quan trọng khác sau khi nhóm xác nhận.
+
+QR UC-11/16:
+Mở phiên: xác minh người tổ chức được giao, Published và khoảng thời gian cho phép.
+Khóa event; đóng phiên hết hạn nhưng closed_at còn NULL trước khi tạo phiên mới.
+Nếu phiên còn hiệu lực: trả lại cùng QR, không tạo thêm. Token ngẫu nhiên do
+backend tạo; DB lưu token_hash và token_ciphertext, khóa giải mã ở ngoài DB.
+Quét: backend kiểm tra token, tài khoản phiên đăng nhập, Registered và thời hạn;
+đã PRESENT thì trả kết quả hiện có, không UPDATE lại. Ghi attendance + history.
+Đóng: cập nhật closed_at/closed_by; mọi lần quét sau phải đọc trạng thái máy chủ.
+Khoảng thời gian được phép mở phiên chưa được đặc tả định lượng, nhóm phải chốt.
+
+Điểm danh thủ công/sửa UC-17/18:
+Chỉ ORGANIZER đang ACTIVE và được giao sự kiện. ADMIN không thừa hưởng quyền này.
+Khóa event, registration, attendance; kiểm tra Registered. Ghi PRESENT hoặc
+NOT_RECORDED, phương thức MANUAL, lý do, actor, thời gian, version mới.
+Ghi before_data/after_data trong attendance_history cùng transaction.
+Không tạo attendance khi kết quả không đổi; không ghi trùng nếu đã Có mặt.
+
+Khóa/đổi vai trò UC-23/24:
+Mọi thao tác tác động Admin dùng cùng một transaction-level advisory lock cố định
+để serialize kiểm tra Admin cuối cùng (hoặc một dòng khóa quản trị riêng).
+Sau đó khóa user, kiểm tra không tự khóa/đổi quyền và còn Admin ACTIVE khác.
+Không thu hồi ORGANIZER khi còn sự kiện đang phụ trách; nhóm cần định nghĩa
+sự kiện đã xử lý (đề xuất: không còn nháp hoặc sự kiện chưa kết thúc).
+Cập nhật role/status, tăng auth_version + version, revoke auth_sessions và ghi
+account_history trong cùng transaction. Mỗi API kiểm tra status, role hiện tại,
+auth_version và session hết hạn/thu hồi, không chỉ dựa vào role trên token cũ.
+Giữ dữ liệu đăng ký và attendance khi khóa tài khoản.
+
+5. EMAIL OUTBOX
+Worker lấy PENDING/FAILED đến hạn với FOR UPDATE SKIP LOCKED, đặt PROCESSING,
+locked_until (lease), tăng attempts rồi COMMIT. Gửi bên ngoài transaction;
+thành công ghi SENT/sent_at, lỗi ghi FAILED/last_error/next_attempt_at.
+Worker chết: thu hồi lease hết hạn để xử lý lại. Quy định max retry và cảnh báo.
+Dedupe_key duy nhất theo nghiệp vụ + id + version + người nhận; không chỉ dùng
+registration_id vì đăng ký lại hoặc sửa sự kiện có thể phát sinh email mới.
+Gửi email ít nhất một lần có thể bị lặp khi provider đã gửi mà worker chưa ghi
+SENT; dùng idempotency key của provider nếu có. Không hứa exactly-once.
+Email lỗi không rollback đăng ký/cập nhật đã thành công.
+
+6. BÁO CÁO VÀ XUẤT
+N = Registered hiện hành; P = số trong N có PRESENT.
+Sau ends_at: absent=N-P. Trước ends_at: absent=NULL, báo cáo tạm thời.
+Tỷ lệ=P/N*100, N=0 -&gt; NULL (UI hiển thị Không áp dụng).
+Không tính Waitlisted/Cancelled vào mẫu số. Sửa attendance làm view cập nhật ngay.
+Dùng transaction READ ONLY REPEATABLE READ cho toàn bộ bảng + tổng số khi xuất.
+Backend xác minh quyền trên event trước mọi truy vấn/xuất.
+
+7. CHÍNH SÁCH DỮ LIỆU
+Lưu timestamptz; API/UI chuyển sang Asia/Ho_Chi_Minh khi hiển thị.
+Email chuẩn hóa lower(trim), MSSV upper(trim) trước ghi; không coi tự khai là
+đã xác minh với trường. Backend kiểm tra định dạng và miền email nếu nhóm yêu cầu.
+Chỉ lưu hash mật khẩu do thư viện xác thực tạo; không lưu mật khẩu tạm dạng rõ.
+Tài khoản người tổ chức có thể dùng must_change_password; quy trình bàn giao
+và buộc đổi mật khẩu phải được bổ sung vào backend sau khi nhóm chốt A7.
+Không xóa cứng tài khoản/sự kiện có dữ liệu nghiệp vụ. FK không cascade xóa lịch sử.
+Lịch sử chỉ append; phân quyền DB cho ứng dụng để hạn chế sửa/xóa bảng audit.
+
+8. KIỂM THỬ CẦN CHẠY TRƯỚC KHI TRIỂN KHAI
+- Hai đăng ký đồng thời cho một chỗ cuối: chỉ một Registered; người còn lại
+  chỉ Waitlisted khi đã đồng ý, không vượt sức chứa.
+- Hai yêu cầu đăng ký cùng sinh viên/sự kiện: chỉ một dòng.
+- Hủy Registered và đôn chờ: cùng commit/rollback; không vượt FIFO.
+- Hủy rồi đăng ký lại: vào cuối hàng chờ, lịch sử vẫn đủ.
+- Waitlisted/Cancelled/chưa đăng ký không điểm danh được.
+- QR sai sự kiện, hết hạn, đã đóng bị từ chối; hai lần quét chỉ một kết quả.
+- Hai yêu cầu mở QR đồng thời chỉ một phiên chưa đóng.
+- Admin không sửa attendance; organizer không sửa sự kiện người khác.
+- Hai Admin đồng thời thu hồi nhau: không mất Admin ACTIVE cuối cùng.
+- Sửa sức chứa/đối tượng, đổi vai trò, khóa tài khoản phải kiểm tra lại nhất quán
+  với đăng ký và đôn chờ đang chạy; không chỉ kiểm tra trước transaction.
+- Chưa kết thúc không có kết luận vắng; N=0 không chia 0; chỉnh attendance cập nhật báo cáo.
+- Email thất bại không mất đăng ký; worker phục hồi sau crash.
+
+9. TRẠNG THÁI KIỂM TRA BÀN GIAO
+Đã kiểm tra tĩnh cấu trúc bảng, tham chiếu và tính nhất quán file đóng gói.
+Chưa chạy SQL trên PostgreSQL thật trong môi trường hiện tại, chưa test concurrency.
+Đây là thiết kế + schema khởi đầu, không phải backend hoàn chỉnh đã kiểm thử.
+</pre></section></main></html>

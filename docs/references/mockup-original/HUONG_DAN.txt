@@ -1,0 +1,35 @@
+CAMPUS EVENTS — BẢN THIẾT KẾ GIAO DIỆN TƯƠNG TÁC
+
+CÁCH MỞ
+Mở Campus_Events_UI_v2.html bằng trình duyệt. Hoặc giải nén thư mục mã nguồn và mở index.html; giữ style.css và app.js trong cùng thư mục.
+Không cần cài thư viện. Dữ liệu mẫu lưu trong trình duyệt bằng localStorage.
+
+CÁCH XEM
+Menu “Xem theo vai trò” cho phép chuyển nhanh giữa Sinh viên, Người tổ chức và Quản trị viên để duyệt các màn hình. Đây là công cụ trình diễn, không phải cơ chế phân quyền thật.
+Sinh viên: khám phá sự kiện, đăng ký, đồng ý vào danh sách chờ, hủy, xem lịch sử và điểm danh.
+Người tổ chức: tạo/sửa sự kiện, chọn chế độ điểm danh, quản lý người đăng ký và danh sách chờ, mở/đóng từng lượt, bổ sung thủ công và xem báo cáo/xuất CSV.
+Quản trị viên: quản lý tài khoản mẫu và khôi phục dữ liệu trình diễn.
+
+THỬ ĐIỂM DANH HAI LẦN
+1. Chọn Người tổ chức > Điểm danh > sự kiện AI & Bạn.
+2. Mở Check-in. Chuyển Sinh viên > Quét QR > Quét thử mã hiện tại.
+3. Kết quả chỉ là “Đã check-in · Thiếu check-out”.
+4. Trở lại Người tổ chức, mở Check-out của cùng sự kiện. Sinh viên quét lần nữa để hoàn tất.
+Sự kiện định hướng nghề nghiệp dùng chế độ một lần: quét thành công là hoàn tất.
+Mỗi sự kiện có dữ liệu riêng. Quét lặp không cộng thêm lượt.
+
+BỔ SUNG THỦ CÔNG
+Người tổ chức chọn sinh viên trong màn hình điểm danh, chọn lượt cần bổ sung và nhập lý do. Với chế độ hai lần, check-out cần có check-in. Mỗi thay đổi có lịch sử trong dữ liệu mẫu.
+
+DANH SÁCH CHỜ
+Sự kiện AI & Bạn có sẵn một sinh viên đang chờ. Khi sinh viên đăng ký chính thức hủy trước giờ bắt đầu, người đầu danh sách chờ được chuyển lên. Workshop gốm đang đầy để thử thao tác đồng ý vào danh sách chờ.
+
+PHẠM VI BẢN MẪU
+QR là hình minh họa, nút quét mô phỏng thao tác; chưa dùng camera hoặc mã QR thật. Đăng nhập, email và lưu trữ máy chủ chưa tích hợp. Chỉ xuất CSV. Dữ liệu không đồng bộ giữa các trình duyệt/thiết bị.
+Mốc sự kiện mẫu nằm trong tháng 11/2026. Thời hạn đăng ký/hủy dựa trên thời gian máy. Riêng việc mở các lượt điểm danh cho phép thực hiện để trình diễn.
+
+QUY TẮC ĐANG ĐỀ XUẤT, CHƯA COI LÀ CLIENT XÁC NHẬN
+- Sự kiện hai lần chỉ hoàn tất khi có cả check-in và check-out.
+- Không giảm sức chứa xuống dưới số đăng ký chính thức hiện có.
+- Tỷ lệ hoàn tất = số hoàn tất / số đăng ký chính thức hiện tại; không gộp người chờ hoặc đã hủy. Trong lúc sự kiện đang diễn ra, thiếu lượt được gọi là chưa hoàn tất.
+- Khi có chỗ, hệ thống mẫu chuyển theo thứ tự danh sách chờ; chính sách chuyển sau khi đóng đăng ký cần chốt lại với client.

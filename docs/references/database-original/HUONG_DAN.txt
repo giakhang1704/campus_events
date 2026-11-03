@@ -1,0 +1,167 @@
+THIẾT KẾ DATABASE CAMPUS EVENTS
+Nguồn: DacTa_UseCase_HeThongSuKien(1).docx, 24 use case UC-01–UC-24.
+Phiên bản thiết kế: 03/11/2026. Hệ quản trị lựa chọn: PostgreSQL 15+.
+
+1. CÁCH SỬ DỤNG
+Mở Thiet_ke_database.html bằng trình duyệt để đọc thiết kế và từ điển dữ liệu.
+Tạo một database rỗng trên PostgreSQL rồi chạy 01_schema.sql trong pgAdmin,
+hoặc: psql -d campus_events -v ON_ERROR_STOP=1 -f 01_schema.sql
+Script tạo schema campus; không xóa dữ liệu và không chạy lại trên schema đã có.
+02_queries.sql chứa các truy vấn PREPARE mẫu, chạy trong cùng phiên nếu muốn EXECUTE.
+03_erd.mmd là mã Mermaid của sơ đồ quan hệ, có thể nhập vào công cụ hỗ trợ Mermaid.
+
+2. CÁC QUYẾT ĐỊNH THIẾT KẾ
+- Một tài khoản có một vai trò hiện hành theo A1. Không cần bảng roles/user_roles
+  cho mô hình 3 vai trò cố định này. Sinh viên có thêm student_profiles.
+- Giữ hồ sơ sinh viên khi đổi vai trò để không mất đăng ký lịch sử. Chỉ tài khoản
+  có vai trò STUDENT hiện tại được đăng ký mới. Chuyển sang STUDENT cần hồ sơ đủ dữ liệu.
+- Một sự kiện có một người tổ chức chịu trách nhiệm (giả định MVP). Nếu cần nhiều
+  người đồng quản lý, đổi sang event_organizers; không tự thêm vào phạm vi hiện tại.
+- Đơn vị tổ chức tách khỏi khoa: một CLB/phòng ban cũng có thể tổ chức sự kiện.
+- Bản nháp trong script vẫn yêu cầu đủ trường cơ bản và thời gian hợp lệ.
+- Không giới hạn sức chứa dùng capacity=NULL; không dùng 0.
+- Không có dòng event_departments nghĩa là tất cả khoa. Không có dòng
+  event_study_years nghĩa là tất cả năm. Hai điều kiện kết hợp bằng AND.
+- Đăng ký/chờ/hủy là 3 trạng thái của cùng một bảng registrations.
+  UNIQUE(event_id,student_id) bảo đảm một dòng hiện hành cho mỗi cặp.
+- Không lưu waitlist_position: tính theo waitlisted_at rồi id. Gán waitlisted_at
+  bằng clock_timestamp() SAU KHI đã khóa sự kiện để phản ánh thứ tự tiếp nhận.
+- Đăng ký lại sau hủy: tái sử dụng dòng, reset cancelled_at/registered_at/
+  waitlisted_at cho lượt mới, tăng version, ghi registration_history. Không giữ
+  ưu tiên chờ cũ. Đây là lựa chọn bổ sung cần nhóm xác nhận.
+- Người chờ không còn hợp lệ được bỏ qua và ghi SKIP với lý do; giữ WAITLISTED
+  theo A3. Hiển thị thứ tự thô có thể bao gồm người bị bỏ qua. Nếu nhóm muốn loại
+  khỏi hàng chờ thì cần chốt quy tắc trạng thái riêng, không âm thầm đổi thành hủy.
+- Attendance là kết quả riêng. Chưa có dòng hoặc NOT_RECORDED đều là chưa ghi nhận.
+  PRESENT là có mặt. Không lưu ABSENT: chỉ suy ra sau khi sự kiện kết thúc.
+- QR/Manual lưu phương thức của lần ghi hiện hành; sửa kết quả dùng MANUAL,
+  session_id=NULL, reason bắt buộc. Nhật ký giữ snapshot cũ gồm QR/session gốc.
+- Không có check-out; không tự đăng ký sinh viên khi điểm danh thủ công.
+- Đề xuất bổ sung: không đổi trạng thái/định danh đăng ký khi đã có attendance.
+  Điều này bảo toàn kết quả; phải rà soát nếu muốn cho hủy sau khi mở điểm danh sớm.
+- Không tạo bảng reports hoặc exports cho MVP. View event_report tính dữ liệu;
+  xuất CSV/XLSX là chức năng backend, trong cùng snapshot đọc.
+- Không thêm SMS, MyBK, điểm rèn luyện, recommendation hoặc báo cáo học kỳ.
+
+3. RANH GIỚI DATABASE VÀ BACKEND
+Database đã có PK, FK, UNIQUE, CHECK, index, kiểm tra thứ tự thời gian,
+chống QR khác sự kiện bằng FK kép, một phiên chưa đóng/sự kiện, một attendance/
+registration. Trigger kiểm tra REGISTERED và hiệu lực phiên QR khi ghi.
+Database CHƯA tự kiểm tra quyền Người tổ chức/Admin, sức chứa, điều kiện đối tượng,
+hạn đăng ký, quy trình đôn chờ, gửi email, bảo vệ Admin cuối cùng, hay tạo lịch sử.
+Những việc này bắt buộc nằm trong service/backend, không chỉ kiểm tra trên UI.
+Version và updated_at không có trigger tự tăng: backend cập nhật chúng rõ ràng.
+Các bảng lịch sử/outbox phải được ghi cùng transaction với thay đổi tương ứng.
+JSON snapshot chỉ gồm dữ liệu nghiệp vụ, không chứa password_hash hoặc token.
+Không cấp quyền truy cập database trực tiếp cho trình duyệt/sinh viên.
+
+4. QUY TRÌNH TRANSACTION BẮT BUỘC
+Thống nhất thứ tự khóa: sự kiện -> tài khoản liên quan (id tăng dần) -> đăng ký
+-> phiên QR -> attendance. Giữ thứ tự này ở mọi endpoint; retry khi deadlock.
+
+Đăng ký UC-06/07:
+BEGIN; SELECT sự kiện FOR UPDATE; đọc/khóa tài khoản và hồ sơ cần kiểm tra.
+Kiểm tra ACTIVE, STUDENT, Published, thời gian mở/đóng, khoa/năm, trạng thái cũ.
+Nếu đã Registered/Waitlisted, trả trạng thái cũ. Nếu hết chỗ, CHỈ tạo Waitlisted
+khi sinh viên đã xác nhận đồng ý. Không cho người mới vượt người chờ hợp lệ.
+Nếu còn chỗ nhưng có người chờ hợp lệ, ưu tiên xử lý chờ theo chính sách nhóm;
+không âm thầm đôn người mới. Quy trình xử lý chỗ trống tồn dư cần nhóm chốt.
+Đếm Registered khi đang giữ khóa sự kiện; ghi đăng ký, lịch sử, outbox nếu
+Registered; COMMIT. Hủy khi lỗi. Không gọi nhà cung cấp email trong transaction.
+
+Hủy + chuyển chờ UC-08/09:
+Khóa sự kiện trước; kiểm tra chủ đăng ký, trước starts_at và trạng thái còn hiệu lực.
+Ghi Cancelled và lịch sử. Nếu hủy Waitlisted, không giải phóng chỗ.
+Nếu hủy Registered, chọn người chờ theo waitlisted_at,id; kiểm tra lại tài khoản,
+đối tượng và thời gian; ghi SKIP nếu không hợp lệ, tiếp tục người kế tiếp.
+Đổi người hợp lệ sang Registered, giữ waitlisted_at để truy vết, đặt registered_at,
+ghi PROMOTE + email_outbox trong CÙNG transaction với hủy. COMMIT.
+A3 hiện cho phép chuyển sau hạn nhận đăng ký nhưng trước starts_at; cần xác nhận.
+
+Sửa sự kiện UC-13:
+Khóa sự kiện; kiểm tra quyền quản lý. UPDATE ... WHERE id=? AND version=?;
+0 dòng bị cập nhật nghĩa là xung đột, trả 409 và yêu cầu tải lại.
+Không giảm capacity dưới số Registered, không tăng capacity khi còn Waitlisted
+(kể cả đổi sang không giới hạn), không sửa đối tượng làm mất điều kiện người
+Registered. Thay đổi thời gian cần kiểm tra các phiên điểm danh đang tồn tại.
+Nếu Published và thay đổi thời gian/địa điểm: ghi một outbox/người Registered,
+payload chụp nội dung thay đổi; dedupe_key gồm event_id + version + recipient_id.
+Thêm loại thay đổi quan trọng khác sau khi nhóm xác nhận.
+
+QR UC-11/16:
+Mở phiên: xác minh người tổ chức được giao, Published và khoảng thời gian cho phép.
+Khóa event; đóng phiên hết hạn nhưng closed_at còn NULL trước khi tạo phiên mới.
+Nếu phiên còn hiệu lực: trả lại cùng QR, không tạo thêm. Token ngẫu nhiên do
+backend tạo; DB lưu token_hash và token_ciphertext, khóa giải mã ở ngoài DB.
+Quét: backend kiểm tra token, tài khoản phiên đăng nhập, Registered và thời hạn;
+đã PRESENT thì trả kết quả hiện có, không UPDATE lại. Ghi attendance + history.
+Đóng: cập nhật closed_at/closed_by; mọi lần quét sau phải đọc trạng thái máy chủ.
+Khoảng thời gian được phép mở phiên chưa được đặc tả định lượng, nhóm phải chốt.
+
+Điểm danh thủ công/sửa UC-17/18:
+Chỉ ORGANIZER đang ACTIVE và được giao sự kiện. ADMIN không thừa hưởng quyền này.
+Khóa event, registration, attendance; kiểm tra Registered. Ghi PRESENT hoặc
+NOT_RECORDED, phương thức MANUAL, lý do, actor, thời gian, version mới.
+Ghi before_data/after_data trong attendance_history cùng transaction.
+Không tạo attendance khi kết quả không đổi; không ghi trùng nếu đã Có mặt.
+
+Khóa/đổi vai trò UC-23/24:
+Mọi thao tác tác động Admin dùng cùng một transaction-level advisory lock cố định
+để serialize kiểm tra Admin cuối cùng (hoặc một dòng khóa quản trị riêng).
+Sau đó khóa user, kiểm tra không tự khóa/đổi quyền và còn Admin ACTIVE khác.
+Không thu hồi ORGANIZER khi còn sự kiện đang phụ trách; nhóm cần định nghĩa
+sự kiện đã xử lý (đề xuất: không còn nháp hoặc sự kiện chưa kết thúc).
+Cập nhật role/status, tăng auth_version + version, revoke auth_sessions và ghi
+account_history trong cùng transaction. Mỗi API kiểm tra status, role hiện tại,
+auth_version và session hết hạn/thu hồi, không chỉ dựa vào role trên token cũ.
+Giữ dữ liệu đăng ký và attendance khi khóa tài khoản.
+
+5. EMAIL OUTBOX
+Worker lấy PENDING/FAILED đến hạn với FOR UPDATE SKIP LOCKED, đặt PROCESSING,
+locked_until (lease), tăng attempts rồi COMMIT. Gửi bên ngoài transaction;
+thành công ghi SENT/sent_at, lỗi ghi FAILED/last_error/next_attempt_at.
+Worker chết: thu hồi lease hết hạn để xử lý lại. Quy định max retry và cảnh báo.
+Dedupe_key duy nhất theo nghiệp vụ + id + version + người nhận; không chỉ dùng
+registration_id vì đăng ký lại hoặc sửa sự kiện có thể phát sinh email mới.
+Gửi email ít nhất một lần có thể bị lặp khi provider đã gửi mà worker chưa ghi
+SENT; dùng idempotency key của provider nếu có. Không hứa exactly-once.
+Email lỗi không rollback đăng ký/cập nhật đã thành công.
+
+6. BÁO CÁO VÀ XUẤT
+N = Registered hiện hành; P = số trong N có PRESENT.
+Sau ends_at: absent=N-P. Trước ends_at: absent=NULL, báo cáo tạm thời.
+Tỷ lệ=P/N*100, N=0 -> NULL (UI hiển thị Không áp dụng).
+Không tính Waitlisted/Cancelled vào mẫu số. Sửa attendance làm view cập nhật ngay.
+Dùng transaction READ ONLY REPEATABLE READ cho toàn bộ bảng + tổng số khi xuất.
+Backend xác minh quyền trên event trước mọi truy vấn/xuất.
+
+7. CHÍNH SÁCH DỮ LIỆU
+Lưu timestamptz; API/UI chuyển sang Asia/Ho_Chi_Minh khi hiển thị.
+Email chuẩn hóa lower(trim), MSSV upper(trim) trước ghi; không coi tự khai là
+đã xác minh với trường. Backend kiểm tra định dạng và miền email nếu nhóm yêu cầu.
+Chỉ lưu hash mật khẩu do thư viện xác thực tạo; không lưu mật khẩu tạm dạng rõ.
+Tài khoản người tổ chức có thể dùng must_change_password; quy trình bàn giao
+và buộc đổi mật khẩu phải được bổ sung vào backend sau khi nhóm chốt A7.
+Không xóa cứng tài khoản/sự kiện có dữ liệu nghiệp vụ. FK không cascade xóa lịch sử.
+Lịch sử chỉ append; phân quyền DB cho ứng dụng để hạn chế sửa/xóa bảng audit.
+
+8. KIỂM THỬ CẦN CHẠY TRƯỚC KHI TRIỂN KHAI
+- Hai đăng ký đồng thời cho một chỗ cuối: chỉ một Registered; người còn lại
+  chỉ Waitlisted khi đã đồng ý, không vượt sức chứa.
+- Hai yêu cầu đăng ký cùng sinh viên/sự kiện: chỉ một dòng.
+- Hủy Registered và đôn chờ: cùng commit/rollback; không vượt FIFO.
+- Hủy rồi đăng ký lại: vào cuối hàng chờ, lịch sử vẫn đủ.
+- Waitlisted/Cancelled/chưa đăng ký không điểm danh được.
+- QR sai sự kiện, hết hạn, đã đóng bị từ chối; hai lần quét chỉ một kết quả.
+- Hai yêu cầu mở QR đồng thời chỉ một phiên chưa đóng.
+- Admin không sửa attendance; organizer không sửa sự kiện người khác.
+- Hai Admin đồng thời thu hồi nhau: không mất Admin ACTIVE cuối cùng.
+- Sửa sức chứa/đối tượng, đổi vai trò, khóa tài khoản phải kiểm tra lại nhất quán
+  với đăng ký và đôn chờ đang chạy; không chỉ kiểm tra trước transaction.
+- Chưa kết thúc không có kết luận vắng; N=0 không chia 0; chỉnh attendance cập nhật báo cáo.
+- Email thất bại không mất đăng ký; worker phục hồi sau crash.
+
+9. TRẠNG THÁI KIỂM TRA BÀN GIAO
+Đã kiểm tra tĩnh cấu trúc bảng, tham chiếu và tính nhất quán file đóng gói.
+Chưa chạy SQL trên PostgreSQL thật trong môi trường hiện tại, chưa test concurrency.
+Đây là thiết kế + schema khởi đầu, không phải backend hoàn chỉnh đã kiểm thử.

@@ -1,0 +1,41 @@
+name: campus-events-local
+services:
+  db:
+    image: postgres:17
+    command: ["postgres", "-c", "timezone=Asia/Ho_Chi_Minh", "-c", "log_timezone=Asia/Ho_Chi_Minh"]
+    environment:
+      TZ: Asia/Ho_Chi_Minh
+      POSTGRES_DB: ${POSTGRES_DB:-campus_events_dev}
+      POSTGRES_USER: ${POSTGRES_USER:-campus_app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Copy .env.example to .env and set password}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema/01_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  backend:
+    build: ./backend
+    environment:
+      SERVER_ADDRESS: 0.0.0.0
+      TZ: Asia/Ho_Chi_Minh
+      DB_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-campus_events_dev}?currentSchema=campus
+      DB_USER: ${POSTGRES_USER:-campus_app}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    ports:
+      - "127.0.0.1:${BACKEND_PORT:-8080}:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+  frontend:
+    build: ./frontend
+    ports:
+      - "127.0.0.1:${FRONTEND_PORT:-4200}:80"
+    depends_on:
+      - backend
+volumes:
+  postgres_data:

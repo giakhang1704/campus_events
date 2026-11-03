@@ -1,0 +1,19 @@
+erDiagram
+ departments ||--o{ student_profiles : contains
+ users ||--o| student_profiles : has
+ organization_units |o--o{ users : belongs_to
+ organization_units ||--o{ events : hosts
+ users ||--o{ auth_sessions : signs_in
+ users ||--o{ events : manages
+ events ||--o{ event_departments : allows
+ departments ||--o{ event_departments : selected
+ events ||--o{ event_study_years : allows
+ events ||--o{ registrations : receives
+ student_profiles ||--o{ registrations : joins
+ registrations ||--o{ registration_history : records
+ events ||--o{ attendance_sessions : opens
+ registrations ||--o| attendance : has
+ attendance_sessions |o--o{ attendance : records
+ attendance ||--o{ attendance_history : changes
+ events ||--o{ email_outbox : notifies
+ users ||--o{ account_history : target
