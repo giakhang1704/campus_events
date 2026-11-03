@@ -35,3 +35,6 @@ Docker báo tích hợp Ubuntu WSL có /var/run/docker.sock đang được dùng
 %LOCALAPPDATA%/docker-secrets-engine.backup-20261103-224459
 
 Không coi smoke test môi trường là đã hoàn thành các chức năng hoặc RA02/A11 cloud.
+
+## Cập nhật A05.1
+Task chuẩn bị và tài khoản đã có implementation/API thật, kiểm thử HTTP và browser PASS. Xem docs/testing/I1_RESULTS.md (từ root). Những ghi nhận chưa có auth/email phía trên là lịch sử môi trường trước I1; email và sự kiện A05.2 vẫn chưa triển khai.

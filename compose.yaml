@@ -22,6 +22,7 @@ services:
     build: ./backend
     environment:
       SERVER_ADDRESS: 0.0.0.0
+      AUTH_COOKIE_SECURE: ${AUTH_COOKIE_SECURE:-false}
       TZ: Asia/Ho_Chi_Minh
       DB_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-campus_events_dev}?currentSchema=campus
       DB_USER: ${POSTGRES_USER:-campus_app}
