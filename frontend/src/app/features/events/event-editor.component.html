@@ -1,0 +1,70 @@
+<section class="panel">
+  <h2>{{ event ? 'Chỉnh sửa sự kiện' : 'Tạo sự kiện nháp' }}</h2>
+  <p>Điền đủ thông tin cơ bản để lưu. Thời gian hiển thị theo giờ Việt Nam (UTC+07:00).</p>
+  @if (event) { <p>Trạng thái: {{ event.status === 'DRAFT' ? 'Bản nháp' : 'Đã công bố' }} · Phiên bản {{ event.version }}</p> }
+  @if (message()) { <p class="notice" role="status">{{ message() }}</p> }
+  @if (conflict()) {
+    <p>Bấm tải bản mới sẽ thay nội dung đang nhập bằng dữ liệu mới nhất.</p>
+    <button type="button" class="secondary" [disabled]="busy()" (click)="reload()">Tải bản mới</button>
+  }
+  <form #form="ngForm" (ngSubmit)="save(form)">
+    <label>Tên sự kiện
+      <input aria-label="Tên sự kiện" name="title" [(ngModel)]="model.title" required maxlength="250"
+        [attr.aria-invalid]="!!error('title', form)" aria-describedby="event-title-error">
+      @if (error('title', form)) { <small class="field-error" id="event-title-error">{{ error('title', form) }}</small> }
+    </label>
+    <label>Mô tả
+      <textarea aria-label="Mô tả" name="description" [(ngModel)]="model.description" required maxlength="20000"
+        [attr.aria-invalid]="!!error('description', form)" aria-describedby="event-description-error"></textarea>
+      @if (error('description', form)) { <small class="field-error" id="event-description-error">{{ error('description', form) }}</small> }
+    </label>
+    <div class="columns">
+      <label>Địa điểm
+        <input aria-label="Địa điểm" name="location" [(ngModel)]="model.location" required maxlength="250"
+          [attr.aria-invalid]="!!error('location', form)" aria-describedby="event-location-error">
+        @if (error('location', form)) { <small class="field-error" id="event-location-error">{{ error('location', form) }}</small> }
+      </label>
+      <label>Đơn vị tổ chức
+        <select aria-label="Đơn vị tổ chức" name="organizationUnitId" [(ngModel)]="model.organizationUnitId" required>
+          <option [ngValue]="null">Chọn đơn vị</option>
+          @for (unit of units; track unit.id) { <option [ngValue]="unit.id">{{ unit.name }}</option> }
+        </select>
+        @if (error('organizationUnitId', form)) { <small class="field-error">{{ error('organizationUnitId', form) }}</small> }
+      </label>
+      <label>Mở đăng ký
+        <input aria-label="Mở đăng ký" type="datetime-local" step="1" name="registrationOpensAt" [(ngModel)]="model.registrationOpensAt" required>
+        @if (error('registrationOpensAt', form)) { <small class="field-error">{{ error('registrationOpensAt', form) }}</small> }
+      </label>
+      <label>Đóng đăng ký
+        <input aria-label="Đóng đăng ký" type="datetime-local" step="1" name="registrationClosesAt" [(ngModel)]="model.registrationClosesAt" required>
+        @if (error('registrationClosesAt', form)) { <small class="field-error" id="event-close-error">{{ error('registrationClosesAt', form) }}</small> }
+      </label>
+      <label>Bắt đầu sự kiện
+        <input aria-label="Bắt đầu sự kiện" type="datetime-local" step="1" name="startsAt" [(ngModel)]="model.startsAt" required>
+        @if (error('startsAt', form)) { <small class="field-error">{{ error('startsAt', form) }}</small> }
+      </label>
+      <label>Kết thúc sự kiện
+        <input aria-label="Kết thúc sự kiện" type="datetime-local" step="1" name="endsAt" [(ngModel)]="model.endsAt" required>
+        @if (error('endsAt', form)) { <small class="field-error">{{ error('endsAt', form) }}</small> }
+      </label>
+      <label>Sức chứa
+        <input aria-label="Sức chứa" type="number" min="1" max="2147483647" step="1" name="capacity" [(ngModel)]="model.capacity" required>
+        @if (error('capacity', form)) { <small class="field-error">{{ error('capacity', form) }}</small> }
+      </label>
+      <label>Năm học được tham gia
+        <input aria-label="Năm học được tham gia" name="studyYears" [(ngModel)]="studyYearsText" placeholder="Ví dụ: 1, 2, 3">
+        <small>Ngăn cách bằng dấu phẩy. Để trống nếu không giới hạn năm học.</small>
+        @if (error('studyYears', form)) { <small class="field-error">{{ error('studyYears', form) }}</small> }
+      </label>
+    </div>
+    <label>Khoa được tham gia
+      <select aria-label="Khoa được tham gia" name="departmentIds" multiple [(ngModel)]="model.departmentIds">
+        @for (department of departments; track department.id) { <option [ngValue]="department.id">{{ department.name }}</option> }
+      </select>
+      <small>Có thể chọn nhiều khoa. Không chọn khoa nào nghĩa là tất cả; điều kiện khoa và năm học được áp dụng đồng thời.</small>
+      @if (error('departmentIds', form)) { <small class="field-error">{{ error('departmentIds', form) }}</small> }
+    </label>
+    <button type="submit" [disabled]="busy() || conflict()">{{ busy() ? 'Đang lưu…' : event ? 'Lưu thay đổi sự kiện' : 'Lưu nháp' }}</button>
+    <button class="secondary" type="button" [disabled]="busy()" (click)="cancelled.emit()">Hủy</button>
+  </form>
+</section>

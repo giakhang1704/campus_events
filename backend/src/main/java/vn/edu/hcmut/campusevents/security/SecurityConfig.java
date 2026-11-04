@@ -31,13 +31,19 @@ public class SecurityConfig {
    .exceptionHandling(c->c.authenticationEntryPoint((req,res,e)->error(res,401,"UNAUTHENTICATED","Vui lòng đăng nhập."))
     .accessDeniedHandler((req,res,e)->error(res,403,"FORBIDDEN","Không có quyền hoặc CSRF token không hợp lệ.")))
    .authorizeHttpRequests(c->c.requestMatchers("/api/health","/api/auth/csrf").permitAll()
-    .requestMatchers(HttpMethod.POST,"/api/auth/login","/api/auth/register").permitAll()
+    .requestMatchers(HttpMethod.POST,"/api/auth/login","/api/auth/register","/api/auth/logout").permitAll()
     .requestMatchers(HttpMethod.GET,"/api/catalog/**").permitAll()
+    .requestMatchers("/api/admin/users/*/role","/api/admin/users/*/role/preview").denyAll()
     .requestMatchers("/api/admin/**").hasRole("ADMIN")
+    .requestMatchers("/api/organizer/**").hasRole("ORGANIZER")
+    .requestMatchers(HttpMethod.POST,"/api/events","/api/events/*/publish").hasRole("ORGANIZER")
+    .requestMatchers(HttpMethod.PATCH,"/api/events/*").hasRole("ORGANIZER")
+    .requestMatchers(HttpMethod.GET,"/api/events","/api/events/*").authenticated()
     .requestMatchers("/api/**").authenticated().anyRequest().denyAll())
    .addFilterBefore(new OncePerRequestFilter(){
     @Override protected void doFilterInternal(HttpServletRequest req,HttpServletResponse res,FilterChain chain) throws ServletException,IOException {
-     var principal=auth.authenticate(token(req));
+     Optional<vn.edu.hcmut.campusevents.auth.AuthPrincipal> principal;
+     try{principal=auth.authenticate(token(req));}catch(org.springframework.dao.DataAccessException e){error(res,503,"SERVICE_UNAVAILABLE","Dịch vụ dữ liệu tạm thời gián đoạn. Vui lòng thử lại.");return;}
      if(principal.isPresent()){
       var p=principal.get();
       SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(p,null,List.of(new SimpleGrantedAuthority("ROLE_"+p.role()))));

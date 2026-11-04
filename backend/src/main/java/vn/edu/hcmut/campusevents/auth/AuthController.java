@@ -21,7 +21,7 @@ public class AuthController {
  @PostMapping("/register") ResponseEntity<PublicUser> register(@Valid @RequestBody Register r){return ResponseEntity.status(201).body(auth.register(r.fullName,r.email,r.password,r.studentCode,r.departmentId,r.studyYear));}
  @PostMapping("/login") PublicUser login(@Valid @RequestBody Credentials r,HttpServletRequest request,HttpServletResponse response){var login=auth.login(r.email,r.password,SecurityConfig.token(request));cookie(response,login.token(),28800);return login.user();}
  @GetMapping("/me") PublicUser me(@AuthenticationPrincipal AuthPrincipal p){return users.find(p.userId());}
- @PostMapping("/logout") ResponseEntity<?> logout(@AuthenticationPrincipal AuthPrincipal p,HttpServletResponse response){auth.logout(p);cookie(response,"",0);return ResponseEntity.noContent().build();}
+ @PostMapping("/logout") ResponseEntity<?> logout(@AuthenticationPrincipal AuthPrincipal p,HttpServletResponse response){if(p!=null)auth.logout(p);cookie(response,"",0);return ResponseEntity.noContent().build();}
  @PostMapping("/password") ResponseEntity<?> password(@AuthenticationPrincipal AuthPrincipal p,@Valid @RequestBody Password r,HttpServletResponse response){auth.password(p,r.currentPassword,r.newPassword);cookie(response,"",0);return ResponseEntity.noContent().build();}
  private void cookie(HttpServletResponse response,String token,int seconds){response.addHeader(HttpHeaders.SET_COOKIE,ResponseCookie.from(SecurityConfig.COOKIE,token).httpOnly(true).secure(secure).sameSite("Lax").path("/api").maxAge(seconds).build().toString());}
 }

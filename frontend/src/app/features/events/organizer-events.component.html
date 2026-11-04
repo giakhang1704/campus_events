@@ -1,0 +1,49 @@
+<div class="section-title">
+  <div><h1>Sự kiện của tôi</h1><p class="muted">Tạo nháp, chỉnh sửa và công bố các sự kiện bạn phụ trách.</p></div>
+  @if (editing() === undefined) {
+    <button class="secondary" [disabled]="busy()" (click)="publishing.set(null); load()">Tải lại danh sách</button>
+    <button [disabled]="busy() || !catalogsReady()" (click)="publishing.set(null); editing.set(null); message.set('')">Tạo sự kiện</button>
+  }
+</div>
+@if (message()) { <p class="notice" role="status">{{ message() }}</p> }
+@if (!catalogsReady()) { <button class="secondary" (click)="loadCatalogs()">Tải lại danh mục</button> }
+@if (editing() !== undefined) {
+  <app-event-editor [event]="editing() ?? null" [departments]="departments()" [units]="units()"
+    (saved)="saved($event)" (cancelled)="editing.set(undefined)" />
+} @else {
+  @if (publishing(); as event) {
+    <section class="panel" aria-labelledby="publish-heading">
+      <h2 id="publish-heading">Xác nhận công bố sự kiện</h2>
+      <h3>{{ event.title }}</h3><p style="white-space:pre-wrap">{{ event.description }}</p>
+      <p>Địa điểm: {{ event.location }} · Đơn vị: {{ unitName(event.organizationUnitId) }}</p>
+      <p>Nhận đăng ký: {{ displayTime(event.registrationOpensAt) }} — {{ displayTime(event.registrationClosesAt) }}</p>
+      <p>Sự kiện: {{ displayTime(event.startsAt) }} — {{ displayTime(event.endsAt) }} (giờ Việt Nam)</p>
+      <p>Sức chứa: {{ event.capacity }} · {{ departmentNames(event) }} · Năm học: {{ event.studyYears.join(', ') || 'Tất cả' }}</p>
+      <p>Sự kiện sẽ chuyển sang trạng thái Đã công bố. Lịch nhận đăng ký đã cấu hình được giữ nguyên.</p>
+      <button [disabled]="busy()" (click)="publish()">Xác nhận công bố</button>
+      <button class="secondary" [disabled]="busy()" (click)="publishing.set(null)">Hủy công bố</button>
+    </section>
+  }
+  <section class="panel">
+    @if (busy()) { <p role="status">Đang tải sự kiện…</p> }
+    @else if (failed()) { <button class="secondary" (click)="load()">Tải lại sự kiện</button> }
+    @else if (!items().length) { <p>Chưa có sự kiện. Hãy tạo bản nháp đầu tiên.</p> }
+    @else {
+      <div class="table-scroll"><table>
+        <thead><tr><th>Sự kiện</th><th>Trạng thái</th><th>Bắt đầu (giờ VN)</th><th>Thao tác</th></tr></thead>
+        <tbody>@for (event of items(); track event.id) {
+          <tr><td><strong>{{ event.title }}</strong><small>{{ event.location }} · Phiên bản {{ event.version }}</small></td>
+            <td>{{ event.status === 'DRAFT' ? 'Bản nháp' : 'Đã công bố' }}</td><td>{{ displayTime(event.startsAt) }}</td>
+            <td><button class="secondary" [disabled]="busy() || !catalogsReady()" (click)="publishing.set(null); edit(event)">Chỉnh sửa</button>
+              @if (event.status === 'DRAFT') { <button [disabled]="busy() || !catalogsReady()" (click)="publishing.set(event); message.set('')">Công bố</button> }
+            </td></tr>
+        }</tbody>
+      </table></div>
+    }
+    <div class="pager">
+      <button class="secondary" [disabled]="page === 0 || busy()" (click)="changePage(-1)">Trang trước</button>
+      <span>Trang {{ page + 1 }}</span>
+      <button class="secondary" [disabled]="!hasNext() || busy()" (click)="changePage(1)">Trang sau</button>
+    </div>
+  </section>
+}

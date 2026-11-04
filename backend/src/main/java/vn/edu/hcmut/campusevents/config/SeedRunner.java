@@ -2,12 +2,14 @@ package vn.edu.hcmut.campusevents.config;
 import java.util.*;
 import org.springframework.boot.*;
 import org.springframework.core.env.Environment;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import vn.edu.hcmut.campusevents.auth.AuthService;
 import vn.edu.hcmut.campusevents.users.*;
 @Component
+@Order(10)
 public class SeedRunner implements ApplicationRunner {
  private final Environment env;private final AccountRepository users;private final PasswordEncoder encoder;
  public SeedRunner(Environment env,AccountRepository users,PasswordEncoder encoder){this.env=env;this.users=users;this.encoder=encoder;}
@@ -25,7 +27,6 @@ public class SeedRunner implements ApplicationRunner {
    }}
   if(!seed)return;
   String password=env.getRequiredProperty("campus.dev-seed.password");AuthService.checkPassword(password);
-  users.jdbc().update("INSERT INTO campus.departments(code,name) VALUES('CSE','Khoa Công nghệ thông tin'),('ECON','Khoa Kinh tế') ON CONFLICT(code) DO NOTHING");
   users.jdbc().update("INSERT INTO campus.organization_units(name) VALUES('Đơn vị thử nghiệm I1') ON CONFLICT(name) DO NOTHING");
   long department=users.jdbc().queryForObject("SELECT id FROM campus.departments WHERE code='CSE'",Long.class),unit=users.jdbc().queryForObject("SELECT id FROM campus.organization_units WHERE name='Đơn vị thử nghiệm I1'",Long.class);
   user("admin.i1@example.test","Admin I1","ADMIN",password,null,"ACTIVE");user("admin2.i1@example.test","Admin 2 I1","ADMIN",password,null,"ACTIVE");

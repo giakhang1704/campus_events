@@ -1,10 +1,26 @@
 package vn.edu.hcmut.campusevents.users;
-import java.util.*;
-import org.springframework.jdbc.core.JdbcTemplate;
+import java.util.List;
+import java.util.Map;
 import org.springframework.web.bind.annotation.*;
-@RestController @RequestMapping("/api/catalog")
+import vn.edu.hcmut.campusevents.catalog.CatalogService;
+import vn.edu.hcmut.campusevents.catalog.Department;
+
+@RestController
+@RequestMapping("/api/catalog")
 public class CatalogController {
- private final JdbcTemplate db;public CatalogController(JdbcTemplate db){this.db=db;}
- @GetMapping("/departments") List<Map<String,Object>> departments(){return db.queryForList("SELECT id,code,name FROM campus.departments ORDER BY id");}
- @GetMapping("/organization-units") List<Map<String,Object>> units(){return db.queryForList("SELECT id,name FROM campus.organization_units ORDER BY id");}
+    private final CatalogService catalogs;
+
+    public CatalogController(CatalogService catalogs) {
+        this.catalogs = catalogs;
+    }
+
+    @GetMapping("/departments")
+    public List<Department> departments() {
+        return catalogs.departments();
+    }
+
+    @GetMapping("/organization-units")
+    public List<Map<String, Object>> organizationUnits() {
+        return catalogs.organizationUnits();
+    }
 }

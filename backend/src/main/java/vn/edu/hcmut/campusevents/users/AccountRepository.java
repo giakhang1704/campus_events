@@ -2,7 +2,9 @@ package vn.edu.hcmut.campusevents.users;
 import java.util.*;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import vn.edu.hcmut.campusevents.catalog.DepartmentCatalog;
 @Repository
 public class AccountRepository {
  private final JdbcTemplate db;
@@ -14,7 +16,22 @@ public class AccountRepository {
  public Optional<PublicUser> email(String email){return db.query(SELECT+"WHERE u.email=?",PUBLIC,email).stream().findFirst();}
  public String hash(long id){return db.queryForObject("SELECT password_hash FROM campus.users WHERE id=?",String.class,id);}
  public int authVersion(long id){return db.queryForObject("SELECT auth_version FROM campus.users WHERE id=?",Integer.class,id);}
+ public boolean selectableDepartmentExists(long id){
+  return new NamedParameterJdbcTemplate(db).queryForObject(
+    "SELECT EXISTS(SELECT 1 FROM campus.departments WHERE id=:id AND code IN (:codes))",
+    Map.of("id",id,"codes",DepartmentCatalog.codes()),Boolean.class);
+ }
  public void adminLock(){db.queryForObject("SELECT pg_advisory_xact_lock(3011001)",(rs,n)->true);}
  public void lock(long id){db.queryForObject("SELECT id FROM campus.users WHERE id=? FOR UPDATE",Long.class,id);}
- public List<PublicUser> list(String q,int page,int size){String pattern="%"+q.replace("!","!!").replace("%","!%").replace("_","!_")+"%";return db.query(SELECT+"WHERE u.full_name ILIKE ? ESCAPE '!' OR u.email ILIKE ? ESCAPE '!' OR p.student_code ILIKE ? ESCAPE '!' ORDER BY u.id LIMIT ? OFFSET ?",PUBLIC,pattern,pattern,pattern,size+1,page*size);}
+    public boolean hasActiveSession(long userId, long sessionId) {
+        return db.queryForObject("""
+                SELECT EXISTS(SELECT 1 FROM campus.auth_sessions s JOIN campus.users u ON u.id=s.user_id
+                WHERE s.id=? AND s.user_id=? AND s.revoked_at IS NULL AND s.expires_at>clock_timestamp()
+                    AND s.auth_version=u.auth_version)
+                """, Boolean.class, sessionId, userId);
+    }
+ public List<PublicUser> list(String q,String role,String status,int page,int size){
+  String pattern="%"+q.replace("!","!!").replace("%","!%").replace("_","!_")+"%";
+  return db.query(SELECT+"WHERE (u.full_name ILIKE ? ESCAPE '!' OR u.email ILIKE ? ESCAPE '!' OR p.student_code ILIKE ? ESCAPE '!') AND (?='' OR u.role=?) AND (?='' OR u.status=?) ORDER BY u.id LIMIT ? OFFSET ?",PUBLIC,pattern,pattern,pattern,role,role,status,status,size+1,page*size);
+ }
 }

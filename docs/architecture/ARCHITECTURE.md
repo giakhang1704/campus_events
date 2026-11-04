@@ -33,4 +33,10 @@ Single-instance không có high availability; cần test tải và bộ nhớ Ja
 
 
 ## Trạng thái bản chạy local
-Đã có Dockerfile frontend/backend và compose.yaml; chỉ có API kiểm tra môi trường, chưa có service nghiệp vụ. Angular nhúng mockup public/mockup để xem trước, không coi đó là Angular implementation của toàn bộ chức năng. Xem LOCAL_RUN.md và SMOKE_TEST.md trước khi chạy.
+Đã có Dockerfile frontend/backend và compose.yaml; đã có API tài khoản và nghiệp vụ Organizer tạo/sửa/công bố sự kiện. Angular nhúng mockup public/mockup để xem trước, không coi đó là Angular implementation của toàn bộ chức năng. Xem LOCAL_RUN.md và SMOKE_TEST.md trước khi chạy.
+
+## Module sự kiện Organizer
+
+`events/EventController` nhận request/validation và trả response; `EventService` điều phối quyền sở hữu, version và transaction; `EventRules` chứa quy tắc thuần để unit test; `EventRepository` chứa toàn bộ SQL và đọc eligibility theo lô. `events/model` là snapshot bất biến, không phụ thuộc DTO HTTP; `events/dto` định nghĩa payload và pagination. Module events gọi dịch vụ công khai `AuthService.requireActiveOrganizer` để recheck tài khoản/phiên khi ghi, không viết trực tiếp dữ liệu users.
+
+Frontend `features/events` tách model/thời gian, `EventApi`, `OrganizerEventsComponent` và `EventEditorComponent`; template ở file HTML riêng. Không viết SQL hoặc nghiệp vụ phân quyền trong component. Dữ liệu được tải từ API qua lớp core hiện có, không dùng localStorage cho sự kiện thật. Backend tìm/xem sự kiện PUBLISHED đã có trong module events: controller nhận q/page/size/id, service giữ snapshot read-only, repository lọc trạng thái ngay trong SQL và đọc eligibility theo lô. FE Sinh viên và tích hợp đăng ký/email là các phần tiếp theo, không đánh dấu toàn bộ A05.2/I1 đã xong.
