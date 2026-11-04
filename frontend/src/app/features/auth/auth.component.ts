@@ -1,9 +1,10 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Api, ApiError, Catalog } from '../../core/api';
+import { Session } from '../../core/auth/session';
 @Component({selector:'app-auth',standalone:true,imports:[FormsModule],template:`
-<section class="auth-layout"><div class="auth-intro"><span class="eyebrow">CAMPUS EVENTS</span><h1>Những trải nghiệm<br>bắt đầu từ đây.</h1><p>Tài khoản thật, dữ liệu được lưu trong hệ thống.</p></div>
-<div class="panel auth-form"><h2>{{signup?'Tạo tài khoản sinh viên':'Đăng nhập'}}</h2><p class="muted">{{signup?'Khai báo hồ sơ để bắt đầu.':'Sử dụng tài khoản được cấp hoặc tự đăng ký sinh viên.'}}</p>
+<section class="auth-shell"><div class="auth-art"><div class="brand"><span class="brand-mark">ce</span><span>campus<em>events</em></span></div><div><div class="eyebrow">KHÔNG GIAN SỰ KIỆN SINH VIÊN</div><h1>Những trải nghiệm bắt đầu từ đây.</h1><p>Khám phá hội thảo, workshop và hoạt động ngoại khóa; đăng ký và điểm danh trong cùng một nơi.</p></div><small>© Campus Events</small></div>
+<div class="auth-content"><div class="auth-box"><div class="eyebrow">{{signup?'SINH VIÊN MỚI':'CHÀO MỪNG TRỞ LẠI'}}</div><h1>{{signup?'Tạo tài khoản sinh viên':'Đăng nhập'}}</h1><p>{{signup?'Khai báo hồ sơ để bắt đầu tham gia sự kiện.':'Sử dụng tài khoản được cấp hoặc tài khoản sinh viên đã đăng ký.'}}</p>
 <form #form="ngForm" (ngSubmit)="submit(form)">
 @if(signup){
 <label>Họ và tên<input aria-label="Họ và tên" name="fullName" [(ngModel)]="fullName" required maxlength="150" autocomplete="name" [attr.aria-invalid]="!!error('fullName',form)" aria-describedby="fullName-error">@if(error('fullName',form)){<small class="field-error" id="fullName-error">{{error('fullName',form)}}</small>}</label>
@@ -13,13 +14,17 @@ import { Api, ApiError, Catalog } from '../../core/api';
 @if(signup){<div class="columns">
 <label>Khoa<select aria-label="Khoa" name="departmentId" [(ngModel)]="departmentId" required [attr.aria-invalid]="!!error('departmentId',form)" aria-describedby="departmentId-error"><option [ngValue]="null">Chọn khoa</option>@for(d of departments();track d.id){<option [ngValue]="d.id">{{d.name}}</option>}</select>@if(error('departmentId',form)){<small class="field-error" id="departmentId-error">{{error('departmentId',form)}}</small>}</label>
 <label>Năm học<input type="number" aria-label="Năm học" name="studyYear" [(ngModel)]="studyYear" required min="1" max="32767" step="1" [attr.aria-invalid]="!!error('studyYear',form)" aria-describedby="studyYear-error">@if(error('studyYear',form)){<small class="field-error" id="studyYear-error">{{error('studyYear',form)}}</small>}</label></div>}
-@if(message()){<p class="notice" role="status">{{message()}}</p>}
+@if(message()){<p class="notice" [class.success]="message().startsWith('Tạo tài khoản thành công')" role="status">{{message()}}</p>}
 <button type="submit" [disabled]="busy()">{{busy()?'Đang xử lý…':signup?'Tạo tài khoản':'Đăng nhập'}}</button>
-</form><button class="secondary" [disabled]="busy()" (click)="toggle(form)">{{signup?'Đã có tài khoản? Đăng nhập':'Đăng ký tài khoản sinh viên'}}</button>
-</div></section>`})
+</form><p class="auth-switch"><button type="button" [disabled]="busy()" (click)="toggle(form)">{{signup?'Đã có tài khoản? Đăng nhập':'Đăng ký tài khoản sinh viên'}}</button></p>
+</div></div></section>`})
 export class AuthComponent {
  api=inject(Api);signup=false;email='';password='';fullName='';studentCode='';departmentId:number|null=null;studyYear=1;departments=signal<Catalog[]>([]);busy=signal(false);message=signal('');fields=signal<Record<string,string>>({});
- constructor(){this.loadDepartments();}
+ constructor(){
+  // Messages from other screens (logout, password change, session check) are shown here once.
+  const session=inject(Session);effect(()=>{const notice=session.loginNotice();if(notice){this.message.set(notice);session.loginNotice.set('');}});
+  // Departments are only needed for sign-up; toggle() loads them on demand.
+ }
  private loadDepartments(){this.api.request<Catalog[]>('/catalog/departments').then(x=>this.departments.set(x)).catch(()=>this.message.set('Không tải được danh mục khoa. Vui lòng tải lại trang.'));}
  error(name:string,form:NgForm){
   if(this.fields()[name])return this.fields()[name];

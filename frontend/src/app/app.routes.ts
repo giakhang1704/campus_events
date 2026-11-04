@@ -1,0 +1,80 @@
+import { Routes } from '@angular/router';
+import { authGuard, guestGuard, homeRedirectGuard, mustChangePasswordGuard, roleGuard } from './core/auth/session';
+import { ShellComponent } from './core/layout/shell.component';
+
+const comingSoon = () => import('./shared/coming-soon/coming-soon.page').then((m) => m.ComingSoonPage);
+
+/**
+ * Screens marked comingSoon wait for backend APIs (later increments); data.mockupFn = source function in public/mockup/app.js.
+ * Sidebar menu lives in core/layout/navigation.ts – keep both in sync.
+ */
+export const routes: Routes = [
+  {
+    path: 'login',
+    canActivate: [guestGuard],
+    title: 'Đăng nhập · Campus Events',
+    loadComponent: () => import('./features/auth/login.page').then((m) => m.LoginPage),
+  },
+  {
+    path: 'change-password',
+    canActivate: [mustChangePasswordGuard],
+    title: 'Đổi mật khẩu · Campus Events',
+    loadComponent: () => import('./features/auth/change-password.page').then((m) => m.ChangePasswordPage),
+  },
+  {
+    path: '',
+    component: ShellComponent,
+    canActivate: [authGuard],
+    children: [
+      { path: '', pathMatch: 'full', canActivate: [homeRedirectGuard], children: [] },
+
+      // ── STUDENT ──
+      {
+        path: 'events',
+        canActivate: [roleGuard('STUDENT', 'ORGANIZER')],
+        data: { title: 'Khám phá sự kiện' },
+        title: 'Khám phá sự kiện · Campus Events',
+        loadComponent: () => import('./features/events/student-events.page').then((m) => m.StudentEventsPage),
+      },
+      {
+        path: 'events/:id',
+        canActivate: [roleGuard('STUDENT', 'ORGANIZER')],
+        data: { title: 'Chi tiết sự kiện' },
+        title: 'Chi tiết sự kiện · Campus Events',
+        loadComponent: () => import('./features/events/student-event-detail.page').then((m) => m.StudentEventDetailPage),
+      },
+      { path: 'my-events', canActivate: [roleGuard('STUDENT')], data: { title: 'Sự kiện của tôi', mockupFn: 'explore(true)' }, loadComponent: comingSoon },
+      { path: 'scan', canActivate: [roleGuard('STUDENT')], data: { title: 'Điểm danh QR', mockupFn: 'scan' }, loadComponent: comingSoon },
+
+      // ── ORGANIZER ──
+      {
+        path: 'manage',
+        canActivate: [roleGuard('ORGANIZER')],
+        data: { title: 'Sự kiện quản lý' },
+        title: 'Sự kiện quản lý · Campus Events',
+        loadComponent: () => import('./features/events/organizer-events.component').then((m) => m.OrganizerEventsComponent),
+      },
+      { path: 'participants', canActivate: [roleGuard('ORGANIZER')], data: { title: 'Người tham gia', mockupFn: 'participants' }, loadComponent: comingSoon },
+      { path: 'attendance', canActivate: [roleGuard('ORGANIZER')], data: { title: 'Điểm danh', mockupFn: 'attendance' }, loadComponent: comingSoon },
+      { path: 'reports', canActivate: [roleGuard('ORGANIZER')], data: { title: 'Báo cáo', mockupFn: 'report' }, loadComponent: comingSoon },
+
+      // ── ADMIN ──
+      {
+        path: 'admin/accounts',
+        canActivate: [roleGuard('ADMIN')],
+        data: { title: 'Quản lý tài khoản' },
+        title: 'Quản lý tài khoản · Campus Events',
+        loadComponent: () => import('./features/admin/accounts.component').then((m) => m.AccountsComponent),
+      },
+
+      // ── ALL ROLES ──
+      {
+        path: 'system',
+        data: { title: 'Hệ thống & mockup' },
+        title: 'Hệ thống · Campus Events',
+        loadComponent: () => import('./features/system/environment.page').then((m) => m.EnvironmentPage),
+      },
+    ],
+  },
+  { path: '**', redirectTo: '' },
+];

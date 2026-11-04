@@ -1,5 +1,5 @@
 <div class="section-title">
-  <div><h1>Sự kiện của tôi</h1><p class="muted">Tạo nháp, chỉnh sửa và công bố các sự kiện bạn phụ trách.</p></div>
+  <div><div class="eyebrow">KHÔNG GIAN TỔ CHỨC</div><h1>Sự kiện của tôi</h1><p class="muted">Tạo nháp, chỉnh sửa và công bố các sự kiện bạn phụ trách.</p></div>
   @if (editing() === undefined) {
     <button class="secondary" [disabled]="busy()" (click)="publishing.set(null); load()">Tải lại danh sách</button>
     <button [disabled]="busy() || !catalogsReady()" (click)="publishing.set(null); editing.set(null); message.set('')">Tạo sự kiện</button>
@@ -33,7 +33,7 @@
         <thead><tr><th>Sự kiện</th><th>Trạng thái</th><th>Bắt đầu (giờ VN)</th><th>Thao tác</th></tr></thead>
         <tbody>@for (event of items(); track event.id) {
           <tr><td><strong>{{ event.title }}</strong><small>{{ event.location }} · Phiên bản {{ event.version }}</small></td>
-            <td>{{ event.status === 'DRAFT' ? 'Bản nháp' : 'Đã công bố' }}</td><td>{{ displayTime(event.startsAt) }}</td>
+            <td><span class="badge" [class.gray]="event.status === 'DRAFT'">{{ event.status === 'DRAFT' ? 'Bản nháp' : 'Đã công bố' }}</span></td><td>{{ displayTime(event.startsAt) }}</td>
             <td><button class="secondary" [disabled]="busy() || !catalogsReady()" (click)="publishing.set(null); edit(event)">Chỉnh sửa</button>
               @if (event.status === 'DRAFT') { <button [disabled]="busy() || !catalogsReady()" (click)="publishing.set(event); message.set('')">Công bố</button> }
             </td></tr>
