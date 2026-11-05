@@ -5,6 +5,7 @@ import { filter, map } from 'rxjs';
 import { Api } from '../api';
 import { ROLE_LABEL, Session } from '../auth/session';
 import { IconComponent } from '../../shared/icon/icon.component';
+import { ToastService } from '../../shared/toast/toast.service';
 import { NAV_BY_ROLE, SPACE_CAPTION } from './navigation';
 
 /** Logged-in layout: sidebar + topbar + page (mockup `shell()`). */
@@ -50,6 +51,7 @@ import { NAV_BY_ROLE, SPACE_CAPTION } from './navigation';
 export class ShellComponent {
   protected readonly api = inject(Api);
   protected readonly session = inject(Session);
+  private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
@@ -86,11 +88,11 @@ export class ShellComponent {
   protected async logout(): Promise<void> {
     this.loggingOut.set(true);
     try {
-      this.session.loginNotice.set('Bạn đã đăng xuất.');
       await this.api.logout();
+      this.toast.success('Bạn đã đăng xuất thành công.');
     } catch (e) {
       // Api.logout already cleared the local session; the message explains the pending server revoke.
-      this.session.loginNotice.set(e instanceof Error ? e.message : 'Không đăng xuất được.');
+      this.toast.error(e instanceof Error ? e.message : 'Không đăng xuất được.');
     } finally {
       this.loggingOut.set(false);
     }

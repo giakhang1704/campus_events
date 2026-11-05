@@ -53,7 +53,7 @@ export class AccountsComponent {
   this.busy.set(true);this.message.set('');
   try{
    const u=this.selected;
-   const body={status:u.status==='ACTIVE'?'LOCKED':'ACTIVE',version:u.version,reason:this.reason};
+   const body={status:u.status==='ACTIVE'?'LOCKED':'ACTIVE',version:u.version,reason:this.reason.trim()};
    const result=await this.api.request<ChangePreview>('/admin/users/'+u.id+'/status/preview','POST',body);
    if(result.changed)this.preview=result;else{this.cancelEdit();this.message.set('Không có thay đổi.');}
   }catch(e){this.message.set(e instanceof Error?e.message:'Không kiểm tra được điều kiện thay đổi.');}finally{this.busy.set(false);}

@@ -307,3 +307,132 @@ a.poster{display:flex}
 .empty button svg,.empty a.button svg{width:18px;height:18px;margin:0;color:inherit}
 .manage-hero button{white-space:nowrap}
 @media(max-width:680px){.manage-hero .actions button{padding:10px 12px}}
+
+/* Event editor: banner, three titled cards, sticky action bar. */
+.editor-hero{align-items:flex-start}
+.editor-hero-main{min-width:0;flex:1}
+.editor-hero-main p{overflow-wrap:anywhere}
+.manage-hero .hero-back{background:transparent;border:0;color:#fff;padding:4px 0;margin-bottom:10px;font-size:14px;opacity:.9}
+.manage-hero .hero-back:hover:not(:disabled){background:transparent;opacity:1;text-decoration:underline}
+.manage-hero .hero-back svg{width:16px;height:16px}
+.hero-pill{display:inline-flex;align-items:center;padding:6px 12px;border-radius:999px;font-size:13px;font-weight:600;white-space:nowrap;background:#ffffff26;color:#fff;box-shadow:inset 0 0 0 1px #ffffff59}
+.hero-pill.live{background:var(--mint);color:var(--green);box-shadow:none}
+.editor-form{display:flex;flex-direction:column;gap:20px}
+.form-card{border-radius:12px;padding:24px;box-shadow:0 1px 2px #0c1b3d0d,0 4px 12px #0c1b3d08}
+.form-card h2{font-size:17px;margin:0 0 18px}
+.form-card .card-hint{color:var(--muted);font-size:13px;margin:-12px 0 16px}
+.form-card .columns{row-gap:18px}
+.form-card .columns label{margin-bottom:0}
+.form-card .columns:not(:last-child){margin-bottom:18px}
+.form-card>label:last-child{margin-bottom:0}
+.form-card label{font-weight:600;color:#2c3547}
+.form-card input::placeholder,.form-card textarea::placeholder{color:#8a93a6}
+.form-card select[multiple]{min-height:150px}
+.editor-footer{position:sticky;bottom:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  margin:4px -1px 0;padding:16px 24px;background:#fff;border-top:1px solid var(--line);border-radius:12px 12px 0 0;box-shadow:0 -6px 16px #0c1b3d0f}
+.editor-footer>span{color:var(--muted);font-size:13px}
+.editor-footer .actions{margin-left:auto}
+@media(max-width:680px){.editor-footer{padding:12px 16px}.editor-footer>span{display:none}.editor-footer .actions{width:100%}.editor-footer .actions button{flex:1}.form-card{padding:20px}}
+@media(max-width:680px){.editor-hero{flex-direction:column;gap:14px}.editor-hero .editor-hero-main{width:100%}}
+
+/* Password field with show/hide toggle. */
+.password-field{position:relative;display:block}
+.password-field input{padding-right:46px!important}
+.pw-toggle{position:absolute;right:4px;top:50%;transform:translateY(-50%);padding:8px;border:0;background:transparent;color:#8a93a6;border-radius:8px}
+.pw-toggle:hover:not(:disabled){background:transparent;color:#4b5567}
+.pw-toggle svg{width:18px;height:18px}
+
+/* Invalid fields: a clearly red border (3:1 against white) and red ring on focus. */
+[aria-invalid="true"]{border-color:#d64545!important}
+.panel [aria-invalid="true"]:focus,.auth-box [aria-invalid="true"]:focus{box-shadow:0 0 0 3px #d6454526!important}
+
+/* Toasts, top right. */
+.toast-stack{position:fixed;top:92px;right:24px;z-index:200;display:flex;flex-direction:column;gap:10px;width:min(380px,calc(100vw - 32px));pointer-events:none}
+.toast{pointer-events:auto;display:flex;align-items:flex-start;gap:10px;padding:14px 12px 14px 14px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--green);border-radius:10px;
+  box-shadow:0 10px 30px #0c1b3d1f;color:var(--dark);font-size:14px;line-height:1.5;animation:toast-in .28s cubic-bezier(.16,1,.3,1)}
+.toast>app-icon svg{width:20px;height:20px;color:var(--green);margin-top:1px}
+.toast>span{flex:1}
+.toast.error{border-left-color:#d64545}
+.toast.error>app-icon svg{color:#d64545}
+.toast-close{padding:2px;border:0;background:transparent;color:#8a93a6}
+.toast-close:hover:not(:disabled){background:transparent;color:var(--dark)}
+.toast-close svg{width:16px;height:16px}
+.toast.leaving{animation:toast-out .2s ease-in forwards}
+@keyframes toast-in{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+@keyframes toast-out{to{opacity:0;transform:translateX(12px)}}
+@media (prefers-reduced-motion:reduce){.toast,.toast.leaving{animation:none}}
+/* Below the 78px top bar so the account menu and logout stay reachable; phones use the bottom edge. */
+body:has(.auth-shell) .toast-stack{top:20px}
+@media(max-width:767px){.toast-stack{top:12px;right:16px}body:has(.auth-shell) .toast-stack{top:12px}}
+
+/* Event form: date + time pairs, checkbox groups, character count, error summary. */
+.form-card fieldset{border:0;margin:0;padding:0;min-width:0}
+.form-card legend{padding:0;margin-bottom:8px;font-size:13px;font-weight:600;color:#2c3547}
+.datetime-row{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px}
+.input-icon{position:relative;display:block}
+.input-icon>app-icon svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:17px;height:17px;color:#8a93a6;pointer-events:none}
+.input-icon input{padding-left:38px!important;cursor:pointer}
+.input-icon input::-webkit-calendar-picker-indicator{display:none}
+.input-icon:focus-within>app-icon svg{color:var(--blue)}
+.datetime .field-error{display:block;margin-top:6px;font-size:12px}
+.choice-group>small{display:block;margin-top:8px;font-size:12px;color:var(--muted)}
+.choice-group>small.field-error{color:#b42318}
+.chips-check{display:flex;flex-wrap:wrap;gap:8px}
+.check-chip{display:inline-flex!important;flex-direction:row!important;align-items:center;gap:8px!important;margin:0!important;padding:9px 14px;border:1px solid #d3dbe8;border-radius:999px;background:#fff;font-weight:500!important;cursor:pointer;transition:border-color .15s,background-color .15s}
+.check-chip:hover{border-color:#a9c4e8}
+.check-chip:has(input:checked){border-color:var(--blue);background:var(--blue-50);color:var(--blue)}
+.check-chip input,.check-row input{accent-color:var(--blue);width:16px;height:16px;margin:0}
+.check-list{max-height:200px;overflow-y:auto;border:1px solid #d3dbe8;border-radius:10px;padding:4px}
+.check-row{display:flex!important;flex-direction:row!important;align-items:center;gap:10px!important;margin:0!important;padding:9px 10px;border-radius:8px;font-weight:400!important;cursor:pointer}
+.check-row:hover{background:var(--blue-50)}
+.check-row.all{font-weight:600!important;border-bottom:1px solid var(--line);border-radius:8px 8px 0 0;margin-bottom:2px!important}
+.field-foot{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.field-foot .char-count{margin-left:auto;color:#8a93a6;font-size:12px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.footer-errors{display:inline-flex;align-items:center;gap:6px;color:#b42318!important;font-weight:600}
+.footer-errors svg{width:16px;height:16px}
+@media(max-width:680px){.editor-footer>span.footer-errors{display:inline-flex;width:100%}}
+
+/* Date (dd/mm/yyyy) and time (HH:MM AM/PM) fields used in the event form. */
+.date-field,.time-field{position:relative;display:block;min-width:0}
+.date-field>input[type=text],.time-field>input[type=text]{padding-left:40px!important}
+.field-icon-btn{position:absolute;left:4px;top:50%;transform:translateY(-50%);padding:7px;border:0;background:transparent;color:#8a93a6;border-radius:8px;line-height:0}
+.field-icon-btn:hover:not(:disabled){background:var(--blue-50);color:var(--blue)}
+.field-icon-btn svg{width:17px;height:17px}
+.date-field:focus-within .field-icon-btn,.time-field:focus-within .field-icon-btn{color:var(--blue)}
+/* Pick panels (calendar, time): one look, above the cards below. */
+.pick-pop{position:absolute;top:calc(100% + 6px);z-index:60;padding:14px;background:#fff;border:1px solid var(--line);border-radius:14px;
+  box-shadow:0 16px 40px #0c1b3d24,0 2px 6px #0c1b3d0f;animation:pop-in .14s cubic-bezier(.16,1,.3,1)}
+@keyframes pop-in{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.pick-pop{animation:none}}
+.pick-pop button{font-variant-numeric:tabular-nums}
+.date-pop{left:0;width:296px}
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cal-head strong{font-size:15px}
+.cal-nav{padding:7px;border:0;background:transparent;border-radius:8px;color:var(--dark)}
+.cal-nav:hover:not(:disabled){background:var(--blue-50)}
+.cal-nav svg{width:16px;height:16px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-week span{text-align:center;font-size:12px;font-weight:600;color:var(--muted);padding:4px 0 6px}
+.cal-grid button{height:36px;padding:0;border:0;border-radius:9px;background:transparent;font-weight:500;color:var(--dark)}
+.cal-grid button.out{color:#9aa3b5}
+.cal-grid button.today{box-shadow:inset 0 0 0 1px var(--blue);color:var(--blue)}
+.cal-grid button:hover:not(.on){background:var(--blue-50)}
+.cal-grid button.on{background:var(--blue);color:#fff;box-shadow:none}
+.cal-foot{display:flex;justify-content:flex-end;border-top:1px solid var(--line);margin-top:10px;padding-top:8px}
+.link-btn{border:0;background:transparent;color:var(--blue);padding:6px 8px;font-weight:600}
+.link-btn:hover:not(:disabled){background:var(--blue-50)}
+
+/* Time as three selects (Giờ | Phút | Buổi) next to the date; wraps under it when the column is narrow. */
+.datetime-row{display:flex;flex-wrap:wrap;gap:8px}
+.datetime-row>app-date-field{flex:1 1 150px}
+.time-field{display:flex!important;flex-wrap:wrap;gap:8px;flex:0 1 auto;min-width:0}
+.select-wrap{position:relative;display:block}
+.select-wrap select{appearance:none;-webkit-appearance:none;padding:11px 30px 11px 12px!important;cursor:pointer;font-variant-numeric:tabular-nums}
+.select-wrap.hour select{width:76px}
+.select-wrap.minute select{width:96px}
+.select-wrap.period select{width:84px}
+.select-wrap>app-icon svg{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:#8a93a6;pointer-events:none}
+.select-wrap:focus-within>app-icon svg{color:var(--blue)}
+.select-wrap select.placeholder{color:#8a93a6}
+.select-wrap select option{color:var(--dark)}
+.minute-other{width:64px!important;text-align:center;font-variant-numeric:tabular-nums}

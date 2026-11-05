@@ -1,4 +1,5 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
+import { ToastService } from '../../shared/toast/toast.service';
 import { CanActivateFn, Router } from '@angular/router';
 import { Api } from '../api';
 
@@ -25,12 +26,11 @@ export const HOME_BY_ROLE: Record<string, string> = {
 export class Session {
   private readonly api = inject(Api);
   private restoring: Promise<void> | null = null;
-  /** One-off message for the login page (session check failed, logged out, password changed...). */
-  readonly loginNotice = signal('');
+  private readonly toast = inject(ToastService);
 
   ensureRestored(): Promise<void> {
     this.restoring ??= this.api.refresh().catch((e) => {
-      this.loginNotice.set(e instanceof Error ? e.message : 'Dịch vụ tạm thời gián đoạn. Vui lòng thử lại.');
+      this.toast.error(e instanceof Error ? e.message : 'Dịch vụ tạm thời gián đoạn. Vui lòng thử lại.');
     });
     return this.restoring;
   }

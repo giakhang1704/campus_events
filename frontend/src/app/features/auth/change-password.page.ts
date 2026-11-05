@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Api, ApiError } from '../../core/api';
-import { Session } from '../../core/auth/session';
+import { ToastService } from '../../shared/toast/toast.service';
 
 /**
  * /change-password: required first-login password change (moved from the I1 main.ts).
@@ -46,7 +46,7 @@ import { Session } from '../../core/auth/session';
 })
 export class ChangePasswordPage {
   protected readonly api = inject(Api);
-  private readonly session = inject(Session);
+  private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
   protected readonly busy = signal(false);
   protected readonly message = signal('');
@@ -67,7 +67,7 @@ export class ChangePasswordPage {
     this.busy.set(true);
     try {
       await this.api.request('/auth/password', 'POST', { currentPassword: this.oldPassword, newPassword: this.newPassword });
-      this.session.loginNotice.set('Đã đổi mật khẩu và thu hồi các phiên cũ. Vui lòng đăng nhập lại.');
+      this.toast.success('Đã đổi mật khẩu và thu hồi các phiên cũ. Vui lòng đăng nhập lại.');
       this.api.user.set(null);
       await this.router.navigateByUrl('/login');
     } catch (e) {
@@ -82,7 +82,7 @@ export class ChangePasswordPage {
     try {
       await this.api.logout();
     } catch (e) {
-      this.session.loginNotice.set(e instanceof Error ? e.message : 'Không đăng xuất được.');
+      this.toast.error(e instanceof Error ? e.message : 'Không đăng xuất được.');
     }
     await this.router.navigateByUrl('/login');
   }
