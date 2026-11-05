@@ -29,7 +29,7 @@ import { formatDayMonth, formatLongDate, formatTime, isEligible, posterColor, re
         <section class="panel detail-copy">
           <div [class]="posterClass()">
             <small>{{ unitName() }}</small>
-            <strong>{{ e.title }}</strong>
+            <strong>{{ dayMonth(e.startsAt) }} · {{ time(e.startsAt) }}</strong>
           </div>
           <span [class]="badge().css">{{ badge().label }}</span>
           <h1 class="gap-top">{{ e.title }}</h1>
@@ -94,6 +94,7 @@ export class StudentEventDetailPage {
 
   protected readonly longDate = formatLongDate;
   protected readonly time = formatTime;
+  protected readonly dayMonth = formatDayMonth;
   /** "08:00 12/11" in Vietnam time. */
   protected stamp(iso: string): string {
     return `${formatTime(iso)} ${formatDayMonth(iso)}`;

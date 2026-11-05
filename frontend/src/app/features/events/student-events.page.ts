@@ -1,42 +1,26 @@
-import { ChangeDetectionStrategy, Component, inject, OnDestroy, signal } from '@angular/core';
-import { Api, Catalog } from '../../core/api';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, isDevMode, OnDestroy, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute } from '@angular/router';
+import { map } from 'rxjs';
+import { Catalog } from '../../core/api';
 import { CatalogService } from '../../core/catalog.service';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { EventApi } from './event-api.service';
 import { CampusEvent } from './event.models';
 import { PublicEventCardComponent } from './public-event-card.component';
+import { registrationWindow } from './event-view';
+import { FIXTURE_UNITS, FIXTURES, FixtureKey } from './dev/event-fixtures';
+import { FixtureToggleComponent } from './dev/fixture-toggle.component';
+import { EventPage } from './event.models';
 
 /** /events: published events from GET /api/events (mockup `explore()`). */
 @Component({
   selector: 'app-student-events',
-  imports: [PageHeaderComponent, IconComponent, PublicEventCardComponent],
+  imports: [PageHeaderComponent, IconComponent, PublicEventCardComponent, FixtureToggleComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <app-page-header title="Khám phá sự kiện" subtitle="Tìm những hoạt động bạn muốn tham gia tại trường." />
-
-    <section class="hero">
-      <div>
-        <div class="eyebrow">KHÁM PHÁ · HỌC HỎI · KẾT NỐI</div>
-        <h2>Bước ra khỏi lớp học.<br />Thêm một trải nghiệm mới.</h2>
-        <p>Seminar, workshop và những cuộc gặp gỡ dành cho cộng đồng sinh viên{{ firstName() ? ', ' + firstName() : '' }}.</p>
-      </div>
-      <div class="hero-art" aria-hidden="true">
-        <div class="ticket">
-          <small>CAMPUS PASS</small>
-          <strong>Sự kiện<br />mới</strong>
-          <div class="ticket-line"><span>Đăng ký</span><span>Điểm danh</span></div>
-        </div>
-        <span class="star">✦</span>
-      </div>
-    </section>
-
-    <div class="section-head">
-      <div>
-        <h2>Sự kiện tại trường</h2>
-        <p>{{ loading() ? 'Đang tải…' : summary() }}</p>
-      </div>
-    </div>
+    <app-page-header title="Khám phá sự kiện" [subtitle]="headline()" />
 
     <div class="toolbar">
       <label class="search">
@@ -72,11 +56,15 @@ import { PublicEventCardComponent } from './public-event-card.component';
         <button class="small" [disabled]="!hasNext() || loading()" (click)="go(1)">Trang sau <app-icon name="arrow" /></button>
       </div>
     }
+
+    @if (devMode) {
+      <!-- DEV ONLY: data source switch, never rendered in production builds. -->
+      <app-fixture-toggle />
+    }
   `,
 })
 export class StudentEventsPage implements OnDestroy {
   private readonly events = inject(EventApi);
-  private readonly api = inject(Api);
   private readonly catalogs = inject(CatalogService);
 
   protected readonly items = signal<CampusEvent[]>([]);
@@ -89,24 +77,43 @@ export class StudentEventsPage implements OnDestroy {
   private searchTimer?: ReturnType<typeof setTimeout>;
   private requestId = 0;
 
+  // DEV ONLY: ?data=demo|worst|empty|one|huge swaps the API for a fixture at this boundary.
+  protected readonly devMode = isDevMode();
+  private readonly fixture = toSignal(
+    inject(ActivatedRoute).queryParamMap.pipe(map((q) => (this.devMode ? (q.get('data') as FixtureKey | null) : null))),
+    { initialValue: null },
+  );
+
   constructor() {
-    void this.load();
-    this.catalogs.getUnits().then((u) => this.units.set(u)).catch(() => {});
+    effect(() => {
+      const key = this.fixture();
+      this.page.set(0);
+      void this.load();
+      if (key && FIXTURES[key]) this.units.set(FIXTURE_UNITS);
+      else this.catalogs.getUnits().then((u) => this.units.set(u)).catch(() => {});
+    });
+  }
+
+  /** Same contract as GET /api/events (server-side search, 9 per page), over a dev fixture. */
+  private fixturePage(key: FixtureKey, q: string, page: number, size = 9): EventPage {
+    const needle = q.toLocaleLowerCase('vi');
+    const rows = FIXTURES[key].filter((e) => !needle || [e.title, e.description, e.location].some((v) => v.toLocaleLowerCase('vi').includes(needle)));
+    return { items: rows.slice(page * size, page * size + size), page, size, hasNext: rows.length > (page + 1) * size };
   }
 
   ngOnDestroy(): void {
     clearTimeout(this.searchTimer);
   }
 
-  protected firstName(): string {
-    return this.api.user()?.fullName.trim().split(/\s+/).pop() ?? '';
-  }
-
-  protected summary(): string {
+  /** The screen's finding: how many of the listed events take registrations right now. */
+  protected readonly headline = computed(() => {
+    if (this.loading()) return 'Đang tải sự kiện…';
     const n = this.items().length;
-    if (!n) return 'Không có kết quả';
-    return this.hasNext() || this.page() > 0 ? `${n} sự kiện trên trang này` : `${n} sự kiện`;
-  }
+    if (!n) return this.query() ? 'Không có sự kiện phù hợp với từ khóa.' : 'Chưa có sự kiện nào được công bố.';
+    const open = this.items().filter((e) => registrationWindow(e) === 'OPEN').length;
+    const scope = this.hasNext() || this.page() > 0 ? ' trên trang này' : '';
+    return open ? `${open} trong ${n} sự kiện${scope} đang nhận đăng ký.` : `${n} sự kiện${scope}, chưa có sự kiện nào đang nhận đăng ký.`;
+  });
 
   protected unitName(id: number): string {
     return this.units().find((u) => u.id === id)?.name ?? '';
@@ -132,7 +139,8 @@ export class StudentEventsPage implements OnDestroy {
     this.loading.set(true);
     this.error.set('');
     try {
-      const result = await this.events.listPublished(this.query().trim(), this.page());
+      const key = this.fixture();
+      const result = key && FIXTURES[key] ? this.fixturePage(key, this.query().trim(), this.page()) : await this.events.listPublished(this.query().trim(), this.page());
       if (id !== this.requestId) return; // a newer search already started
       this.items.set(result.items);
       this.hasNext.set(result.hasNext);

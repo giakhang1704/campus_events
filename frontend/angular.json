@@ -1,1 +1,51 @@
-{"version":1,"projects":{"campus-events":{"projectType":"application","root":"","sourceRoot":"src","architect":{"build":{"builder":"@angular/build:application","options":{"browser":"src/main.ts","index":"src/index.html","tsConfig":"tsconfig.json","outputPath":"dist/campus-events","assets":[{"glob":"**/*","input":"public"}],"styles":["src/styles.css"]}},"serve":{"builder":"@angular/build:dev-server","options":{"buildTarget":"campus-events:build"}}}}}}
+{
+  "version": 1,
+  "projects": {
+    "campus-events": {
+      "projectType": "application",
+      "root": "",
+      "sourceRoot": "src",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "src/main.ts",
+            "index": "src/index.html",
+            "tsConfig": "tsconfig.json",
+            "outputPath": "dist/campus-events",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "public"
+              }
+            ],
+            "styles": [
+              "src/styles.css"
+            ]
+          },
+          "configurations": {
+            "production": {},
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "campus-events:build:production"
+            },
+            "development": {
+              "buildTarget": "campus-events:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        }
+      }
+    }
+  }
+}

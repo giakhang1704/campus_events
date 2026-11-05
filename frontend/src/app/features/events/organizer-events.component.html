@@ -1,5 +1,5 @@
 <div class="section-title">
-  <div><div class="eyebrow">KHÔNG GIAN TỔ CHỨC</div><h1>Sự kiện của tôi</h1><p class="muted">Tạo nháp, chỉnh sửa và công bố các sự kiện bạn phụ trách.</p></div>
+  <div><h1>Sự kiện của tôi</h1><p class="muted">Tạo nháp, chỉnh sửa và công bố các sự kiện bạn phụ trách.</p></div>
   @if (editing() === undefined) {
     <button class="secondary" [disabled]="busy()" (click)="publishing.set(null); load()">Tải lại danh sách</button>
     <button [disabled]="busy() || !catalogsReady()" (click)="publishing.set(null); editing.set(null); message.set('')">Tạo sự kiện</button>

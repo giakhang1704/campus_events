@@ -17,15 +17,13 @@ import { Session } from '../../core/auth/session';
       <div class="auth-art">
         <div class="brand"><span class="brand-mark">ce</span><span>campus<em>events</em></span></div>
         <div>
-          <div class="eyebrow">BẢO MẬT TÀI KHOẢN</div>
-          <h1>Đặt mật khẩu của riêng bạn.</h1>
+          <p class="auth-statement">Đặt mật khẩu của riêng bạn.</p>
           <p>Tài khoản được cấp bằng mật khẩu tạm. Hãy đổi mật khẩu trước khi bắt đầu sử dụng hệ thống.</p>
         </div>
         <small>© Campus Events</small>
       </div>
       <div class="auth-content">
         <div class="auth-box">
-          <div class="eyebrow">LẦN ĐĂNG NHẬP ĐẦU TIÊN</div>
           <h1>Đổi mật khẩu lần đầu</h1>
           <p>Xin chào <b>{{ api.user()?.fullName }}</b>. Mật khẩu mới cần từ 8 đến 72 ký tự.</p>
           <form (ngSubmit)="submit()">
@@ -40,7 +38,7 @@ import { Session } from '../../core/auth/session';
             @if (message()) { <p class="notice warn" role="status">{{ message() }}</p> }
             <button type="submit" [disabled]="busy()">{{ busy() ? 'Đang xử lý…' : 'Đổi mật khẩu' }}</button>
           </form>
-          <p class="auth-switch">Không phải bạn?<button type="button" [disabled]="busy()" (click)="logout()">Đăng xuất</button></p>
+          <p class="auth-switch">Không phải bạn?<button type="button" class="link" [disabled]="busy()" (click)="logout()">Đăng xuất</button></p>
         </div>
       </div>
     </section>

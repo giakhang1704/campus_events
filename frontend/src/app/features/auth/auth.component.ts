@@ -3,8 +3,8 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { Api, ApiError, Catalog } from '../../core/api';
 import { Session } from '../../core/auth/session';
 @Component({selector:'app-auth',standalone:true,imports:[FormsModule],template:`
-<section class="auth-shell"><div class="auth-art"><div class="brand"><span class="brand-mark">ce</span><span>campus<em>events</em></span></div><div><div class="eyebrow">KHÔNG GIAN SỰ KIỆN SINH VIÊN</div><h1>Những trải nghiệm bắt đầu từ đây.</h1><p>Khám phá hội thảo, workshop và hoạt động ngoại khóa; đăng ký và điểm danh trong cùng một nơi.</p></div><small>© Campus Events</small></div>
-<div class="auth-content"><div class="auth-box"><div class="eyebrow">{{signup?'SINH VIÊN MỚI':'CHÀO MỪNG TRỞ LẠI'}}</div><h1>{{signup?'Tạo tài khoản sinh viên':'Đăng nhập'}}</h1><p>{{signup?'Khai báo hồ sơ để bắt đầu tham gia sự kiện.':'Sử dụng tài khoản được cấp hoặc tài khoản sinh viên đã đăng ký.'}}</p>
+<section class="auth-shell"><div class="auth-art"><div class="brand"><span class="brand-mark">ce</span><span>campus<em>events</em></span></div><div><p class="auth-statement">Những trải nghiệm bắt đầu từ đây.</p><p>Khám phá hội thảo, workshop và hoạt động ngoại khóa; đăng ký và điểm danh trong cùng một nơi.</p></div><small>© Campus Events</small></div>
+<div class="auth-content"><div class="auth-box"><h1>{{signup?'Tạo tài khoản sinh viên':'Đăng nhập'}}</h1><p>{{signup?'Khai báo hồ sơ để bắt đầu tham gia sự kiện.':'Sử dụng tài khoản được cấp hoặc tài khoản sinh viên đã đăng ký.'}}</p>
 <form #form="ngForm" (ngSubmit)="submit(form)">
 @if(signup){
 <label>Họ và tên<input aria-label="Họ và tên" name="fullName" [(ngModel)]="fullName" required maxlength="150" autocomplete="name" [attr.aria-invalid]="!!error('fullName',form)" aria-describedby="fullName-error">@if(error('fullName',form)){<small class="field-error" id="fullName-error">{{error('fullName',form)}}</small>}</label>
@@ -16,7 +16,7 @@ import { Session } from '../../core/auth/session';
 <label>Năm học<input type="number" aria-label="Năm học" name="studyYear" [(ngModel)]="studyYear" required min="1" max="32767" step="1" [attr.aria-invalid]="!!error('studyYear',form)" aria-describedby="studyYear-error">@if(error('studyYear',form)){<small class="field-error" id="studyYear-error">{{error('studyYear',form)}}</small>}</label></div>}
 @if(message()){<p class="notice" [class.success]="message().startsWith('Tạo tài khoản thành công')" role="status">{{message()}}</p>}
 <button type="submit" [disabled]="busy()">{{busy()?'Đang xử lý…':signup?'Tạo tài khoản':'Đăng nhập'}}</button>
-</form><p class="auth-switch"><button type="button" [disabled]="busy()" (click)="toggle(form)">{{signup?'Đã có tài khoản? Đăng nhập':'Đăng ký tài khoản sinh viên'}}</button></p>
+</form><p class="auth-switch"><button type="button" class="link" [disabled]="busy()" (click)="toggle(form)">{{signup?'Đã có tài khoản? Đăng nhập':'Đăng ký tài khoản sinh viên'}}</button></p>
 </div></div></section>`})
 export class AuthComponent {
  api=inject(Api);signup=false;email='';password='';fullName='';studentCode='';departmentId:number|null=null;studyYear=1;departments=signal<Catalog[]>([]);busy=signal(false);message=signal('');fields=signal<Record<string,string>>({});

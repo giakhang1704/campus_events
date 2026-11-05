@@ -7,7 +7,6 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
   template: `
     <div class="page-head">
       <div>
-        <div class="eyebrow">CAMPUS EVENTS</div>
         <h1>{{ title() }}</h1>
         @if (subtitle()) {
           <p>{{ subtitle() }}</p>

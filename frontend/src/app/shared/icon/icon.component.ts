@@ -32,7 +32,7 @@ const ICONS: Record<string, string> = {
   template: `<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <path [attr.d]="path()" />
   </svg>`,
-  styles: `:host { display: inline-flex; }`,
+  styles: `:host { display: inline-flex; vertical-align: middle; }`,
 })
 export class IconComponent {
   readonly name = input.required<string>();

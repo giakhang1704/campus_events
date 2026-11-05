@@ -80,3 +80,137 @@ a.poster{display:block}
 
 @media(max-width:950px){main{padding:24px 20px 40px}footer{padding:18px 20px}.nav a{white-space:nowrap;padding:10px 12px;font-size:12px}.nav a svg{width:17px;height:17px}}
 @media(max-width:680px){.columns{grid-template-columns:1fr}.section-title{align-items:flex-start;flex-direction:column}.search-row>*{width:100%!important}.topbar .user-chip div{display:none}}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Theme "trẻ trung, nhiều màu" (2026-11-04, design review 2026-11-05).
+   HCMUT colours from the university logo: navy #032B91 (primary), sky #1488DB (secondary), orange accent. Colour sits on data, status and the one primary
+   action; chrome is flat. Gradients are kept only on event posters (they stand in for
+   event artwork) and the login art (brand choice). Delete this block to return to the mockup.
+   ─────────────────────────────────────────────────────────────────────────── */
+:root{
+  --blue:#032b91;--blue-600:#021f6b;--blue-50:#e9eff9;--blue-100:#cddbf2;
+  --accent:#e85d1f;--accent-50:#fff1ea;
+  --dark:#0c1b3d;--muted:#55607a;--line:#e2e8f1;--bg:#f5f8fc;
+  --green:#137a5b;--mint:#e3f8f0;--amber:#94560a;
+  --radius:16px;
+}
+body{font-family:'Be Vietnam Pro','Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--dark);-webkit-font-smoothing:antialiased}
+h1{font-size:26px;font-weight:700;letter-spacing:-.5px}h2,h3{font-weight:700}
+::selection{background:var(--blue-100)}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #8fbdec}
+.num,td,.info-row b,.meta{font-variant-numeric:tabular-nums}
+
+/* Buttons: one flat primary fill; secondary white with a border. No shadows. */
+button{border-radius:10px;border-color:#d3dbe8;box-shadow:none}
+button:hover:not(:disabled){background:var(--blue-50);border-color:var(--blue-100)}
+button:active:not(:disabled){transform:translateY(1px)}
+button.primary,button:not([class]),.auth-box button[type=submit]{background:var(--blue);border:1px solid var(--blue);color:#fff}
+button.primary:hover:not(:disabled),button:not([class]):hover:not(:disabled){background:var(--blue-600);border-color:var(--blue-600)}
+button.primary:disabled,button:not([class]):disabled{background:#e6ebf3;border-color:#e6ebf3;color:#4a5878;opacity:1}
+.text-button{color:var(--blue);font-size:13px;font-weight:600}
+.text-button:hover{color:var(--blue-600);text-decoration:underline}
+
+/* Shell: flat, sentence-case captions, the product named at the top. */
+.sidebar{border-right-color:var(--line)}
+.brand-mark{background:var(--blue);border-radius:11px}
+.brand{color:var(--blue)}.brand em{color:#1488db}
+.school{font-size:12px;letter-spacing:0;color:var(--muted);margin-top:10px}
+.nav-caption{font-size:12px;letter-spacing:0;font-weight:600;color:var(--muted);margin:32px 12px 10px}
+.nav a{border-radius:10px;color:#3c4a66;font-size:14px;font-weight:500}
+.nav a:hover{background:#f0f4fa;color:var(--dark)}
+.nav a.active{background:var(--blue-50);color:var(--blue);font-weight:600}
+.side-note{display:none}
+.avatar{background:var(--blue-50);color:var(--blue-600)}
+.topbar{background:#fff}
+.breadcrumb{color:var(--muted);font-size:13px}
+
+/* Cards, panels, notices: border or tone step, no resting shadow. */
+.panel,.card,.stat,.search{border-radius:var(--radius);border-color:var(--line)}
+.card{box-shadow:none;display:flex;flex-direction:column}
+.card:hover{box-shadow:none;transform:none;border-color:#a9c4e8}
+.card-body{flex:1;display:flex;flex-direction:column}
+.card-foot{margin-top:auto}
+.card h3{font-size:16px;min-height:0;margin:2px 0 6px}
+.card-desc{font-size:14px;color:var(--muted)}
+.meta{font-size:13px;color:var(--muted)}
+.page-head p,.section-title p{font-size:14px;color:var(--muted)}
+.notice{background:var(--blue-50);border-color:var(--blue-100);color:#0b2a6e;border-radius:12px;font-size:14px}
+.notice.warn{background:var(--accent-50);border-color:#ffd9c7;color:#8a3a12}
+.notice.success{background:var(--mint);border-color:#c3eedd;color:#0d5c44}
+.badge{border-radius:999px;padding:4px 10px;font-size:12px;font-weight:600}
+td .badge{font-size:12px}
+.badge.blue{background:var(--blue-50);color:#032b91}
+.badge.amber{background:#fff3dc;color:var(--amber)}
+.badge.gray{background:#edf1f6;color:#3c4a66}
+.badge.red{background:#ffedea;color:#831c1e}
+.split{align-items:start}
+.info-row{font-size:14px}
+.info-row span{color:var(--muted)}
+
+/* Tables: sentence-case grey headers, no band, 14px cells. */
+th{background:none;text-transform:none;letter-spacing:0;font-size:12px;font-weight:600;color:var(--muted);border-bottom:1px solid var(--line)}
+td{font-size:14px;border-bottom-color:#edf1f6}
+td small{font-size:13px;color:var(--muted)}
+tbody tr:hover{background:#f8fafd}
+
+/* Event posters: the one place gradients stay (event artwork stand-in). */
+.poster{height:128px;background:linear-gradient(135deg,#032b91,#1488db)} /* gradient: event artwork / login brand field, chosen by the team */
+.poster.green{background:linear-gradient(135deg,#0f9e7a,#2cc2b3)} /* gradient: event artwork / login brand field, chosen by the team */
+.poster.orange{background:linear-gradient(135deg,#f0642a,#ff9a3d)} /* gradient: event artwork / login brand field, chosen by the team */
+.poster.purple{background:linear-gradient(135deg,#0b6cb5,#2bb0e8)} /* gradient: event artwork / login brand field, chosen by the team */
+.poster.yellow{background:linear-gradient(135deg,#e8890c,#f2603f)} /* gradient: event artwork / login brand field, chosen by the team */
+.poster:before{border-color:#ffffff22}
+.poster small{font-size:12px;letter-spacing:0;text-transform:none;opacity:.95;font-weight:600;margin-bottom:8px}
+.poster strong{font-size:32px}
+.poster-tag{color:var(--dark);font-size:12px;font-weight:700;border-radius:999px;padding:3px 10px}
+.detail-poster{height:180px;border-radius:12px}
+.detail-poster strong{font-size:34px;max-width:75%;display:block}
+
+/* Forms */
+.panel input:focus,.panel select:focus,.panel textarea:focus,.auth-box input:focus,.auth-box select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #032b9126}
+.panel input:not([type=checkbox]):not([type=radio]),.panel select,.panel textarea,.auth-box input,.auth-box select{border-radius:10px;border-color:#d3dbe8;font-size:14px}
+.panel label,.auth-box label{font-size:13px}
+
+/* Login: the brand field stays colourful. */
+.auth-art{background:radial-gradient(circle at 80% 85%,#ff9a6b55 0,transparent 40%),linear-gradient(135deg,#032b91 0%,#0b5fc0 55%,#1488db 100%)} /* gradient: event artwork / login brand field, chosen by the team */
+.auth-art:after{border-color:#ffffff1f}
+.auth-art .auth-statement{color:#fff;font-size:34px;line-height:1.25;font-weight:700;letter-spacing:-.6px;max-width:420px;margin-top:40px;position:relative;z-index:1}
+.auth-art p,.auth-art small{color:#f6f2ff;font-size:15px}
+.auth-art small{font-size:12px}
+.auth-art .brand{color:#fff}
+.auth-art .brand em{color:#9fd3ff}
+.auth-art .brand-mark{background:#fff;color:var(--blue)}
+.auth-box h1{font-size:28px}
+.auth-box>p{font-size:14px}
+.auth-box button[type=submit]{padding:12px;font-size:15px}
+.auth-switch{font-size:14px}
+.auth-switch button.link{background:none;border:0;box-shadow:none;color:var(--blue);padding:0 4px;font-weight:600}
+.auth-switch button.link:hover:not(:disabled){background:none;color:var(--blue-600);text-decoration:underline}
+@media(max-width:680px){.auth-art .auth-statement{display:none}.auth-art{background:#fff}.auth-art .brand{color:var(--dark)}.auth-art .brand-mark{background:var(--blue);color:#fff}.auth-art .brand{color:var(--blue)}.auth-art .brand em{color:#1488db}}
+
+footer{font-size:13px}.topbar .user-chip small{font-size:12px}.detail-copy p{color:var(--dark);font-size:15px}
+
+/* Long-content fixes (2026-11-05): unbreakable titles/URLs must not widen cards or the page. */
+.grid>*{min-width:0}                                        /* #1 grid items may shrink below their content */
+@media(max-width:680px){.grid{grid-template-columns:minmax(0,1fr)}}  /* #1 the phone column too (was 1fr) */
+.card h3{overflow-wrap:anywhere}                            /* #2 hashtag-style titles break instead of clipping */
+.meta{overflow-wrap:anywhere}                               /* #3 URLs as locations break inside the card */
+.card-loc{display:-webkit-inline-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;vertical-align:top;max-width:calc(100% - 22px)}  /* #3 location: 2 lines, full text in title */
+
+/* Search box: the rounded wrapper shows focus, not the bare input inside it. */
+.search{transition:border-color .15s,box-shadow .15s}
+.search input:focus,.search input:focus-visible{outline:none;box-shadow:none}
+.search:focus-within{border-color:var(--blue);box-shadow:0 0 0 3px #032b9126}
+.search:focus-within svg{color:var(--blue)}
+
+/* Icon + label links (Chi tiết →, ← Quay lại): centre the arrow on the text line. */
+.text-button{display:inline-flex;align-items:center;gap:6px}
+.text-button svg{width:16px;height:16px}
+
+/* Admin accounts table: keep role and status on one line so the status column stays visible on phones. */
+.table-scroll td:nth-child(2),.table-scroll td:nth-child(3){white-space:nowrap}
+
+/* Text-style buttons on the login card: a thumb-sized hit area without changing the look. */
+.auth-switch button.link{padding:8px 4px}
+.meta app-icon{vertical-align:-1px}
+.meta .card-loc{margin-left:3px}

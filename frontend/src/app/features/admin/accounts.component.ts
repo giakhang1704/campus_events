@@ -4,7 +4,7 @@ import { Api, ApiError, User, Catalog } from '../../core/api';
 interface ChangePreview {before:User;role:string;status:string;organizationUnitId:number|null;reason:string;changed:boolean;impact:string;}
 interface OrganizerRequest {fullName:string;email:string;temporaryPassword:string;organizationUnitId:number|null;reason:string;}
 @Component({selector:'app-accounts',standalone:true,imports:[FormsModule],template:`
-<div class="section-title"><div><span class="eyebrow">QUẢN TRỊ</span><h1>Quản lý tài khoản</h1><p class="muted">Tra cứu, cấp tài khoản và khóa/mở quyền truy cập. Mỗi tài khoản có một vai trò cố định.</p></div><button [disabled]="busy()" (click)="toggleCreate()">{{creating?'Đóng form':'Cấp tài khoản người tổ chức'}}</button></div>
+<div class="section-title"><div><h1>Quản lý tài khoản</h1><p class="muted">Tra cứu, cấp tài khoản và khóa/mở quyền truy cập. Mỗi tài khoản có một vai trò cố định.</p></div><button [disabled]="busy()" (click)="toggleCreate()">{{creating?'Đóng form':'Cấp tài khoản người tổ chức'}}</button></div>
 @if(message()){<p class="notice" role="status">{{message()}}</p>}
 @if(creating){<section class="panel"><h2>Cấp tài khoản người tổ chức</h2>
 @if(createReview){

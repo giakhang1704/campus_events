@@ -15,7 +15,7 @@ import { NAV_BY_ROLE, SPACE_CAPTION } from './navigation';
   template: `
     <aside class="sidebar">
       <a class="brand" [routerLink]="session.homeUrl()"><span class="brand-mark">ce</span><span>campus<em>events</em></span></a>
-      <div class="school">KHÔNG GIAN SỰ KIỆN SINH VIÊN</div>
+      <div class="school">Không gian sự kiện sinh viên</div>
       <div class="nav-caption">{{ caption() }}</div>
       <nav class="nav" aria-label="Điều hướng chính">
         @for (item of nav(); track item.path) {
@@ -24,9 +24,6 @@ import { NAV_BY_ROLE, SPACE_CAPTION } from './navigation';
         <a routerLink="/system" routerLinkActive="active"><app-icon name="server" /><span>Hệ thống &amp; mockup</span></a>
       </nav>
       <div class="sidebar-bottom">
-        <div class="side-note">
-          <strong>Mọi lượt tham gia đều rõ ràng.</strong>Theo dõi đăng ký, điểm danh và kết quả trong cùng một không gian.
-        </div>
         <div class="profile">
           <span class="avatar">{{ initials() }}</span>
           <div><b>{{ user()?.fullName }}</b><small>{{ user()?.email }}</small></div>

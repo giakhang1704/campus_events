@@ -22,7 +22,7 @@ import { formatDayMonth, formatLongDate, formatTime, posterColor, registrationWi
         <p class="card-desc">{{ event().description }}</p>
         <div class="meta">
           <app-icon name="clock" /> {{ formatLongDate(event().startsAt) }} · {{ formatTime(event().startsAt) }}<br />
-          <app-icon name="pin" /> {{ event().location }}<br />
+          <app-icon name="pin" /> <span class="card-loc" [attr.title]="event().location">{{ event().location }}</span><br />
           <app-icon name="users" /> {{ event().capacity }} chỗ
         </div>
         <div class="card-foot">

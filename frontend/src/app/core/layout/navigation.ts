@@ -14,14 +14,14 @@ export const NAV_BY_ROLE: Record<string, NavItem[]> = {
   ORGANIZER: [
     { path: '/manage', icon: 'grid', label: 'Sự kiện quản lý' },
     { path: '/participants', icon: 'users', label: 'Người tham gia' },
-    { path: '/attendance', icon: 'qr', label: 'Điểm danh' },
+    { path: '/attendance', icon: 'check', label: 'Điểm danh' },
     { path: '/reports', icon: 'chart', label: 'Báo cáo' },
   ],
   ADMIN: [{ path: '/admin/accounts', icon: 'users', label: 'Quản lý tài khoản' }],
 };
 
 export const SPACE_CAPTION: Record<string, string> = {
-  STUDENT: 'KHÔNG GIAN CỦA BẠN',
-  ORGANIZER: 'KHÔNG GIAN TỔ CHỨC',
-  ADMIN: 'QUẢN TRỊ HỆ THỐNG',
+  STUDENT: 'Không gian của bạn',
+  ORGANIZER: 'Không gian tổ chức',
+  ADMIN: 'Quản trị hệ thống',
 };
