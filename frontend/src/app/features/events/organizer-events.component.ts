@@ -2,7 +2,8 @@ import { Component, inject, signal } from '@angular/core';
 import { Api, Catalog } from '../../core/api';
 import { EventApi } from './event-api.service';
 import { EventEditorComponent } from './event-editor.component';
-import { CampusEvent, displayEventTime } from './event.models';
+import { CampusEvent } from './event.models';
+import { formatDateTime } from './event-view';
 
 @Component({
   selector: 'app-organizer-events', standalone: true, imports: [EventEditorComponent],
@@ -21,7 +22,7 @@ export class OrganizerEventsComponent {
   readonly hasNext = signal(false);
   readonly editing = signal<CampusEvent | null | undefined>(undefined);
   readonly publishing = signal<CampusEvent | null>(null);
-  readonly displayTime = displayEventTime;
+  readonly displayTime = formatDateTime;
   page = 0;
 
   constructor() {

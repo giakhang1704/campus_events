@@ -30,7 +30,7 @@
     @else if (!items().length) { <p>Chưa có sự kiện. Hãy tạo bản nháp đầu tiên.</p> }
     @else {
       <div class="table-scroll"><table>
-        <thead><tr><th>Sự kiện</th><th>Trạng thái</th><th>Bắt đầu (giờ VN)</th><th>Thao tác</th></tr></thead>
+        <thead><tr><th>Sự kiện</th><th>Trạng thái</th><th>Bắt đầu</th><th>Thao tác</th></tr></thead>
         <tbody>@for (event of items(); track event.id) {
           <tr><td><strong>{{ event.title }}</strong><small>{{ event.location }} · Phiên bản {{ event.version }}</small></td>
             <td><span class="badge" [class.gray]="event.status === 'DRAFT'">{{ event.status === 'DRAFT' ? 'Bản nháp' : 'Đã công bố' }}</span></td><td>{{ displayTime(event.startsAt) }}</td>

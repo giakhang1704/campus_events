@@ -3,7 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { map } from 'rxjs';
 
-/** DEV ONLY: switches the data source of the screen via ?data=. Rendered only when isDevMode(). */
+/** DEV ONLY: switches the data source of the screen via ?data= (api = live backend). Rendered only when isDevMode() and ?data is set. */
 @Component({
   selector: 'app-fixture-toggle',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,6 +40,6 @@ export class FixtureToggleComponent {
   });
 
   protected pick(key: string): void {
-    void this.router.navigate([], { queryParams: { data: key === 'api' ? null : key }, queryParamsHandling: 'merge' });
+    void this.router.navigate([], { queryParams: { data: key }, queryParamsHandling: 'merge' });
   }
 }

@@ -17,7 +17,10 @@ export const NAV_BY_ROLE: Record<string, NavItem[]> = {
     { path: '/attendance', icon: 'check', label: 'Điểm danh' },
     { path: '/reports', icon: 'chart', label: 'Báo cáo' },
   ],
-  ADMIN: [{ path: '/admin/accounts', icon: 'users', label: 'Quản lý tài khoản' }],
+  ADMIN: [
+    { path: '/admin/accounts', icon: 'users', label: 'Quản lý tài khoản' },
+    { path: '/system', icon: 'server', label: 'Trạng thái hệ thống' },
+  ],
 };
 
 export const SPACE_CAPTION: Record<string, string> = {

@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Api, Catalog } from '../../core/api';
+import { Api, ApiError, Catalog } from '../../core/api';
 import { CatalogService } from '../../core/catalog.service';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { EventApi } from './event-api.service';
 import { CampusEvent } from './event.models';
-import { formatDayMonth, formatLongDate, formatTime, isEligible, posterColor, registrationWindow, WINDOW_BADGE } from './event-view';
+import { dateTile, formatDateTime, formatLongDate, formatTime, isEligible, registrationWindow, WINDOW_BADGE } from './event-view';
 
 /** /events/:id: published event detail from GET /api/events/{id} (mockup `detail()`). */
 @Component({
@@ -17,19 +17,27 @@ import { formatDayMonth, formatLongDate, formatTime, isEligible, posterColor, re
 
     @if (loading()) {
       <p class="muted" role="status">Đang tải sự kiện…</p>
-    } @else if (error()) {
+    } @else if (error(); as err) {
       <div class="empty">
         <app-icon name="info" />
-        <h3>Không xem được sự kiện</h3>
-        <p>{{ error() }}</p>
-        <a class="text-button" routerLink="/events">Về danh sách sự kiện <app-icon name="arrow" /></a>
+        <h3>{{ err.title }}</h3>
+        <p>{{ err.hint }}</p>
+        <div class="actions center">
+          @if (err.retry) {
+            <button type="button" (click)="reload()">Thử lại</button>
+          }
+          <a class="button primary" routerLink="/events">Về danh sách sự kiện</a>
+        </div>
       </div>
     } @else if (event(); as e) {
       <div class="split">
         <section class="panel detail-copy">
-          <div [class]="posterClass()">
-            <small>{{ unitName() }}</small>
-            <strong>{{ dayMonth(e.startsAt) }} · {{ time(e.startsAt) }}</strong>
+          <div class="poster detail-poster">
+            <span class="date-tile">
+              <strong>{{ tile().day }}</strong>
+              <span><b>{{ tile().month }}</b><small>{{ tile().weekday }}</small></span>
+            </span>
+            <span class="poster-tag"><app-icon name="clock" /> {{ time(e.startsAt) }} – {{ time(e.endsAt) }}</span>
           </div>
           <span [class]="badge().css">{{ badge().label }}</span>
           <h1 class="gap-top">{{ e.title }}</h1>
@@ -43,8 +51,8 @@ import { formatDayMonth, formatLongDate, formatTime, isEligible, posterColor, re
           <div class="info-row"><span>Thời gian</span><b>{{ time(e.startsAt) }} – {{ time(e.endsAt) }}</b></div>
           <div class="info-row"><span>Địa điểm</span><b>{{ e.location }}</b></div>
           <div class="info-row"><span>Đơn vị tổ chức</span><b>{{ unitName() || '—' }}</b></div>
-          <div class="info-row"><span>Sức chứa</span><b>{{ e.capacity }} người</b></div>
-          <div class="info-row"><span>Nhận đăng ký</span><b>{{ stamp(e.registrationOpensAt) }} → {{ stamp(e.registrationClosesAt) }}</b></div>
+          <div class="info-row"><span>Sức chứa</span><b>{{ capacity() }} người</b></div>
+          <div class="info-row"><span>Nhận đăng ký</span><b>{{ stamp(e.registrationOpensAt) }}<br />đến {{ stamp(e.registrationClosesAt) }}</b></div>
           <div class="info-row"><span>Đối tượng</span><b>{{ audience() }}</b></div>
           <div class="info-row"><span>Điểm danh</span><b>1 lần điểm danh đầu vào</b></div>
 
@@ -71,11 +79,12 @@ export class StudentEventDetailPage {
 
   protected readonly event = signal<CampusEvent | null>(null);
   protected readonly loading = signal(true);
-  protected readonly error = signal('');
+  protected readonly error = signal<{ title: string; hint: string; retry: boolean } | null>(null);
   private readonly departments = signal<Catalog[]>([]);
   private readonly units = signal<Catalog[]>([]);
 
-  protected readonly posterClass = computed(() => 'poster detail-poster ' + (this.event() ? posterColor(this.event()!) : ''));
+  protected readonly tile = computed(() => dateTile(this.event()?.startsAt ?? new Date().toISOString()));
+  protected readonly capacity = computed(() => new Intl.NumberFormat('vi-VN').format(this.event()?.capacity ?? 0));
   protected readonly badge = computed(() => {
     const b = WINDOW_BADGE[this.event() ? registrationWindow(this.event()!) : 'UPCOMING'];
     return { label: b.label, css: ('badge ' + b.css).trim() };
@@ -94,11 +103,8 @@ export class StudentEventDetailPage {
 
   protected readonly longDate = formatLongDate;
   protected readonly time = formatTime;
-  protected readonly dayMonth = formatDayMonth;
-  /** "08:00 12/11" in Vietnam time. */
-  protected stamp(iso: string): string {
-    return `${formatTime(iso)} ${formatDayMonth(iso)}`;
-  }
+  /** "12/11/2026 · 08:00", the app-wide timestamp format. */
+  protected readonly stamp = formatDateTime;
 
   constructor() {
     this.catalogs.getDepartments().then((d) => this.departments.set(d)).catch(() => {});
@@ -108,15 +114,24 @@ export class StudentEventDetailPage {
     });
   }
 
+  protected reload(): void {
+    void this.load(Number(this.id()));
+  }
+
   private async load(id: number): Promise<void> {
     this.loading.set(true);
-    this.error.set('');
+    this.error.set(null);
     try {
-      if (!Number.isInteger(id) || id <= 0) throw new Error('Đường dẫn sự kiện không hợp lệ.');
+      if (!Number.isInteger(id) || id <= 0) throw new ApiError(404, 'NOT_FOUND', '');
       this.event.set(await this.events.getPublished(id));
     } catch (e) {
       this.event.set(null);
-      this.error.set(e instanceof Error ? e.message : 'Không tải được sự kiện.');
+      const missing = e instanceof ApiError && (e.status === 404 || e.status === 403);
+      this.error.set(
+        missing
+          ? { title: 'Sự kiện không tồn tại hoặc chưa được công bố', hint: 'Có thể sự kiện đã bị gỡ hoặc đường dẫn chưa đúng.', retry: false }
+          : { title: 'Chưa tải được sự kiện', hint: 'Kiểm tra kết nối mạng rồi thử lại.', retry: true },
+      );
     } finally {
       this.loading.set(false);
     }

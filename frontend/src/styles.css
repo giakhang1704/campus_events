@@ -155,10 +155,6 @@ tbody tr:hover{background:#f8fafd}
 
 /* Event posters: the one place gradients stay (event artwork stand-in). */
 .poster{height:128px;background:linear-gradient(135deg,#032b91,#1488db)} /* gradient: event artwork / login brand field, chosen by the team */
-.poster.green{background:linear-gradient(135deg,#0f9e7a,#2cc2b3)} /* gradient: event artwork / login brand field, chosen by the team */
-.poster.orange{background:linear-gradient(135deg,#f0642a,#ff9a3d)} /* gradient: event artwork / login brand field, chosen by the team */
-.poster.purple{background:linear-gradient(135deg,#0b6cb5,#2bb0e8)} /* gradient: event artwork / login brand field, chosen by the team */
-.poster.yellow{background:linear-gradient(135deg,#e8890c,#f2603f)} /* gradient: event artwork / login brand field, chosen by the team */
 .poster:before{border-color:#ffffff22}
 .poster small{font-size:12px;letter-spacing:0;text-transform:none;opacity:.95;font-weight:600;margin-bottom:8px}
 .poster strong{font-size:32px}
@@ -214,3 +210,32 @@ footer{font-size:13px}.topbar .user-chip small{font-size:12px}.detail-copy p{col
 .auth-switch button.link{padding:8px 4px}
 .meta app-icon{vertical-align:-1px}
 .meta .card-loc{margin-left:3px}
+
+/* Event artwork: one brand field for every event (HCMUT blue), the date is the motif.
+   Cards and the detail banner share the same date tile, so the date is never repeated in the body. */
+.poster{height:auto;min-height:112px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding:20px}
+.date-tile{display:flex;align-items:center;gap:12px;position:relative;z-index:1;color:#fff}
+.date-tile strong{font-size:44px;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.date-tile>span{display:flex;flex-direction:column;border-left:1px solid #ffffff59;padding-left:12px}
+.date-tile b{font-size:15px;font-weight:700}
+.date-tile small{font-size:13px;margin:0;opacity:1;color:#dbe8fb;letter-spacing:0}
+.poster-tag{position:relative;inset:auto;display:inline-flex;align-items:center;gap:5px;align-self:flex-start;font-variant-numeric:tabular-nums}
+.poster-tag svg{width:14px;height:14px}
+.detail-poster{min-height:170px}
+.detail-poster .date-tile strong{font-size:60px}
+.detail-poster .date-tile b{font-size:18px}
+.card-unit{font-size:13px;font-weight:600;color:var(--blue);margin:0 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Links that act as buttons (empty states, "Về danh sách sự kiện"). */
+a.button{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:10px 16px;background:#fff;color:var(--dark);font-weight:600}
+a.button:hover{border-color:#a9c4e8;background:var(--blue-50)}
+a.button.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+a.button.primary:hover{background:var(--blue-600)}
+.actions.center{justify-content:center}
+.empty svg{color:var(--blue)}
+
+footer{flex-wrap:wrap}
+.poster-tag{white-space:nowrap;flex-shrink:0}
+a.poster{display:flex}
+.empty h3{color:var(--dark)}
+.empty p{font-size:14px;color:var(--muted)}

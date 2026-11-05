@@ -67,10 +67,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/admin/accounts.component').then((m) => m.AccountsComponent),
       },
 
-      // ── ALL ROLES ──
       {
         path: 'system',
-        data: { title: 'Hệ thống & mockup' },
+        canActivate: [roleGuard('ADMIN')],
+        data: { title: 'Trạng thái hệ thống' },
         title: 'Hệ thống · Campus Events',
         loadComponent: () => import('./features/system/environment.page').then((m) => m.EnvironmentPage),
       },

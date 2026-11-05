@@ -21,7 +21,6 @@ import { NAV_BY_ROLE, SPACE_CAPTION } from './navigation';
         @for (item of nav(); track item.path) {
           <a [routerLink]="item.path" routerLinkActive="active"><app-icon [name]="item.icon" /><span>{{ item.label }}</span></a>
         }
-        <a routerLink="/system" routerLinkActive="active"><app-icon name="server" /><span>Hệ thống &amp; mockup</span></a>
       </nav>
       <div class="sidebar-bottom">
         <div class="profile">
@@ -44,7 +43,7 @@ import { NAV_BY_ROLE, SPACE_CAPTION } from './navigation';
         </div>
       </header>
       <main><router-outlet /></main>
-      <footer><b>Campus Events</b><span>Angular · Spring Boot · PostgreSQL · {{ year }}</span></footer>
+      <footer><b>Campus Events</b><span>Nền tảng quản lý sự kiện dành cho sinh viên</span></footer>
     </div>
   `,
 })
@@ -55,7 +54,6 @@ export class ShellComponent {
   private readonly route = inject(ActivatedRoute);
 
   protected readonly user = this.api.user;
-  protected readonly year = new Date().getFullYear();
   protected readonly loggingOut = signal(false);
   protected readonly nav = computed(() => NAV_BY_ROLE[this.user()?.role ?? ''] ?? []);
   protected readonly caption = computed(() => SPACE_CAPTION[this.user()?.role ?? ''] ?? '');

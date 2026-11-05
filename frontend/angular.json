@@ -24,7 +24,15 @@
             ]
           },
           "configurations": {
-            "production": {},
+            "production": {
+              "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "public",
+                  "ignore": ["mockup/**"]
+                }
+              ]
+            },
             "development": {
               "optimization": false,
               "extractLicenses": false,

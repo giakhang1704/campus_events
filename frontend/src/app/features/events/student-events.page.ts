@@ -57,8 +57,8 @@ import { EventPage } from './event.models';
       </div>
     }
 
-    @if (devMode) {
-      <!-- DEV ONLY: data source switch, never rendered in production builds. -->
+    @if (fixtureSwitch()) {
+      <!-- DEV ONLY: shown in dev builds when the URL carries ?data=…; never in production. -->
       <app-fixture-toggle />
     }
   `,
@@ -79,10 +79,13 @@ export class StudentEventsPage implements OnDestroy {
 
   // DEV ONLY: ?data=demo|worst|empty|one|huge swaps the API for a fixture at this boundary.
   protected readonly devMode = isDevMode();
+  private readonly query$ = inject(ActivatedRoute).queryParamMap;
   private readonly fixture = toSignal(
-    inject(ActivatedRoute).queryParamMap.pipe(map((q) => (this.devMode ? (q.get('data') as FixtureKey | null) : null))),
+    this.query$.pipe(map((q) => (this.devMode ? (q.get('data') as FixtureKey | null) : null))),
     { initialValue: null },
   );
+  /** Open the switch with /events?data=api (live API) or ?data=demo|worst|empty|one|huge. */
+  protected readonly fixtureSwitch = toSignal(this.query$.pipe(map((q) => this.devMode && q.has('data'))), { initialValue: false });
 
   constructor() {
     effect(() => {
