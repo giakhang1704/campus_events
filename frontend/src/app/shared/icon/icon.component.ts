@@ -17,6 +17,8 @@ const ICONS: Record<string, string> = {
   check: 'M5 12l4 4L19 6',
   download: 'M12 3v12 M7 10l5 5 5-5 M4 17v4h16v-4',
   edit: 'M16 3l5 5 M3 21l4-1L21 6l-5-5L2 15z',
+  pencil: 'M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z M15 5l4 4',
+  'calendar-plus': 'M8 2v4 M16 2v4 M21 13V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8 M3 10h18 M16 19h6 M19 16v6',
   close: 'M6 6l12 12 M18 6L6 18',
   lock: 'M6 10h12v11H6z M8 10V7a4 4 0 0 1 8 0v3',
   info: 'M12 11v6 M12 7h.01 M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0',

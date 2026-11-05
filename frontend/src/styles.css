@@ -239,3 +239,71 @@ footer{flex-wrap:wrap}
 a.poster{display:flex}
 .empty h3{color:var(--dark)}
 .empty p{font-size:14px;color:var(--muted)}
+
+/* Organizer "Sự kiện quản lý": same tokens as the student screens. */
+.badge.ended{background:#fff;color:var(--muted);box-shadow:inset 0 0 0 1px var(--line)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.event-list{padding:8px 24px 20px}
+.event-table td{padding:16px 10px}
+.event-table .ev-main strong{display:block;font-size:15px;overflow-wrap:anywhere}
+.event-table .ev-date{white-space:nowrap}
+.event-table .ev-actions{text-align:right}
+.event-table .row-actions{justify-content:flex-end}
+.event-list .empty{padding:48px 20px}
+
+/* Loading: skeleton rows the height of real rows. */
+.skeleton-row{display:grid;grid-template-columns:minmax(0,3fr) 1fr 1.6fr 1fr;gap:24px;align-items:center;padding:22px 10px;border-bottom:1px solid var(--line)}
+.skeleton-row:last-child{border-bottom:0}
+.sk{display:block;height:12px;border-radius:6px;background:linear-gradient(90deg,var(--blue-50) 25%,#f4f7fc 50%,var(--blue-50) 75%);background-size:200% 100%;animation:sk 1.2s ease-in-out infinite}
+.sk-title{height:16px;width:80%}.sk-badge{height:22px;width:84px;border-radius:6px}.sk-date{width:90%}.sk-action{height:30px;width:88px;justify-self:end;border-radius:8px}
+@keyframes sk{from{background-position:200% 0}to{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){.sk{animation:none}}
+
+/* Publish confirmation. */
+.publish-confirm{margin-bottom:20px;max-width:760px}
+.publish-confirm h2{margin-bottom:6px}
+.publish-confirm h3{margin:18px 0 6px}
+.publish-desc{white-space:pre-wrap;margin-bottom:12px}
+.publish-actions{justify-content:flex-end;margin-top:20px}
+
+/* Phones: the event table becomes a list of cards. */
+@media(max-width:680px){
+  .event-list{padding:4px 16px 16px}
+  .event-table,.event-table tbody,.event-table tr,.event-table td{display:block;width:100%}
+  .event-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+  .event-table{min-width:0!important}
+  .event-table tr{padding:16px 0;border-bottom:1px solid var(--line)}
+  .event-table tbody tr:last-child{border-bottom:0}
+  .event-table td{padding:0;border:0;text-align:left}
+  .event-table .ev-status{margin:10px 0 6px}
+  .event-table .ev-date{white-space:normal;color:var(--muted)}
+  .event-table .ev-actions{margin-top:12px}
+  .event-table .row-actions{justify-content:flex-start}
+  .skeleton-row{grid-template-columns:1fr;gap:10px}
+  .sk-action{justify-self:start}
+}
+.page-head .actions{flex-shrink:0}
+.event-table .ev-main{min-width:240px}
+@media(max-width:1180px){.table-scroll .event-table td.ev-date{white-space:normal;min-width:130px}.event-table .ev-main{min-width:200px}}
+
+/* Organizer banner: brand navy field (organizer space), white type, actions inside. */
+.manage-hero{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;
+  padding:28px 32px;margin-bottom:24px;border-radius:var(--radius);color:#fff;
+  background:linear-gradient(135deg,var(--blue-600),var(--blue) 55%,#0b4fb3)} /* gradient: organizer banner, brand navy only */
+.manage-hero h1{color:#fff;font-size:30px;letter-spacing:-.02em;margin:0}
+.manage-hero p{color:#fff;opacity:.85;font-size:15px;margin-top:6px;max-width:60ch}
+.manage-hero .actions{flex-shrink:0}
+.manage-hero button{border-radius:10px;font-weight:600}
+.manage-hero .hero-ghost{background:transparent;border:1px solid #ffffff80;color:#fff}
+.manage-hero .hero-ghost:hover:not(:disabled){background:#ffffff1f;border-color:#fff}
+.manage-hero .hero-solid{background:#fff;border:1px solid #fff;color:var(--blue)}
+.manage-hero .hero-solid:hover:not(:disabled){background:var(--blue-50);border-color:var(--blue-50)}
+.manage-hero button:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.badge.dark{background:#e3e7ee;color:#2c3547}
+.event-table tbody tr{transition:background-color .12s}
+.event-table tbody tr:hover{background:var(--blue-50)}
+.event-table .row-actions button svg{width:15px;height:15px}
+@media(max-width:680px){.manage-hero{padding:22px 20px}.manage-hero h1{font-size:25px}.manage-hero .actions{width:100%}.manage-hero .actions button{flex:1}}
+.empty button svg,.empty a.button svg{width:18px;height:18px;margin:0;color:inherit}
+.manage-hero button{white-space:nowrap}
+@media(max-width:680px){.manage-hero .actions button{padding:10px 12px}}

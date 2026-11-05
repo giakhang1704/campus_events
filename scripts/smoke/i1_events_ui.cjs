@@ -4,11 +4,11 @@ const path = require('node:path');
 
 module.exports = async function verifyOrganizerEvents(page, base, root) {
   const title = 'Workshop UI ' + crypto.randomBytes(5).toString('hex');
-  await page.getByRole('heading', {name:'Sự kiện của tôi', exact:true}).waitFor();
-  await page.getByText('Chưa có sự kiện. Hãy tạo bản nháp đầu tiên.', {exact:true}).waitFor();
+  await page.getByRole('heading', {name:'Sự kiện quản lý', exact:true}).waitFor();
+  await page.getByText('Chưa có sự kiện nào', {exact:true}).waitFor();
   await page.getByRole('button', {name:'Tạo sự kiện', exact:true}).click();
   await page.getByRole('button', {name:'Hủy', exact:true}).click();
-  await page.getByText('Chưa có sự kiện. Hãy tạo bản nháp đầu tiên.', {exact:true}).waitFor();
+  await page.getByText('Chưa có sự kiện nào', {exact:true}).waitFor();
   await page.getByRole('button', {name:'Tạo sự kiện', exact:true}).click();
   await page.getByRole('button', {name:'Lưu nháp', exact:true}).click();
   await page.locator('#event-title-error').waitFor();

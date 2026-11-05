@@ -1,12 +1,13 @@
 import { Component, inject, signal } from '@angular/core';
 import { Api, Catalog } from '../../core/api';
+import { IconComponent } from '../../shared/icon/icon.component';
 import { EventApi } from './event-api.service';
 import { EventEditorComponent } from './event-editor.component';
 import { CampusEvent } from './event.models';
-import { formatDateTime } from './event-view';
+import { formatDate, formatDateTime, formatLongDate, formatTime, ORGANIZER_BADGE, organizerStatus } from './event-view';
 
 @Component({
-  selector: 'app-organizer-events', standalone: true, imports: [EventEditorComponent],
+  selector: 'app-organizer-events', standalone: true, imports: [EventEditorComponent, IconComponent],
   templateUrl: './organizer-events.component.html'
 })
 export class OrganizerEventsComponent {
@@ -18,11 +19,24 @@ export class OrganizerEventsComponent {
   readonly busy = signal(false);
   readonly message = signal('');
   readonly failed = signal(false);
+  /** True only while the list itself loads (skeleton); busy() also covers edit/publish actions. */
+  readonly listLoading = signal(true);
+  readonly catalogsFailed = signal(false);
+  readonly skeletonRows = [1, 2, 3];
+  /** Success notices are green, problems amber. */
+  readonly messageTone = signal<'success' | 'warn'>('success');
   readonly catalogsReady = signal(false);
   readonly hasNext = signal(false);
   readonly editing = signal<CampusEvent | null | undefined>(undefined);
   readonly publishing = signal<CampusEvent | null>(null);
   readonly displayTime = formatDateTime;
+  readonly time = formatTime;
+  readonly longDate = formatLongDate;
+  /** End time alone when the event ends the same day, the full date when it runs past midnight. */
+  readonly endLabel = (event: CampusEvent) =>
+    formatDate(event.endsAt) === formatDate(event.startsAt) ? formatTime(event.endsAt) : formatDateTime(event.endsAt);
+  readonly number = (n: number) => new Intl.NumberFormat('vi-VN').format(n);
+  readonly badge = (event: CampusEvent) => ORGANIZER_BADGE[organizerStatus(event)];
   page = 0;
 
   constructor() {
@@ -39,23 +53,25 @@ export class OrganizerEventsComponent {
       this.departments.set(departments);
       this.units.set(units);
       this.catalogsReady.set(true);
+      this.catalogsFailed.set(false);
     } catch {
-      this.message.set('Không tải được danh mục khoa/đơn vị. Hãy thử tải lại.');
+      this.catalogsFailed.set(true);
     }
   }
 
   async load(): Promise<void> {
     this.busy.set(true);
+    this.listLoading.set(true);
     this.failed.set(false);
     try {
       const result = await this.events.listOwned(this.page);
       this.items.set(result.items);
       this.hasNext.set(result.hasNext);
-    } catch (error) {
+    } catch {
       this.failed.set(true);
-      this.message.set(error instanceof Error ? error.message : 'Không tải được sự kiện.');
     } finally {
       this.busy.set(false);
+      this.listLoading.set(false);
     }
   }
 
@@ -63,13 +79,14 @@ export class OrganizerEventsComponent {
     this.busy.set(true);
     this.message.set('');
     try { this.editing.set(await this.events.getOwned(event.id)); }
-    catch (error) { this.message.set(error instanceof Error ? error.message : 'Không tải được sự kiện.'); }
+    catch (error) { this.messageTone.set('warn'); this.message.set(error instanceof Error ? error.message : 'Không tải được sự kiện.'); }
     finally { this.busy.set(false); }
   }
 
   async saved(event: CampusEvent): Promise<void> {
     this.editing.set(undefined);
     this.page = 0;
+    this.messageTone.set('success');
     this.message.set(event.status === 'DRAFT' ? 'Đã lưu bản nháp.' : 'Đã cập nhật sự kiện.');
     await this.load();
   }
@@ -81,16 +98,24 @@ export class OrganizerEventsComponent {
     try {
       await this.events.publish(event);
       this.publishing.set(null);
+      this.messageTone.set('success');
       this.message.set('Đã công bố sự kiện. Thời gian nhận đăng ký vẫn theo lịch đã cấu hình.');
       await this.load();
     } catch (error) {
       this.publishing.set(null);
+      this.messageTone.set('warn');
       this.message.set(error instanceof Error ? error.message : 'Không công bố được sự kiện. Hãy thử lại.');
     } finally { this.busy.set(false); }
   }
 
+  startCreate(): void {
+    this.publishing.set(null);
+    this.message.set('');
+    this.editing.set(null);
+  }
+
   unitName(id: number): string {
-    return this.units().find(unit => unit.id === id)?.name ?? String(id);
+    return this.units().find(unit => unit.id === id)?.name ?? '';
   }
 
   departmentNames(event: CampusEvent): string {

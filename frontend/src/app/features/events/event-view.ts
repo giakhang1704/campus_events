@@ -16,7 +16,7 @@ export const WINDOW_BADGE: Record<RegistrationWindow, { label: string; css: stri
   UPCOMING: { label: 'Sắp mở đăng ký', css: 'blue' },
   OPEN: { label: 'Đang nhận đăng ký', css: '' },
   CLOSED: { label: 'Đã đóng đăng ký', css: 'amber' },
-  FINISHED: { label: 'Đã kết thúc', css: 'gray' },
+  FINISHED: { label: 'Đã kết thúc', css: 'ended' },
 };
 
 /** Department AND study year; an empty list means no restriction (docs/decisions/SCOPE.md). */
@@ -44,7 +44,7 @@ export function formatTime(iso: string): string {
  * One date vocabulary for the whole app (Vietnam time):
  *   formatLongDate  "Thứ Năm, 12/11/2026"  headline dates
  *   formatDate      "12/11/2026"           compact dates
- *   formatDateTime  "12/11/2026 · 08:00"   timestamps (registration window, tables)
+ *   formatDateTime  "Thứ Năm, 12/11/2026 · 08:00"   timestamps (registration window, tables)
  *   formatTime      "08:00"
  */
 
@@ -53,9 +53,9 @@ export function formatDate(iso: string): string {
   return `${formatDayMonth(iso)}/${new Intl.DateTimeFormat('en-GB', { timeZone: VN, year: 'numeric' }).format(new Date(iso))}`;
 }
 
-/** "12/11/2026 · 08:00" */
+/** "Thứ Năm, 12/11/2026 · 08:00" */
 export function formatDateTime(iso: string): string {
-  return `${formatDate(iso)} · ${formatTime(iso)}`;
+  return `${formatLongDate(iso)} · ${formatTime(iso)}`;
 }
 
 /** Parts for the date tile on cards and the detail banner. */
@@ -72,3 +72,23 @@ export function formatLongDate(iso: string): string {
   const s = new Intl.DateTimeFormat('vi-VN', { timeZone: VN, weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date(iso));
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
+
+export type OrganizerStatus = 'DRAFT' | 'OPEN' | 'PUBLISHED' | 'FINISHED';
+
+/**
+ * Status shown to organizers, derived from the stored DRAFT/PUBLISHED plus the event's own dates:
+ * published and inside the registration window = OPEN; published and past its end = FINISHED.
+ */
+export function organizerStatus(event: CampusEvent, now = Date.now()): OrganizerStatus {
+  if (event.status === 'DRAFT') return 'DRAFT';
+  const window = registrationWindow(event, now);
+  return window === 'FINISHED' ? 'FINISHED' : window === 'OPEN' ? 'OPEN' : 'PUBLISHED';
+}
+
+/** Green = taking registrations (same as the student badge), blue = published, gray = draft, dark gray = over. */
+export const ORGANIZER_BADGE: Record<OrganizerStatus, { label: string; css: string }> = {
+  OPEN: { label: 'Đang nhận đăng ký', css: 'badge' },
+  PUBLISHED: { label: 'Đã công bố', css: 'badge blue' },
+  DRAFT: { label: 'Bản nháp', css: 'badge gray' },
+  FINISHED: { label: 'Đã kết thúc', css: 'badge dark' },
+};
