@@ -1,0 +1,214 @@
+<section class="manage-hero">
+  <div>
+    <h1>Quản lý tài khoản</h1>
+    <p>Tra cứu, cấp tài khoản và khóa/mở quyền truy cập. Mỗi tài khoản có một vai trò cố định.</p>
+  </div>
+  <div class="actions">
+    <button type="button" [class]="creating ? 'hero-ghost' : 'hero-solid'" [disabled]="busy()" (click)="toggleCreate()">
+      {{ creating ? 'Đóng form' : 'Cấp tài khoản người tổ chức' }}
+    </button>
+  </div>
+</section>
+
+@if (message()) {
+  <p class="notice" role="status">{{ message() }}</p>
+}
+
+<!-- Create an organizer account: form, then a confirmation step. -->
+@if (creating) {
+  <section class="panel">
+    <h2>Cấp tài khoản người tổ chức</h2>
+
+    @if (createReview) {
+      <h3>Xác nhận cấp tài khoản</h3>
+      <p>{{ createReview.fullName }} · {{ createReview.email }}</p>
+      <p>Vai trò: Người tổ chức · Đơn vị: {{ unitLabel(createReview.organizationUnitId) }}</p>
+      <p>Lý do: {{ createReview.reason }}</p>
+      <p>
+        Chỉ cấp cho người đã được phân công và đối chiếu thông tin. Bàn giao mật khẩu tạm riêng cho đúng người;
+        người nhận phải đổi mật khẩu khi đăng nhập lần đầu. Không công khai mật khẩu trong danh sách tài khoản.
+      </p>
+      <button type="button" [disabled]="busy()" (click)="create()">Xác nhận cấp tài khoản</button>
+      <button type="button" class="secondary" [disabled]="busy()" (click)="createReview = null">Quay lại</button>
+      <button type="button" class="secondary" [disabled]="busy()" (click)="cancelCreate()">Hủy</button>
+    } @else {
+      <form #createForm="ngForm" (ngSubmit)="reviewCreate(createForm)">
+        <div class="columns">
+          <label>
+            Họ tên
+            <input name="name" [(ngModel)]="name" required maxlength="150" />
+            @if (fields()['fullName']) {
+              <small class="field-error">{{ fields()['fullName'] }}</small>
+            }
+          </label>
+
+          <label>
+            Email
+            <input type="email" email name="email" [(ngModel)]="email" required maxlength="254" />
+            @if (fields()['email']) {
+              <small class="field-error">{{ fields()['email'] }}</small>
+            }
+          </label>
+
+          <label>
+            Mật khẩu tạm
+            <input
+              type="password"
+              name="temporary"
+              [(ngModel)]="temporary"
+              required
+              minlength="8"
+              maxlength="72"
+              autocomplete="new-password"
+            />
+            @if (fields()['temporaryPassword']) {
+              <small class="field-error">{{ fields()['temporaryPassword'] }}</small>
+            }
+          </label>
+
+          <label>
+            Đơn vị
+            <select aria-label="Đơn vị" name="unit" [(ngModel)]="unit" required>
+              <option [ngValue]="null">Chọn đơn vị</option>
+              @for (d of units(); track d.id) {
+                <option [ngValue]="d.id">{{ d.name }}</option>
+              }
+            </select>
+            @if (fields()['organizationUnitId']) {
+              <small class="field-error">{{ fields()['organizationUnitId'] }}</small>
+            }
+          </label>
+        </div>
+
+        <label>
+          Lý do
+          <textarea name="createReason" [(ngModel)]="createReason" required maxlength="1000"></textarea>
+          @if (fields()['reason']) {
+            <small class="field-error">{{ fields()['reason'] }}</small>
+          }
+        </label>
+
+        <p class="muted">
+          Tài khoản sinh viên được tự đăng ký. Nếu email đã tồn tại, hãy tra cứu hoặc liên hệ người phụ trách.
+          Không thể đổi vai trò của tài khoản đã tạo.
+        </p>
+        <button type="submit" [disabled]="busy()">Tạo tài khoản</button>
+        <button type="button" class="secondary" (click)="cancelCreate()">Hủy</button>
+      </form>
+    }
+  </section>
+}
+
+<!-- Lock / unlock an account: reason, then a server preview to confirm. -->
+@if (selected) {
+  <section class="panel">
+    <h2>Đổi trạng thái · {{ selected.fullName }}</h2>
+
+    @if (preview) {
+      <h3>Xác nhận thay đổi tài khoản</h3>
+      <p>{{ preview.before.fullName }} · {{ preview.before.email }} {{ preview.before.studentCode || '' }}</p>
+      <p>Vai trò cố định: {{ roleLabel(preview.before.role) }}</p>
+      <p>Trạng thái: {{ statusLabel(preview.before.status) }} → {{ statusLabel(preview.status) }}</p>
+      <p>Đơn vị: {{ unitLabel(preview.before.organizationUnitId) }}</p>
+      <p>Lý do: {{ preview.reason }}</p>
+      <p class="notice">{{ preview.impact }}</p>
+      <button type="button" [disabled]="busy()" (click)="confirmSave()">Xác nhận lưu</button>
+      <button type="button" class="secondary" [disabled]="busy()" (click)="preview = null">Quay lại</button>
+      <button type="button" class="secondary" [disabled]="busy()" (click)="cancelEdit()">Hủy</button>
+    } @else {
+      <p>
+        {{ selected.email }} · Vai trò hiện tại: {{ roleLabel(selected.role) }} · Trạng thái: {{ statusLabel(selected.status) }}
+      </p>
+      <form #changeForm="ngForm" (ngSubmit)="save(changeForm)">
+        <p>Chuyển sang: <strong>{{ selected.status === 'ACTIVE' ? 'Khóa' : 'Hoạt động' }}</strong></p>
+        <label>
+          Lý do
+          <textarea name="reason" [(ngModel)]="reason" required maxlength="1000"></textarea>
+        </label>
+        <button type="submit" [disabled]="busy()">Lưu thay đổi</button>
+        <button type="button" class="secondary" [disabled]="busy()" (click)="cancelEdit()">Hủy</button>
+      </form>
+    }
+  </section>
+}
+
+<!-- Search, filters and the account list. -->
+<section class="panel account-list">
+  <form class="search-row account-filters" (ngSubmit)="page = 0; load()">
+    <input name="search" aria-label="Tìm tài khoản" placeholder="Họ tên, email hoặc MSSV" [(ngModel)]="q" maxlength="100" />
+    <select aria-label="Lọc vai trò" name="filterRole" [(ngModel)]="filterRole" (ngModelChange)="onFilterChange()">
+      <option value="">Tất cả vai trò</option>
+      <option value="STUDENT">Sinh viên</option>
+      <option value="ORGANIZER">Người tổ chức</option>
+      <option value="ADMIN">Quản trị viên</option>
+    </select>
+    <select aria-label="Lọc trạng thái" name="filterStatus" [(ngModel)]="filterStatus" (ngModelChange)="onFilterChange()">
+      <option value="">Tất cả trạng thái</option>
+      <option value="ACTIVE">Hoạt động</option>
+      <option value="LOCKED">Đã khóa</option>
+    </select>
+    <button type="submit" [disabled]="busy()">Tìm kiếm</button>
+  </form>
+
+  <div class="table-scroll">
+    <table class="event-table account-table" role="table" style="table-layout: fixed; width: 100%">
+      <colgroup>
+        <col style="width: 55%" /> <!-- Tài khoản (avatar + tên + email) -->
+        <col style="width: 15%" /> <!-- Vai trò -->
+        <col style="width: 15%" /> <!-- Trạng thái -->
+        <col style="width: 15%" /> <!-- Thao tác -->
+      </colgroup>
+      <thead>
+        <tr role="row">
+          <th role="columnheader">Tài khoản</th>
+          <th role="columnheader">Vai trò</th>
+          <th role="columnheader">Trạng thái</th>
+          <th role="columnheader" class="acc-actions-head">Thao tác</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (u of filteredAccounts; track u.id) {
+          <tr role="row">
+            <td class="ev-main" role="cell">
+              <div class="person-cell">
+                <span class="avatar" [style]="avatarStyle(u.fullName)" aria-hidden="true">{{ initials(u.fullName) }}</span>
+                <div class="person-text">
+                  <strong>{{ u.fullName }}</strong>
+                  <small>{{ u.email }} {{ u.studentCode || '' }}</small>
+                </div>
+              </div>
+            </td>
+            <td class="acc-role" role="cell">{{ roleLabel(u.role) }}</td>
+            <td class="ev-status" role="cell">
+              <span class="badge" [class.red]="u.status === 'LOCKED'">{{ statusLabel(u.status) }}</span>
+            </td>
+            <td class="ev-actions" role="cell">
+              <!-- A disabled button gets no hover events in every browser, so the tooltip sits on a wrapper. -->
+              <span class="btn-tip" [attr.title]="u.id === api.user()?.id ? 'Không thể khóa tài khoản đang đăng nhập' : null">
+                <button
+                  type="button"
+                  class="secondary small"
+                  [disabled]="u.id === api.user()?.id || busy()"
+                  [attr.aria-description]="u.id === api.user()?.id ? 'Không thể khóa tài khoản đang đăng nhập' : null"
+                  (click)="edit(u)"
+                >
+                  {{ u.status === 'ACTIVE' ? 'Khóa' : 'Mở khóa' }}
+                </button>
+              </span>
+            </td>
+          </tr>
+        } @empty {
+          <tr role="row">
+            <td colspan="4" class="acc-empty" role="cell">{{ busy() ? 'Đang tải…' : 'Không có tài khoản phù hợp.' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pager">
+    <button type="button" class="secondary" [disabled]="page === 0 || busy()" (click)="page = page - 1; load()">Trước</button>
+    <span>Trang {{ page + 1 }}</span>
+    <button type="button" class="secondary" [disabled]="!hasNext() || busy()" (click)="page = page + 1; load()">Tiếp</button>
+  </div>
+</section>
