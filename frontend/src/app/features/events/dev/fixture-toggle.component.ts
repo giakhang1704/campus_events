@@ -35,7 +35,7 @@ export class FixtureToggleComponent {
     { key: 'one', label: 'One' },
     { key: 'huge', label: '1,284 rows' },
   ];
-  protected readonly current = toSignal(inject(ActivatedRoute).queryParamMap.pipe(map((q) => q.get('data') ?? 'api')), {
+  protected readonly current = toSignal(inject(ActivatedRoute).queryParamMap.pipe(map((params) => params.get('data') ?? 'api')), {
     initialValue: 'api',
   });
 

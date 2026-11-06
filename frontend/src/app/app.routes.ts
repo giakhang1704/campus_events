@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { authGuard, guestGuard, homeRedirectGuard, mustChangePasswordGuard, roleGuard } from './core/auth/session';
 import { ShellComponent } from './core/layout/shell.component';
 
-const comingSoon = () => import('./shared/coming-soon/coming-soon.page').then((m) => m.ComingSoonPage);
+const comingSoon = () => import('./shared/coming-soon/coming-soon.page').then((module) => module.ComingSoonPage);
 
 /**
  * Screens marked comingSoon wait for backend APIs (later increments); data.mockupFn = source function in public/mockup/app.js.
@@ -13,13 +13,13 @@ export const routes: Routes = [
     path: 'login',
     canActivate: [guestGuard],
     title: 'Đăng nhập · Campus Events',
-    loadComponent: () => import('./features/auth/login.page').then((m) => m.LoginPage),
+    loadComponent: () => import('./features/auth/login.page').then((module) => module.LoginPage),
   },
   {
     path: 'change-password',
     canActivate: [mustChangePasswordGuard],
     title: 'Đổi mật khẩu · Campus Events',
-    loadComponent: () => import('./features/auth/change-password.page').then((m) => m.ChangePasswordPage),
+    loadComponent: () => import('./features/auth/change-password.page').then((module) => module.ChangePasswordPage),
   },
   {
     path: '',
@@ -34,14 +34,14 @@ export const routes: Routes = [
         canActivate: [roleGuard('STUDENT', 'ORGANIZER')],
         data: { title: 'Khám phá sự kiện' },
         title: 'Khám phá sự kiện · Campus Events',
-        loadComponent: () => import('./features/events/student-events.page').then((m) => m.StudentEventsPage),
+        loadComponent: () => import('./features/events/student-events.page').then((module) => module.StudentEventsPage),
       },
       {
         path: 'events/:id',
         canActivate: [roleGuard('STUDENT', 'ORGANIZER')],
         data: { title: 'Chi tiết sự kiện' },
         title: 'Chi tiết sự kiện · Campus Events',
-        loadComponent: () => import('./features/events/student-event-detail.page').then((m) => m.StudentEventDetailPage),
+        loadComponent: () => import('./features/events/student-event-detail.page').then((module) => module.StudentEventDetailPage),
       },
       { path: 'my-events', canActivate: [roleGuard('STUDENT')], data: { title: 'Sự kiện của tôi', mockupFn: 'explore(true)' }, loadComponent: comingSoon },
       { path: 'scan', canActivate: [roleGuard('STUDENT')], data: { title: 'Điểm danh QR', mockupFn: 'scan' }, loadComponent: comingSoon },
@@ -52,7 +52,7 @@ export const routes: Routes = [
         canActivate: [roleGuard('ORGANIZER')],
         data: { title: 'Sự kiện quản lý' },
         title: 'Sự kiện quản lý · Campus Events',
-        loadComponent: () => import('./features/events/organizer-events.component').then((m) => m.OrganizerEventsComponent),
+        loadComponent: () => import('./features/events/organizer-events.component').then((module) => module.OrganizerEventsComponent),
       },
       { path: 'participants', canActivate: [roleGuard('ORGANIZER')], data: { title: 'Người tham gia', mockupFn: 'participants' }, loadComponent: comingSoon },
       { path: 'attendance', canActivate: [roleGuard('ORGANIZER')], data: { title: 'Điểm danh', mockupFn: 'attendance' }, loadComponent: comingSoon },
@@ -64,7 +64,7 @@ export const routes: Routes = [
         canActivate: [roleGuard('ADMIN')],
         data: { title: 'Quản lý tài khoản' },
         title: 'Quản lý tài khoản · Campus Events',
-        loadComponent: () => import('./features/admin/accounts.component').then((m) => m.AccountsComponent),
+        loadComponent: () => import('./features/admin/accounts.component').then((module) => module.AccountsComponent),
       },
 
       {
@@ -72,7 +72,7 @@ export const routes: Routes = [
         canActivate: [roleGuard('ADMIN')],
         data: { title: 'Trạng thái hệ thống' },
         title: 'Hệ thống · Campus Events',
-        loadComponent: () => import('./features/system/environment.page').then((m) => m.EnvironmentPage),
+        loadComponent: () => import('./features/system/environment.page').then((module) => module.EnvironmentPage),
       },
     ],
   },

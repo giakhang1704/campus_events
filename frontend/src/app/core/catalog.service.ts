@@ -1,7 +1,10 @@
 import { inject, Injectable } from '@angular/core';
 import { Api, Catalog } from './api';
 
-/** Cached public catalogs (departments, organization units) for read-only screens. */
+/**
+ * Departments and organization units, loaded once per session and shared by every screen.
+ * The Promise itself is cached (`??=`), so two components asking at the same time share one request.
+ */
 @Injectable({ providedIn: 'root' })
 export class CatalogService {
   private readonly api = inject(Api);
@@ -9,17 +12,17 @@ export class CatalogService {
   private units?: Promise<Catalog[]>;
 
   getDepartments(): Promise<Catalog[]> {
-    this.departments ??= this.api.request<Catalog[]>('/catalog/departments').catch((e) => {
-      this.departments = undefined;
-      throw e;
+    this.departments ??= this.api.request<Catalog[]>('/catalog/departments').catch((error) => {
+      this.departments = undefined; // a failed request is not cached: the next call tries again
+      throw error;
     });
     return this.departments;
   }
 
   getUnits(): Promise<Catalog[]> {
-    this.units ??= this.api.request<Catalog[]>('/catalog/organization-units').catch((e) => {
-      this.units = undefined;
-      throw e;
+    this.units ??= this.api.request<Catalog[]>('/catalog/organization-units').catch((error) => {
+      this.units = undefined; // a failed request is not cached: the next call tries again
+      throw error;
     });
     return this.units;
   }

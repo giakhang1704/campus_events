@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Api, ApiError } from '../../core/api';
+import { passwordProblem } from '../../shared/password-rules';
 import { ToastService } from '../../shared/toast/toast.service';
 
 /**
@@ -58,8 +59,8 @@ export class ChangePasswordPage {
     if (this.busy()) return;
     const fields: Record<string, string> = {};
     if (!this.oldPassword) fields['currentPassword'] = 'Vui lòng nhập mật khẩu hiện tại.';
-    const bytes = new TextEncoder().encode(this.newPassword).length;
-    if (this.newPassword.length < 8 || bytes > 72) fields['newPassword'] = 'Mật khẩu cần ít nhất 8 ký tự và tối đa 72 byte UTF-8.';
+    const problem = passwordProblem(this.newPassword);
+    if (problem) fields['newPassword'] = problem;
     this.fields.set(fields);
     this.message.set('');
     if (Object.keys(fields).length) return;
@@ -70,9 +71,9 @@ export class ChangePasswordPage {
       this.toast.success('Đã đổi mật khẩu và thu hồi các phiên cũ. Vui lòng đăng nhập lại.');
       this.api.user.set(null);
       await this.router.navigateByUrl('/login');
-    } catch (e) {
-      if (e instanceof ApiError) this.fields.set(e.fields);
-      this.message.set(e instanceof Error ? e.message : 'Không đổi được mật khẩu.');
+    } catch (error) {
+      if (error instanceof ApiError) this.fields.set(error.fields);
+      this.message.set(error instanceof Error ? error.message : 'Không đổi được mật khẩu.');
     } finally {
       this.busy.set(false);
     }
@@ -81,8 +82,8 @@ export class ChangePasswordPage {
   protected async logout(): Promise<void> {
     try {
       await this.api.logout();
-    } catch (e) {
-      this.toast.error(e instanceof Error ? e.message : 'Không đăng xuất được.');
+    } catch (error) {
+      this.toast.error(error instanceof Error ? error.message : 'Không đăng xuất được.');
     }
     await this.router.navigateByUrl('/login');
   }

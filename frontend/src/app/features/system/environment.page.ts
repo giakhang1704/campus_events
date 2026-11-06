@@ -35,13 +35,14 @@ export class EnvironmentPage {
   protected readonly ok = signal<boolean | null>(null);
 
   protected async check(): Promise<void> {
+    if (this.busy()) return;
     this.busy.set(true);
     try {
-      const r = await this.api.request<{ status: string; tables: number }>('/health');
-      if (r.status !== 'UP') throw new Error();
+      const health = await this.api.request<{ status: string; tables: number }>('/health');
+      if (health.status !== 'UP') throw new Error();
       this.ok.set(true);
       this.status.set('Kết nối thành công');
-      this.detail.set(`Máy chủ và cơ sở dữ liệu đang hoạt động (${r.tables} bảng dữ liệu).`);
+      this.detail.set(`Máy chủ và cơ sở dữ liệu đang hoạt động (${health.tables} bảng dữ liệu).`);
     } catch {
       this.ok.set(false);
       this.status.set('Chưa kết nối được');

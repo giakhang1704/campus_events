@@ -27,7 +27,7 @@ import { PageHeaderComponent } from '../page-header/page-header.component';
 export class ComingSoonPage {
   protected readonly session = inject(Session);
   protected readonly data = toSignal(
-    inject(ActivatedRoute).data.pipe(map((d) => ({ title: d['title'] as string, mockupFn: d['mockupFn'] as string }))),
+    inject(ActivatedRoute).data.pipe(map((routeData) => ({ title: routeData['title'] as string, mockupFn: routeData['mockupFn'] as string }))),
     { requireSync: true },
   );
 }

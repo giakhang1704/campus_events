@@ -5,6 +5,7 @@ import { filter, map } from 'rxjs';
 import { Api } from '../api';
 import { ROLE_LABEL, Session } from '../auth/session';
 import { IconComponent } from '../../shared/icon/icon.component';
+import { initials } from '../../shared/initials';
 import { ToastService } from '../../shared/toast/toast.service';
 import { NAV_BY_ROLE, SPACE_CAPTION } from './navigation';
 
@@ -60,19 +61,12 @@ export class ShellComponent {
   protected readonly nav = computed(() => NAV_BY_ROLE[this.user()?.role ?? ''] ?? []);
   protected readonly caption = computed(() => SPACE_CAPTION[this.user()?.role ?? ''] ?? '');
   protected readonly roleLabel = computed(() => ROLE_LABEL[this.user()?.role ?? ''] ?? '');
-  protected readonly initials = computed(() =>
-    (this.user()?.fullName ?? '')
-      .trim()
-      .split(/\s+/)
-      .slice(-2)
-      .map((w) => w[0]?.toUpperCase() ?? '')
-      .join(''),
-  );
+  protected readonly initials = computed(() => initials(this.user()?.fullName ?? ''));
 
   /** Title of the deepest active route (route data.title). */
   protected readonly pageTitle = toSignal(
     this.router.events.pipe(
-      filter((e) => e instanceof NavigationEnd),
+      filter((event) => event instanceof NavigationEnd),
       map(() => this.deepestTitle()),
     ),
     { initialValue: this.deepestTitle() },
@@ -90,17 +84,18 @@ export class ShellComponent {
     try {
       await this.api.logout();
       this.toast.success('Bạn đã đăng xuất thành công.');
-    } catch (e) {
+    } catch (error) {
       // Api.logout already cleared the local session; the message explains the pending server revoke.
-      this.toast.error(e instanceof Error ? e.message : 'Không đăng xuất được.');
+      this.toast.error(error instanceof Error ? error.message : 'Không đăng xuất được.');
     } finally {
       this.loggingOut.set(false);
     }
   }
 
   private deepestTitle(): string {
-    let s = this.route.snapshot;
-    while (s?.firstChild) s = s.firstChild;
-    return (s?.data?.['title'] as string) ?? '';
+    // Routes are nested (shell -> page); the page's own title sits on the deepest child.
+    let snapshot = this.route.snapshot;
+    while (snapshot?.firstChild) snapshot = snapshot.firstChild;
+    return (snapshot?.data?.['title'] as string) ?? '';
   }
 }
