@@ -2,7 +2,9 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { RouterLink } from '@angular/router';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { CampusEvent } from './event.models';
-import { dateTile, registrationWindow, WINDOW_BADGE } from './event-view';
+import { dateTile } from '../../shared/utils/date.utils';
+import { formatCount } from '../../shared/utils/number.utils';
+import { registrationWindow, WINDOW_BADGE } from './event-view';
 
 /**
  * Published event card. The date lives only in the tile at the top (day, month, weekday, time);
@@ -43,9 +45,9 @@ export class PublicEventCardComponent {
   readonly event = input.required<CampusEvent>();
   readonly unitName = input('');
   protected readonly tile = computed(() => dateTile(this.event().startsAt));
-  protected readonly capacity = computed(() => new Intl.NumberFormat('vi-VN').format(this.event().capacity));
+  protected readonly capacity = computed(() => formatCount(this.event().capacity));
   protected readonly badge = computed(() => {
-    const b = WINDOW_BADGE[registrationWindow(this.event())];
-    return { label: b.label, css: ('badge ' + b.css).trim() };
+    const badge = WINDOW_BADGE[registrationWindow(this.event())];
+    return { label: badge.label, css: ('badge ' + badge.css).trim() };
   });
 }

@@ -1,14 +1,24 @@
 import { ChangeDetectionStrategy, Component, computed, ElementRef, inject, input, OnChanges, output, signal } from '@angular/core';
 import { IconComponent } from '../icon/icon.component';
-
-const pad = (n: number) => String(n).padStart(2, '0');
+import { padTwoDigits } from '../utils/date.utils';
 
 /** "HH:mm[:ss]" (24 h) -> "HH:MM AM" (12 h, two digits, space before AM/PM). */
 export function toDisplayTime(value: string): string {
-  const m = /^(\d{2}):(\d{2})/.exec(value);
-  if (!m) return '';
-  const h = +m[1];
-  return `${pad(h % 12 || 12)}:${m[2]} ${h < 12 ? 'AM' : 'PM'}`;
+  const match = /^(\d{2}):(\d{2})/.exec(value);
+  if (!match) return '';
+  const hour24 = Number(match[1]);
+  const minute = match[2];
+  return `${padTwoDigits(to12Hour(hour24))}:${minute} ${hour24 < 12 ? 'AM' : 'PM'}`;
+}
+
+/** 0 -> 12, 13 -> 1, 12 -> 12: midnight and noon are both shown as 12 on a 12-hour clock. */
+function to12Hour(hour24: number): number {
+  return hour24 % 12 || 12;
+}
+
+/** 12 AM -> 0, 1 PM -> 13, 12 PM -> 12. */
+function to24Hour(hour12: number, period: Period): number {
+  return (hour12 % 12) + (period === 'PM' ? 12 : 0);
 }
 
 type Period = 'AM' | 'PM';
@@ -66,8 +76,8 @@ export class TimeFieldComponent implements OnChanges {
   readonly describedBy = input('');
   readonly valueChange = output<string>();
 
-  protected readonly hours = Array.from({ length: 12 }, (_, i) => pad(i + 1));
-  protected readonly minuteSteps = Array.from({ length: 12 }, (_, i) => pad(i * 5));
+  protected readonly hours = Array.from({ length: 12 }, (_, index) => padTwoDigits(index + 1)); // 01 ... 12
+  protected readonly minuteSteps = Array.from({ length: 12 }, (_, index) => padTwoDigits(index * 5)); // 00, 05 ... 55
 
   /** Internal state: "01".."12", "00".."59", "AM"/"PM"; '' = not chosen yet. */
   protected readonly hour = signal('');
@@ -77,8 +87,8 @@ export class TimeFieldComponent implements OnChanges {
   protected readonly minuteChoice = signal('');
   /** 5-minute steps plus the current odd minute, so a typed :59 stays visible in the select. */
   protected readonly minuteOptions = computed(() => {
-    const m = this.minute();
-    return m && !this.minuteSteps.includes(m) ? [...this.minuteSteps, m].sort() : this.minuteSteps;
+    const minute = this.minute();
+    return minute && !this.minuteSteps.includes(minute) ? [...this.minuteSteps, minute].sort() : this.minuteSteps;
   });
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
@@ -97,26 +107,30 @@ export class TimeFieldComponent implements OnChanges {
   ngOnChanges(): void {
     // Re-split only when the incoming value differs from what the selects already say.
     if (this.joined() === this.value().slice(0, 5)) return;
-    const m = /^(\d{2}):(\d{2})/.exec(this.value());
-    if (!m) {
-      this.hour.set(''); this.minute.set(''); this.period.set(''); this.minuteChoice.set('');
+    const match = /^(\d{2}):(\d{2})/.exec(this.value());
+    if (!match) {
+      this.hour.set('');
+      this.minute.set('');
+      this.period.set('');
+      this.minuteChoice.set('');
       return;
     }
-    const h = +m[1];
-    this.hour.set(pad(h % 12 || 12));
-    this.minute.set(m[2]);
-    this.period.set(h < 12 ? 'AM' : 'PM');
-    this.minuteChoice.set(m[2]);
+    const hour24 = Number(match[1]);
+    const minute = match[2];
+    this.hour.set(padTwoDigits(to12Hour(hour24)));
+    this.minute.set(minute);
+    this.period.set(hour24 < 12 ? 'AM' : 'PM');
+    this.minuteChoice.set(minute);
   }
 
-  protected setHour(v: string): void {
-    this.hour.set(v);
+  protected setHour(hour: string): void {
+    this.hour.set(hour);
     this.emit();
   }
 
-  protected setMinuteChoice(v: string): void {
-    this.minuteChoice.set(v);
-    if (v === 'other') {
+  protected setMinuteChoice(choice: string): void {
+    this.minuteChoice.set(choice);
+    if (choice === 'other') {
       // Show the small box only while typing; focus it right away.
       // The box is not bound to minute(): rewriting it while typing ("5" -> "05") broke the next keystroke.
       setTimeout(() => {
@@ -128,13 +142,14 @@ export class TimeFieldComponent implements OnChanges {
       });
       return;
     }
-    this.minute.set(v);
+    this.minute.set(choice);
     this.emit();
   }
 
-  protected setOddMinute(v: string): void {
-    const n = Number(v);
-    this.minute.set(v !== '' && Number.isInteger(n) && n >= 0 && n <= 59 ? pad(n) : '');
+  protected setOddMinute(typed: string): void {
+    const minute = Number(typed);
+    const isValidMinute = typed !== '' && Number.isInteger(minute) && minute >= 0 && minute <= 59;
+    this.minute.set(isValidMinute ? padTwoDigits(minute) : '');
     this.emit();
   }
 
@@ -145,16 +160,18 @@ export class TimeFieldComponent implements OnChanges {
     if (refocus) this.host.nativeElement.querySelector<HTMLSelectElement>('.select-wrap.minute select')?.focus();
   }
 
-  protected setPeriod(v: string): void {
-    this.period.set(v as Period);
+  protected setPeriod(period: string): void {
+    this.period.set(period as Period);
     this.emit();
   }
 
   /** "HH:mm" (24 h) from the three parts, or '' while any part is missing. */
   private joined(): string {
-    const h = this.hour(), m = this.minute(), p = this.period();
-    if (!h || !m || !p) return '';
-    return `${pad((+h % 12) + (p === 'PM' ? 12 : 0))}:${m}`;
+    const hour = this.hour();
+    const minute = this.minute();
+    const period = this.period();
+    if (!hour || !minute || !period) return '';
+    return `${padTwoDigits(to24Hour(Number(hour), period))}:${minute}`;
   }
 
   private emit(): void {

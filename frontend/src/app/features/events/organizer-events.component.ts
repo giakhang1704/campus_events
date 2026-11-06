@@ -1,4 +1,7 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, Router } from '@angular/router';
+import { map } from 'rxjs';
 import { Api, Catalog } from '../../core/api';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { EventApi } from './event-api.service';
@@ -38,9 +41,18 @@ export class OrganizerEventsComponent {
   readonly number = (n: number) => new Intl.NumberFormat('vi-VN').format(n);
   readonly badge = (event: CampusEvent) => ORGANIZER_BADGE[organizerStatus(event)];
   page = 0;
+  private readonly router = inject(Router);
+  /** ?page=2 (1-based) keeps the page across reloads and Back. */
+  private readonly urlPage = toSignal(
+    inject(ActivatedRoute).queryParamMap.pipe(map((q) => Math.max(0, (Number(q.get('page')) || 1) - 1))),
+    { requireSync: true },
+  );
 
   constructor() {
-    void this.load();
+    effect(() => {
+      this.page = this.urlPage();
+      void this.load();
+    });
     void this.loadCatalogs();
   }
 
@@ -85,10 +97,11 @@ export class OrganizerEventsComponent {
 
   async saved(event: CampusEvent): Promise<void> {
     this.editing.set(undefined);
-    this.page = 0;
     this.messageTone.set('success');
     this.message.set(event.status === 'DRAFT' ? 'Đã lưu bản nháp.' : 'Đã cập nhật sự kiện.');
-    await this.load();
+    // Back to page 1 (where new and edited events are listed); the URL drives the reload.
+    if (this.page > 0) await this.router.navigate([], { queryParams: { page: null }, queryParamsHandling: 'merge' });
+    else await this.load();
   }
 
   async publish(): Promise<void> {
@@ -125,7 +138,7 @@ export class OrganizerEventsComponent {
   }
 
   changePage(delta: number): void {
-    this.page += delta;
-    void this.load();
+    const next = Math.max(0, this.page + delta);
+    void this.router.navigate([], { queryParams: { page: next ? next + 1 : null }, queryParamsHandling: 'merge' });
   }
 }

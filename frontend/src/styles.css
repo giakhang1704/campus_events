@@ -9,7 +9,7 @@
 .chips,.category{display:none!important}
 
 /* Angular additions */
-.nav a{display:flex;align-items:center;gap:8px;justify-content:flex-start;color:#7a869a;font-size:13px;font-weight:600;padding:13px 14px;border-radius:10px}.nav a.active{background:#edf2ff;color:var(--blue)}.nav a svg{width:20px;height:20px;margin-right:2px}.health-dot{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);white-space:nowrap}.health-dot:before{content:'';width:7px;height:7px;border-radius:50%;background:#c3cad6}.health-dot.up:before{background:var(--green)}.health-dot.down:before{background:#c44}
+.nav a{display:flex;align-items:center;gap:8px;justify-content:flex-start;color:#7a869a;font-size:13px;font-weight:600;padding:13px 14px;border-radius:var(--radius-control)}.nav a.active{background:#edf2ff;color:var(--blue)}.nav a svg{width:20px;height:20px;margin-right:2px}.health-dot{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);white-space:nowrap}.health-dot:before{content:'';width:7px;height:7px;border-radius:50%;background:#c3cad6}.health-dot.up:before{background:var(--green)}.health-dot.down:before{background:#c44}
 
 /* ───────────────────────────────────────────────────────────────────────────
    Angular layer (2026-11-04). Mockup styles above stay untouched; rules below
@@ -17,7 +17,7 @@
    ─────────────────────────────────────────────────────────────────────────── */
 
 /* Sidebar links: mockup used <button>, Angular uses <a routerLink>. */
-.nav a{display:flex;align-items:center;gap:8px;border-radius:10px;color:#7a869a;font-size:13px;font-weight:600;padding:13px 14px;transition:.15s}
+.nav a{display:flex;align-items:center;gap:8px;border-radius:var(--radius-control);color:#7a869a;font-size:13px;font-weight:600;padding:13px 14px;transition:.15s}
 .nav a:hover{background:#f5f8ff;color:var(--dark)}
 .nav a.active{background:#edf2ff;color:var(--blue)}
 .nav a svg{width:20px;height:20px;margin-right:2px}
@@ -92,7 +92,7 @@ a.poster{display:block}
   --accent:#e85d1f;--accent-50:#fff1ea;
   --dark:#0c1b3d;--muted:#55607a;--line:#e2e8f1;--bg:#f5f8fc;
   --green:#137a5b;--mint:#e3f8f0;--amber:#94560a;
-  --radius:16px;
+  --radius:14px;--radius-control:10px;--radius-small:8px;
 }
 body{font-family:'Be Vietnam Pro','Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--dark);-webkit-font-smoothing:antialiased}
 h1{font-size:26px;font-weight:700;letter-spacing:-.5px}h2,h3{font-weight:700}
@@ -101,7 +101,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .num,td,.info-row b,.meta{font-variant-numeric:tabular-nums}
 
 /* Buttons: one flat primary fill; secondary white with a border. No shadows. */
-button{border-radius:10px;border-color:#d3dbe8;box-shadow:none}
+button{border-radius:var(--radius-control);border-color:#d3dbe8;box-shadow:none}
 button:hover:not(:disabled){background:var(--blue-50);border-color:var(--blue-100)}
 button:active:not(:disabled){transform:translateY(1px)}
 button.primary,button:not([class]),.auth-box button[type=submit]{background:var(--blue);border:1px solid var(--blue);color:#fff}
@@ -116,7 +116,7 @@ button.primary:disabled,button:not([class]):disabled{background:#e6ebf3;border-c
 .brand{color:var(--blue)}.brand em{color:#1488db}
 .school{font-size:12px;letter-spacing:0;color:var(--muted);margin-top:10px}
 .nav-caption{font-size:12px;letter-spacing:0;font-weight:600;color:var(--muted);margin:32px 12px 10px}
-.nav a{border-radius:10px;color:#3c4a66;font-size:14px;font-weight:500}
+.nav a{border-radius:var(--radius-control);color:#3c4a66;font-size:14px;font-weight:500}
 .nav a:hover{background:#f0f4fa;color:var(--dark)}
 .nav a.active{background:var(--blue-50);color:var(--blue);font-weight:600}
 .side-note{display:none}
@@ -164,7 +164,7 @@ tbody tr:hover{background:#f8fafd}
 
 /* Forms */
 .panel input:focus,.panel select:focus,.panel textarea:focus,.auth-box input:focus,.auth-box select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #032b9126}
-.panel input:not([type=checkbox]):not([type=radio]),.panel select,.panel textarea,.auth-box input,.auth-box select{border-radius:10px;border-color:#d3dbe8;font-size:14px}
+.panel input:not([type=checkbox]):not([type=radio]),.panel select,.panel textarea,.auth-box input,.auth-box select{border-radius:var(--radius-control);border-color:#d3dbe8;font-size:14px}
 .panel label,.auth-box label{font-size:13px}
 
 /* Login: the brand field stays colourful. */
@@ -227,7 +227,7 @@ footer{font-size:13px}.topbar .user-chip small{font-size:12px}.detail-copy p{col
 .card-unit{font-size:13px;font-weight:600;color:var(--blue);margin:0 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 /* Links that act as buttons (empty states, "Về danh sách sự kiện"). */
-a.button{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:10px 16px;background:#fff;color:var(--dark);font-weight:600}
+a.button{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);border-radius:var(--radius-control);padding:10px 16px;background:#fff;color:var(--dark);font-weight:600}
 a.button:hover{border-color:#a9c4e8;background:var(--blue-50)}
 a.button.primary{background:var(--blue);border-color:var(--blue);color:#fff}
 a.button.primary:hover{background:var(--blue-600)}
@@ -255,7 +255,7 @@ a.poster{display:flex}
 .skeleton-row{display:grid;grid-template-columns:minmax(0,3fr) 1fr 1.6fr 1fr;gap:24px;align-items:center;padding:22px 10px;border-bottom:1px solid var(--line)}
 .skeleton-row:last-child{border-bottom:0}
 .sk{display:block;height:12px;border-radius:6px;background:linear-gradient(90deg,var(--blue-50) 25%,#f4f7fc 50%,var(--blue-50) 75%);background-size:200% 100%;animation:sk 1.2s ease-in-out infinite}
-.sk-title{height:16px;width:80%}.sk-badge{height:22px;width:84px;border-radius:6px}.sk-date{width:90%}.sk-action{height:30px;width:88px;justify-self:end;border-radius:8px}
+.sk-title{height:16px;width:80%}.sk-badge{height:22px;width:84px;border-radius:6px}.sk-date{width:90%}.sk-action{height:30px;width:88px;justify-self:end;border-radius:var(--radius-small)}
 @keyframes sk{from{background-position:200% 0}to{background-position:-200% 0}}
 @media (prefers-reduced-motion:reduce){.sk{animation:none}}
 
@@ -293,7 +293,7 @@ a.poster{display:flex}
 .manage-hero h1{color:#fff;font-size:30px;letter-spacing:-.02em;margin:0}
 .manage-hero p{color:#fff;opacity:.85;font-size:15px;margin-top:6px;max-width:60ch}
 .manage-hero .actions{flex-shrink:0}
-.manage-hero button{border-radius:10px;font-weight:600}
+.manage-hero button{border-radius:var(--radius-control);font-weight:600}
 .manage-hero .hero-ghost{background:transparent;border:1px solid #ffffff80;color:#fff}
 .manage-hero .hero-ghost:hover:not(:disabled){background:#ffffff1f;border-color:#fff}
 .manage-hero .hero-solid{background:#fff;border:1px solid #fff;color:var(--blue)}
@@ -318,7 +318,7 @@ a.poster{display:flex}
 .hero-pill{display:inline-flex;align-items:center;padding:6px 12px;border-radius:999px;font-size:13px;font-weight:600;white-space:nowrap;background:#ffffff26;color:#fff;box-shadow:inset 0 0 0 1px #ffffff59}
 .hero-pill.live{background:var(--mint);color:var(--green);box-shadow:none}
 .editor-form{display:flex;flex-direction:column;gap:20px}
-.form-card{border-radius:12px;padding:24px;box-shadow:0 1px 2px #0c1b3d0d,0 4px 12px #0c1b3d08}
+.form-card{border-radius:var(--radius);padding:24px;box-shadow:0 1px 2px #0c1b3d0d,0 4px 12px #0c1b3d08}
 .form-card h2{font-size:17px;margin:0 0 18px}
 .form-card .card-hint{color:var(--muted);font-size:13px;margin:-12px 0 16px}
 .form-card .columns{row-gap:18px}
@@ -338,7 +338,7 @@ a.poster{display:flex}
 /* Password field with show/hide toggle. */
 .password-field{position:relative;display:block}
 .password-field input{padding-right:46px!important}
-.pw-toggle{position:absolute;right:4px;top:50%;transform:translateY(-50%);padding:8px;border:0;background:transparent;color:#8a93a6;border-radius:8px}
+.pw-toggle{position:absolute;right:4px;top:50%;transform:translateY(-50%);padding:8px;border:0;background:transparent;color:#8a93a6;border-radius:var(--radius-small)}
 .pw-toggle:hover:not(:disabled){background:transparent;color:#4b5567}
 .pw-toggle svg{width:18px;height:18px}
 
@@ -348,7 +348,7 @@ a.poster{display:flex}
 
 /* Toasts, top right. */
 .toast-stack{position:fixed;top:92px;right:24px;z-index:200;display:flex;flex-direction:column;gap:10px;width:min(380px,calc(100vw - 32px));pointer-events:none}
-.toast{pointer-events:auto;display:flex;align-items:flex-start;gap:10px;padding:14px 12px 14px 14px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--green);border-radius:10px;
+.toast{pointer-events:auto;display:flex;align-items:flex-start;gap:10px;padding:14px 12px 14px 14px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--green);border-radius:var(--radius-control);
   box-shadow:0 10px 30px #0c1b3d1f;color:var(--dark);font-size:14px;line-height:1.5;animation:toast-in .28s cubic-bezier(.16,1,.3,1)}
 .toast>app-icon svg{width:20px;height:20px;color:var(--green);margin-top:1px}
 .toast>span{flex:1}
@@ -382,10 +382,10 @@ body:has(.auth-shell) .toast-stack{top:20px}
 .check-chip:hover{border-color:#a9c4e8}
 .check-chip:has(input:checked){border-color:var(--blue);background:var(--blue-50);color:var(--blue)}
 .check-chip input,.check-row input{accent-color:var(--blue);width:16px;height:16px;margin:0}
-.check-list{max-height:200px;overflow-y:auto;border:1px solid #d3dbe8;border-radius:10px;padding:4px}
-.check-row{display:flex!important;flex-direction:row!important;align-items:center;gap:10px!important;margin:0!important;padding:9px 10px;border-radius:8px;font-weight:400!important;cursor:pointer}
+.check-list{max-height:200px;overflow-y:auto;border:1px solid #d3dbe8;border-radius:var(--radius-control);padding:4px}
+.check-row{display:flex!important;flex-direction:row!important;align-items:center;gap:10px!important;margin:0!important;padding:9px 10px;border-radius:var(--radius-small);font-weight:400!important;cursor:pointer}
 .check-row:hover{background:var(--blue-50)}
-.check-row.all{font-weight:600!important;border-bottom:1px solid var(--line);border-radius:8px 8px 0 0;margin-bottom:2px!important}
+.check-row.all{font-weight:600!important;border-bottom:1px solid var(--line);border-radius:var(--radius-small) 8px 0 0;margin-bottom:2px!important}
 .field-foot{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
 .field-foot .char-count{margin-left:auto;color:#8a93a6;font-size:12px;white-space:nowrap;font-variant-numeric:tabular-nums}
 .footer-errors{display:inline-flex;align-items:center;gap:6px;color:#b42318!important;font-weight:600}
@@ -395,12 +395,12 @@ body:has(.auth-shell) .toast-stack{top:20px}
 /* Date (dd/mm/yyyy) and time (HH:MM AM/PM) fields used in the event form. */
 .date-field,.time-field{position:relative;display:block;min-width:0}
 .date-field>input[type=text],.time-field>input[type=text]{padding-left:40px!important}
-.field-icon-btn{position:absolute;left:4px;top:50%;transform:translateY(-50%);padding:7px;border:0;background:transparent;color:#8a93a6;border-radius:8px;line-height:0}
+.field-icon-btn{position:absolute;left:4px;top:50%;transform:translateY(-50%);padding:7px;border:0;background:transparent;color:#8a93a6;border-radius:var(--radius-small);line-height:0}
 .field-icon-btn:hover:not(:disabled){background:var(--blue-50);color:var(--blue)}
 .field-icon-btn svg{width:17px;height:17px}
 .date-field:focus-within .field-icon-btn,.time-field:focus-within .field-icon-btn{color:var(--blue)}
 /* Pick panels (calendar, time): one look, above the cards below. */
-.pick-pop{position:absolute;top:calc(100% + 6px);z-index:60;padding:14px;background:#fff;border:1px solid var(--line);border-radius:14px;
+.pick-pop{position:absolute;top:calc(100% + 6px);z-index:60;padding:14px;background:#fff;border:1px solid var(--line);border-radius:var(--radius);
   box-shadow:0 16px 40px #0c1b3d24,0 2px 6px #0c1b3d0f;animation:pop-in .14s cubic-bezier(.16,1,.3,1)}
 @keyframes pop-in{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.pick-pop{animation:none}}
@@ -408,7 +408,7 @@ body:has(.auth-shell) .toast-stack{top:20px}
 .date-pop{left:0;width:296px}
 .cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .cal-head strong{font-size:15px}
-.cal-nav{padding:7px;border:0;background:transparent;border-radius:8px;color:var(--dark)}
+.cal-nav{padding:7px;border:0;background:transparent;border-radius:var(--radius-small);color:var(--dark)}
 .cal-nav:hover:not(:disabled){background:var(--blue-50)}
 .cal-nav svg{width:16px;height:16px}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
@@ -436,3 +436,43 @@ body:has(.auth-shell) .toast-stack{top:20px}
 .select-wrap select.placeholder{color:#8a93a6}
 .select-wrap select option{color:var(--dark)}
 .minute-other{width:64px!important;text-align:center;font-variant-numeric:tabular-nums}
+
+/* Admin accounts: same banner and list treatment as Sự kiện quản lý. */
+.account-list{padding:20px 24px}
+.account-filters{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr) auto;gap:10px;margin-bottom:8px}
+.account-filters>*{width:auto!important;margin:0}
+.account-table .acc-role{white-space:nowrap}
+.account-table .acc-empty{text-align:center;color:var(--muted);padding:32px 10px}
+@media(max-width:900px){.account-filters{grid-template-columns:1fr 1fr}.account-filters>input{grid-column:1/-1}.account-filters>button{grid-column:1/-1}}
+@media(max-width:680px){.account-list{padding:16px}.account-table .acc-role{color:var(--muted);margin-top:6px}}
+
+/* Event detail on phones: columns may shrink below their content, long time ranges wrap. */
+.split>*{min-width:0}
+.detail-copy h1{overflow-wrap:anywhere}
+.date-tile b,.date-tile small{white-space:nowrap}
+.detail-poster{flex-wrap:wrap;align-content:space-between;row-gap:12px}
+.detail-poster .poster-tag{white-space:normal;flex-shrink:1;max-width:100%;align-items:flex-start;line-height:1.4}
+.detail-poster .poster-tag svg{flex:none;margin-top:1px}
+@media(max-width:680px){.split,.split.equal{grid-template-columns:minmax(0,1fr)}.detail-poster{flex-direction:column-reverse;align-items:flex-start;justify-content:flex-end}.detail-poster .date-tile strong{font-size:48px}}
+.info-row span{flex:none;white-space:nowrap}
+.info-row b{min-width:0;overflow-wrap:anywhere}
+.account-table .person-cell{align-items:center}
+.account-table .person-text{min-width:0}
+.account-table .person-text strong{display:block}
+.account-table .avatar{width:36px;height:36px;font-size:12px;font-weight:700;letter-spacing:.02em}
+.account-table .acc-actions-head{text-align:right}
+.btn-tip{display:inline-block}
+.btn-tip:has(button:disabled){cursor:not-allowed}
+@media(max-width:680px){.event-table .ev-actions{text-align:left}.account-table .acc-role,.account-table .ev-status,.account-table .ev-actions{padding-left:46px!important}}
+
+/* Skeletons for the student screens: flat blocks at the size of what will load. */
+.card-skeleton .sk-poster{height:112px;border-radius:0;animation:sk 1.2s ease-in-out infinite}
+.card-skeleton .card-body{display:flex;flex-direction:column;gap:12px}
+.sk-line{display:block;height:12px;width:100%}
+.sk-line.short{width:45%}
+.sk-line.title{height:18px;width:80%}
+.sk-line.heading{height:28px;width:70%;margin:16px 0 8px}
+.sk-line.label{width:30%}
+.sk-line.value{width:45%;margin-left:auto}
+.sk-banner{height:170px;border-radius:var(--radius);margin-bottom:20px}
+.panel .sk-line+.sk-line{margin-top:12px}

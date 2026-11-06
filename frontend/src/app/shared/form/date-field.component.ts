@@ -1,25 +1,31 @@
 import { ChangeDetectionStrategy, Component, computed, ElementRef, inject, input, OnChanges, output, signal } from '@angular/core';
 import { IconComponent } from '../icon/icon.component';
-
-const pad = (n: number) => String(n).padStart(2, '0');
+import { padTwoDigits } from '../utils/date.utils';
 
 /** "YYYY-MM-DD" -> "DD/MM/YYYY". */
 export function toDisplayDate(iso: string): string {
-  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
-  return m ? `${m[3]}/${m[2]}/${m[1]}` : '';
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+  if (!match) return '';
+  const [, year, month, day] = match;
+  return `${day}/${month}/${year}`;
 }
 
 /** Accepts "DD/MM/YYYY" (also with - or .) and "YYYY-MM-DD"; returns "YYYY-MM-DD" or '' when not a real date. */
 export function parseDate(text: string): string {
-  const t = text.trim();
-  let d: number, mo: number, y: number;
-  let m = /^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})$/.exec(t);
-  if (m) [d, mo, y] = [+m[1], +m[2], +m[3]];
-  else if ((m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(t))) [y, mo, d] = [+m[1], +m[2], +m[3]];
+  const input = text.trim();
+  let day: number, month: number, year: number;
+
+  const dayFirst = /^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})$/.exec(input); // 05/11/2026, 5-11-2026, 5.11.2026
+  const isoForm = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(input); //          2026-11-05
+  if (dayFirst) [day, month, year] = [Number(dayFirst[1]), Number(dayFirst[2]), Number(dayFirst[3])];
+  else if (isoForm) [year, month, day] = [Number(isoForm[1]), Number(isoForm[2]), Number(isoForm[3])];
   else return '';
-  const date = new Date(Date.UTC(y, mo - 1, d));
-  if (date.getUTCFullYear() !== y || date.getUTCMonth() !== mo - 1 || date.getUTCDate() !== d) return '';
-  return `${y}-${pad(mo)}-${pad(d)}`;
+
+  // Reject impossible dates such as 31/02: JavaScript would silently roll them over to March,
+  // so build the date and check that it still has the same day, month and year.
+  const date = new Date(Date.UTC(year, month - 1, day));
+  const isRealDate = date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
+  return isRealDate ? `${year}-${padTwoDigits(month)}-${padTwoDigits(day)}` : '';
 }
 
 /** Today in Vietnam time as "YYYY-MM-DD". */
@@ -27,7 +33,15 @@ function todayVN(): string {
   return new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Ho_Chi_Minh' }).format(new Date());
 }
 
-interface Day { iso: string; day: number; inMonth: boolean; }
+/** One cell of the month grid. */
+interface Day {
+  iso: string;
+  day: number;
+  inMonth: boolean;
+}
+
+/** 6 weeks of 7 days. */
+const CALENDAR_CELLS = 42;
 
 /**
  * Date field that always reads DD/MM/YYYY, whatever the browser language (a native date input shows
@@ -50,7 +64,7 @@ interface Day { iso: string; day: number; inMonth: boolean; }
       aria-haspopup="dialog" [attr.aria-expanded]="open()"
       [value]="text()" (input)="onInput($any($event.target).value)" (blur)="normalize()"
       (click)="show()" (keydown.arrowdown)="show()" />
-    <button type="button" class="field-icon-btn" tabindex="-1" aria-hidden="true" (click)="openFromIcon()"><app-icon name="calendar" /></button>
+    <button type="button" class="field-icon-btn" tabindex="-1" aria-hidden="true" (mousedown)="$event.preventDefault()" (click)="openFromIcon()"><app-icon name="calendar" /></button>
     @if (open()) {
       <div class="pick-pop date-pop" role="dialog" [attr.aria-label]="'Chọn ' + label().toLowerCase()">
         <div class="cal-head">
@@ -89,14 +103,19 @@ export class DateFieldComponent implements OnChanges {
   protected readonly view = signal({ year: 2026, month: 0 });
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
-  /** 6 weeks starting on Monday, padded with the neighbouring months' days. */
+  /**
+   * The month grid: always 6 weeks x 7 days = 42 cells, Monday first, so the calendar never changes
+   * height between months. Cells before the 1st and after the last day show the neighbouring months.
+   */
   protected readonly days = computed<Day[]>(() => {
     const { year, month } = this.view();
-    const first = new Date(Date.UTC(year, month, 1));
-    const offset = (first.getUTCDay() + 6) % 7;
-    return Array.from({ length: 42 }, (_, i) => {
-      const d = new Date(Date.UTC(year, month, 1 - offset + i));
-      return { iso: d.toISOString().slice(0, 10), day: d.getUTCDate(), inMonth: d.getUTCMonth() === month };
+    const firstOfMonth = new Date(Date.UTC(year, month, 1));
+    // getUTCDay(): Sunday = 0 ... Saturday = 6. Shift so Monday = 0 ... Sunday = 6.
+    const blanksBeforeFirst = (firstOfMonth.getUTCDay() + 6) % 7;
+    return Array.from({ length: CALENDAR_CELLS }, (_, cellIndex) => {
+      // Date.UTC rolls over by itself: day 0 is the last day of the previous month, day 32 is in the next one.
+      const date = new Date(Date.UTC(year, month, 1 - blanksBeforeFirst + cellIndex));
+      return { iso: date.toISOString().slice(0, 10), day: date.getUTCDate(), inMonth: date.getUTCMonth() === month };
     });
   });
 
@@ -123,9 +142,10 @@ export class DateFieldComponent implements OnChanges {
   }
 
   protected move(delta: number): void {
+    // month is 0-11; going past December or before January changes the year.
     this.view.update(({ year, month }) => {
-      const m = month + delta;
-      return { year: year + Math.floor(m / 12), month: ((m % 12) + 12) % 12 };
+      const monthIndex = month + delta;
+      return { year: year + Math.floor(monthIndex / 12), month: ((monthIndex % 12) + 12) % 12 };
     });
   }
 

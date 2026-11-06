@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, OnChanges, OnDestroy, Output, signal } from '@angular/core';
+import { Component, EventEmitter, HostListener, inject, Input, OnChanges, OnDestroy, Output, signal } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Api, ApiError, Catalog } from '../../core/api';
 import { IconComponent } from '../../shared/icon/icon.component';
@@ -39,6 +39,9 @@ export class EventEditorComponent implements OnChanges, OnDestroy {
   readonly checked = signal(false);
   /** The "check the form" toast belongs to this screen; it is closed when the editor closes. */
   private formToast = 0;
+  /** Form contents when it was opened or last reloaded; compared to warn before discarding edits. */
+  private initial = '';
+  readonly confirmDiscard = signal(false);
   readonly busy = signal(false);
   readonly message = signal('');
   readonly fields = signal<Record<string, string>>({});
@@ -52,6 +55,33 @@ export class EventEditorComponent implements OnChanges, OnDestroy {
   years = new Set<number>();
   fivePlus = false;
   private fivePlusYears = FIVE_PLUS_DEFAULT;
+
+  /** Current contents in a comparable form. */
+  private snapshot(): string {
+    return JSON.stringify([this.model, [...this.years].sort(), this.fivePlus]);
+  }
+
+  dirty(): boolean {
+    return this.snapshot() !== this.initial;
+  }
+
+  /** Quay lại / Hủy: close at once when nothing changed, otherwise ask in the action bar first. */
+  requestClose(): void {
+    if (this.busy()) return;
+    if (this.dirty()) this.confirmDiscard.set(true);
+    else this.cancelled.emit();
+  }
+
+  discard(): void {
+    this.confirmDiscard.set(false);
+    this.cancelled.emit();
+  }
+
+  /** Reloading or closing the tab with unsaved edits triggers the browser's own "leave site?" prompt. */
+  @HostListener('window:beforeunload', ['$event'])
+  protected warnOnUnload(event: BeforeUnloadEvent): void {
+    if (this.dirty()) event.preventDefault();
+  }
 
   ngOnDestroy(): void {
     this.toast.dismiss(this.formToast);
@@ -72,8 +102,22 @@ export class EventEditorComponent implements OnChanges, OnDestroy {
   }
 
   /**
-   * Client-side rules, shown inline before anything is sent. Date order mirrors the database checks
-   * (opens < closes <= starts < ends); the server still validates everything.
+   * Client-side rules, shown inline before anything is sent; the server still validates everything.
+   * Returns { fieldName: message } for every invalid field (empty object = form is valid).
+   *
+   * Time order (the same CHECK constraint as the `events` table in the database):
+   *
+   *   registration opens  <  registration closes  <=  event starts  <  event ends
+   *
+   * - opens < closes : registration must stay open for some time.
+   * - closes <= starts: registration may close exactly when the event starts, never after it
+   *                     (nobody can sign up for an event that is already running).
+   * - starts < ends   : an event lasts some time.
+   *
+   * Each value is "YYYY-MM-DDTHH:mm" in Vietnam time; toEventTimestamp() adds "+07:00" so Date.parse()
+   * gives the real instant (milliseconds) to compare. An empty field becomes NaN; every comparison with
+   * NaN is false, so a missing date only shows "Vui lòng chọn…", never an order error.
+   * `??=` keeps the first message of a field, so the most basic problem is the one shown.
    */
   validate(): Record<string, string> {
     const m = this.model;
@@ -251,6 +295,8 @@ export class EventEditorComponent implements OnChanges, OnDestroy {
     this.fields.set({});
     this.conflict.set(false);
     this.checked.set(false);
+    this.confirmDiscard.set(false);
     this.message.set('');
+    this.initial = this.snapshot();
   }
 }

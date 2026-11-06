@@ -3,9 +3,12 @@ import { RouterLink } from '@angular/router';
 import { Api, ApiError, Catalog } from '../../core/api';
 import { CatalogService } from '../../core/catalog.service';
 import { IconComponent } from '../../shared/icon/icon.component';
+import { ToastService } from '../../shared/toast/toast.service';
 import { EventApi } from './event-api.service';
 import { CampusEvent } from './event.models';
-import { dateTile, formatDateTime, formatLongDate, formatTime, isEligible, registrationWindow, WINDOW_BADGE } from './event-view';
+import { dateTile, formatDateTime, formatLongDate, formatTime, formatTimeRange } from '../../shared/utils/date.utils';
+import { formatCount } from '../../shared/utils/number.utils';
+import { isEligible, registrationWindow, WINDOW_BADGE } from './event-view';
 
 /** /events/:id: published event detail from GET /api/events/{id} (mockup `detail()`). */
 @Component({
@@ -16,7 +19,21 @@ import { dateTile, formatDateTime, formatLongDate, formatTime, isEligible, regis
     <a class="text-button back" routerLink="/events"><app-icon name="back" /> Quay lại danh sách</a>
 
     @if (loading()) {
-      <p class="muted" role="status">Đang tải sự kiện…</p>
+      <span class="sr-only" role="status">Đang tải sự kiện…</span>
+      <div class="split" aria-hidden="true">
+        <section class="panel">
+          <div class="sk sk-banner"></div>
+          <span class="sk sk-line short"></span>
+          <span class="sk sk-line heading"></span>
+          <span class="sk sk-line"></span>
+          <span class="sk sk-line"></span>
+        </section>
+        <aside class="panel">
+          @for (n of skeletonRows; track n) {
+            <div class="info-row"><span class="sk sk-line label"></span><span class="sk sk-line value"></span></div>
+          }
+        </aside>
+      </div>
     } @else if (error(); as err) {
       <div class="empty">
         <app-icon name="info" />
@@ -48,7 +65,7 @@ import { dateTile, formatDateTime, formatLongDate, formatTime, isEligible, regis
         <aside class="panel sticky">
           <h3>Thông tin sự kiện</h3>
           <div class="info-row"><span>Ngày</span><b>{{ longDate(e.startsAt) }}</b></div>
-          <div class="info-row"><span>Thời gian</span><b>{{ time(e.startsAt) }} – {{ time(e.endsAt) }}</b></div>
+          <div class="info-row"><span>Thời gian</span><b>{{ range(e.startsAt, e.endsAt) }}</b></div>
           <div class="info-row"><span>Địa điểm</span><b>{{ e.location }}</b></div>
           <div class="info-row"><span>Đơn vị tổ chức</span><b>{{ unitName() || '—' }}</b></div>
           <div class="info-row"><span>Sức chứa</span><b>{{ capacity() }} người</b></div>
@@ -76,6 +93,9 @@ export class StudentEventDetailPage {
   private readonly events = inject(EventApi);
   private readonly api = inject(Api);
   private readonly catalogs = inject(CatalogService);
+  private readonly toast = inject(ToastService);
+  /** One placeholder per row of the info column. */
+  protected readonly skeletonRows = [1, 2, 3, 4, 5, 6];
 
   protected readonly event = signal<CampusEvent | null>(null);
   protected readonly loading = signal(true);
@@ -84,31 +104,46 @@ export class StudentEventDetailPage {
   private readonly units = signal<Catalog[]>([]);
 
   protected readonly tile = computed(() => dateTile(this.event()?.startsAt ?? new Date().toISOString()));
-  protected readonly capacity = computed(() => new Intl.NumberFormat('vi-VN').format(this.event()?.capacity ?? 0));
+  protected readonly capacity = computed(() => formatCount(this.event()?.capacity ?? 0));
   protected readonly badge = computed(() => {
-    const b = WINDOW_BADGE[this.event() ? registrationWindow(this.event()!) : 'UPCOMING'];
-    return { label: b.label, css: ('badge ' + b.css).trim() };
+    const event = this.event();
+    const badge = WINDOW_BADGE[event ? registrationWindow(event) : 'UPCOMING'];
+    return { label: badge.label, css: ('badge ' + badge.css).trim() };
   });
-  protected readonly eligible = computed(() => !!this.event() && isEligible(this.event()!, this.api.user()));
-  protected readonly unitName = computed(() => this.units().find((u) => u.id === this.event()?.organizationUnitId)?.name ?? '');
+  /** Shows the "not eligible" notice; the server applies the same rule when registration opens. */
+  protected readonly eligible = computed(() => {
+    const event = this.event();
+    return !!event && isEligible(event, this.api.user());
+  });
+  protected readonly unitName = computed(
+    () => this.units().find((unit) => unit.id === this.event()?.organizationUnitId)?.name ?? '',
+  );
+  /** "Khoa A, Khoa B · năm 1, 2" — who may join; an empty list means everyone. */
   protected readonly audience = computed(() => {
-    const e = this.event();
-    if (!e) return '';
-    const dept = e.departmentIds.length
-      ? e.departmentIds.map((id) => this.departments().find((d) => d.id === id)?.name ?? `Khoa #${id}`).join(', ')
+    const event = this.event();
+    if (!event) return '';
+    const departmentNames = event.departmentIds.length
+      ? event.departmentIds
+          .map((id) => this.departments().find((department) => department.id === id)?.name ?? `Khoa #${id}`)
+          .join(', ')
       : 'Mọi khoa';
-    const years = e.studyYears.length ? 'năm ' + [...e.studyYears].sort((a, b) => a - b).join(', ') : 'mọi năm học';
-    return `${dept} · ${years}`;
+    const studyYears = event.studyYears.length
+      ? 'năm ' + [...event.studyYears].sort((a, b) => a - b).join(', ')
+      : 'mọi năm học';
+    return `${departmentNames} · ${studyYears}`;
   });
 
   protected readonly longDate = formatLongDate;
   protected readonly time = formatTime;
-  /** "12/11/2026 · 08:00", the app-wide timestamp format. */
+  protected readonly range = formatTimeRange;
+  /** "Thứ Năm, 12/11/2026 · 08:00", the app-wide timestamp format. */
   protected readonly stamp = formatDateTime;
 
   constructor() {
-    this.catalogs.getDepartments().then((d) => this.departments.set(d)).catch(() => {});
-    this.catalogs.getUnits().then((u) => this.units.set(u)).catch(() => {});
+    // Without the catalogs the page still works; names fall back to '—' / 'Khoa #id', and the user is told why.
+    this.catalogs.getDepartments().then((departments) => this.departments.set(departments)).catch(() => this.toast.error('Chưa tải được danh mục khoa; tên khoa có thể chưa hiện.'));
+    this.catalogs.getUnits().then((units) => this.units.set(units)).catch(() => this.toast.error('Chưa tải được danh mục đơn vị tổ chức. Tên đơn vị có thể chưa hiện; hãy tải lại trang.'));
+    // Reload whenever the :id in the URL changes (input bound by withComponentInputBinding).
     effect(() => {
       void this.load(Number(this.id()));
     });
@@ -124,9 +159,11 @@ export class StudentEventDetailPage {
     try {
       if (!Number.isInteger(id) || id <= 0) throw new ApiError(404, 'NOT_FOUND', '');
       this.event.set(await this.events.getPublished(id));
-    } catch (e) {
+    } catch (error) {
       this.event.set(null);
-      const missing = e instanceof ApiError && (e.status === 404 || e.status === 403);
+      // 404 / 403: the event does not exist or is not published -> no point retrying.
+      // Anything else (network, server) -> offer "Thử lại".
+      const missing = error instanceof ApiError && (error.status === 404 || error.status === 403);
       this.error.set(
         missing
           ? { title: 'Sự kiện không tồn tại hoặc chưa được công bố', hint: 'Có thể sự kiện đã bị gỡ hoặc đường dẫn chưa đúng.', retry: false }

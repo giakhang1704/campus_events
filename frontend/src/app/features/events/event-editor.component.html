@@ -1,6 +1,6 @@
 <section class="manage-hero editor-hero">
   <div class="editor-hero-main">
-    <button type="button" class="hero-back" [disabled]="busy()" (click)="cancelled.emit()"><app-icon name="back" /> Quay lại</button>
+    <button type="button" class="hero-back" [disabled]="busy()" (click)="requestClose()"><app-icon name="back" /> Quay lại</button>
     <h1>{{ event ? 'Chỉnh sửa sự kiện' : 'Tạo sự kiện nháp' }}</h1>
     <p>{{ event ? (model.title.trim() || event.title) : 'Điền thông tin cơ bản để lưu bản nháp. Bạn có thể chỉnh sửa trước khi công bố.' }}</p>
   </div>
@@ -106,17 +106,25 @@
     </fieldset>
   </section>
 
-  <div class="editor-footer">
-    @if (errorCount(); as n) {
-      <span class="footer-errors" role="status"><app-icon name="alert" /> Còn {{ n }} trường chưa hợp lệ.</span>
+  <div class="editor-footer" [class.confirming]="confirmDiscard()">
+    @if (confirmDiscard()) {
+      <span class="footer-errors" role="alert"><app-icon name="alert" /> Bỏ các thay đổi chưa lưu?</span>
+      <div class="actions">
+        <button class="secondary" type="button" (click)="confirmDiscard.set(false)">Tiếp tục sửa</button>
+        <button class="danger" type="button" (click)="discard()">Bỏ thay đổi</button>
+      </div>
     } @else {
-      <span>{{ event ? 'Lưu để áp dụng thay đổi.' : 'Bản nháp chỉ bạn thấy cho đến khi công bố.' }}</span>
+      @if (errorCount(); as n) {
+        <span class="footer-errors" role="status"><app-icon name="alert" /> Còn {{ n }} trường chưa hợp lệ.</span>
+      } @else {
+        <span>{{ event ? 'Lưu để áp dụng thay đổi.' : 'Bản nháp chỉ bạn thấy cho đến khi công bố.' }}</span>
+      }
+      <div class="actions">
+        <button class="secondary" type="button" [disabled]="busy()" (click)="requestClose()">Hủy</button>
+        <button class="primary" type="submit" [disabled]="busy() || conflict()">
+          <app-icon name="save" /> {{ busy() ? 'Đang lưu…' : event ? 'Lưu thay đổi' : 'Lưu nháp' }}
+        </button>
+      </div>
     }
-    <div class="actions">
-      <button class="secondary" type="button" [disabled]="busy()" (click)="cancelled.emit()">Hủy</button>
-      <button class="primary" type="submit" [disabled]="busy() || conflict()">
-        <app-icon name="save" /> {{ busy() ? 'Đang lưu…' : event ? 'Lưu thay đổi' : 'Lưu nháp' }}
-      </button>
-    </div>
   </div>
 </form>
