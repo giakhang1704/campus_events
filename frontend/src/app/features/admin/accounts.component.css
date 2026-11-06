@@ -1,0 +1,559 @@
+/* Trang quản lý tài khoản */
+:host {
+  display: block;
+  min-width: 0;
+  color: #17243e;
+}
+
+:host *,
+:host *::before,
+:host *::after {
+  box-sizing: border-box;
+}
+
+/* Tiêu đề trang */
+.section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.section-title h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+  line-height: 1.35;
+}
+
+.section-title p {
+  max-width: 720px;
+  margin: 0;
+  color: #77839a;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.section-title > button {
+  flex-shrink: 0;
+}
+
+/* Nút bấm */
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 10px 16px;
+  border: 1px solid #315de5;
+  border-radius: 9px;
+  background: #315de5;
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s;
+}
+
+button:hover:not(:disabled) {
+  border-color: #244dc9;
+  background: #244dc9;
+}
+
+button.secondary {
+  border-color: #dfe5ef;
+  background: #fff;
+  color: #17243e;
+}
+
+button.secondary:hover:not(:disabled) {
+  border-color: #b8c7ef;
+  background: #f2f5ff;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button:focus-visible {
+  outline: 3px solid #a8c1ff;
+  outline-offset: 3px;
+}
+
+/* Khung nội dung */
+.panel {
+  min-width: 0;
+  margin-bottom: 24px;
+  padding: 26px;
+  border: 1px solid #e6ebf3;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 4px 18px rgba(23, 36, 62, 0.03);
+}
+
+/* Thông báo */
+.notice {
+  margin: 0 0 22px;
+  padding: 14px 16px;
+  border: 1px solid #dfe7fa;
+  border-radius: 10px;
+  background: #f3f6ff;
+  color: #526991;
+  font-size: 13px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+/* Thống kê trang hiện tại */
+.account-summary {
+  margin-bottom: 26px;
+}
+
+.account-summary-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-bottom: 14px;
+}
+
+.account-summary-heading h2 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.account-summary-heading p {
+  margin: 0;
+  color: #77839a;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.account-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.account-stat {
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid #e6ebf3;
+  border-top: 3px solid #375de5;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 4px 18px rgba(23, 36, 62, 0.03);
+}
+
+.account-stat > span {
+  display: block;
+  color: #77839a;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.account-stat strong {
+  display: block;
+  margin: 12px 0 8px;
+  color: #17243e;
+  font-size: 32px;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+
+.account-stat small {
+  display: block;
+  color: #77839a;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.account-stat.purple {
+  border-top-color: #8454d6;
+}
+
+.account-stat.green {
+  border-top-color: #169b78;
+}
+
+.account-stat.amber {
+  border-top-color: #c88719;
+}
+
+/* Tìm kiếm và bộ lọc */
+.search-row {
+  display: grid;
+  grid-template-columns: minmax(200px, 1fr) 170px 170px auto;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.search-row input,
+.search-row select {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid #e0e6ef;
+  border-radius: 9px;
+  background: #fff;
+  color: #17243e;
+  font: inherit;
+  font-size: 13px;
+}
+
+.search-row input::placeholder {
+  color: #8994a8;
+}
+
+.search-row button {
+  min-height: 44px;
+}
+
+/* Trạng thái ô nhập */
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #375de5;
+  outline-offset: 2px;
+}
+
+input:disabled,
+select:disabled,
+textarea:disabled {
+  background: #f5f7fb;
+  color: #77839a;
+  cursor: not-allowed;
+}
+
+/* Bảng tài khoản */
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  min-width: 650px;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+th {
+  padding: 14px 16px;
+  background: #f7f9fc;
+  color: #77839a;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+td {
+  padding: 20px 16px;
+  border-bottom: 1px solid #e6ebf3;
+  vertical-align: middle;
+}
+
+td:first-child {
+  overflow-wrap: anywhere;
+}
+
+td strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+td small {
+  display: block;
+  margin-top: 5px;
+  color: #77839a;
+  font-size: 12px;
+}
+
+tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+tbody tr:hover {
+  background: #fafbff;
+}
+
+td button {
+  min-height: 36px;
+  padding: 8px 12px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+td[colspan] {
+  padding: 36px 16px;
+  color: #77839a;
+  text-align: center;
+}
+
+/* Nhãn trạng thái */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 7px;
+  background: #e8f6f0;
+  color: #16856a;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.badge.red {
+  background: #fff0f0;
+  color: #b24b58;
+}
+
+/* Phân trang */
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid #e6ebf3;
+  color: #77839a;
+  font-size: 12px;
+}
+
+.pager button {
+  min-height: 36px;
+  padding: 8px 13px;
+  font-size: 12px;
+}
+
+/* Form cấp tài khoản và đổi trạng thái */
+.account-create-panel {
+  border-top: 3px solid #375de5;
+}
+
+.account-form-heading {
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e6ebf3;
+}
+
+.account-form-tag {
+  display: block;
+  margin-bottom: 8px;
+  color: #375de5;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+}
+
+.account-form-heading h2 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  line-height: 1.4;
+}
+
+.account-form-heading p {
+  margin: 0;
+  color: #77839a;
+  font-size: 13px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+/* Hai cột thông tin */
+.account-create-panel .columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.account-create-panel label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  color: #17243e;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.account-create-panel input,
+.account-create-panel select,
+.account-create-panel textarea {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid #dfe5ef;
+  border-radius: 9px;
+  background: #fff;
+  color: #17243e;
+  font: inherit;
+  font-weight: 400;
+}
+
+.account-create-panel input,
+.account-create-panel select {
+  min-height: 46px;
+}
+
+.account-create-panel textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.account-create-panel input:disabled,
+.account-create-panel select:disabled,
+.account-create-panel textarea:disabled {
+  background: #f5f7fb;
+  color: #77839a;
+}
+
+.account-create-panel input:focus,
+.account-create-panel select:focus,
+.account-create-panel textarea:focus {
+  outline: 2px solid #375de5;
+  outline-offset: 2px;
+}
+
+/* Hướng dẫn và lỗi nhập liệu */
+.account-create-panel form > p.muted {
+  margin: 18px 0 0;
+  padding: 14px 16px;
+  border-radius: 9px;
+  background: #f5f7fc;
+  color: #66758f;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.account-create-panel .field-error {
+  display: block;
+  color: #b93c3c;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.account-create-panel input.ng-invalid.ng-touched,
+.account-create-panel select.ng-invalid.ng-touched,
+.account-create-panel textarea.ng-invalid.ng-touched {
+  border-color: #c45b65;
+}
+
+/* Nội dung xác nhận */
+.account-create-panel > h3 {
+  margin: 0 0 14px;
+  font-size: 16px;
+}
+
+.account-create-panel > p {
+  margin: 10px 0;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.account-create-panel > p.notice {
+  margin: 18px 0;
+}
+
+.account-create-panel > form {
+  margin-top: 18px;
+}
+
+/* Nút cuối form */
+.account-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e6ebf3;
+}
+
+/* Máy tính bảng */
+@media (max-width: 1100px) {
+  .search-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .account-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Form trên màn hình nhỏ */
+@media (max-width: 700px) {
+  .account-create-panel .columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .account-form-actions > button {
+    flex: 1 1 auto;
+  }
+}
+
+/* Điện thoại */
+@media (max-width: 600px) {
+  .section-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .section-title h1 {
+    font-size: 25px;
+  }
+
+  .section-title > button {
+    width: 100%;
+  }
+
+  .search-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .panel {
+    padding: 18px;
+  }
+
+  .account-form-heading h2 {
+    font-size: 18px;
+  }
+
+  .pager {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 540px) {
+  .account-stats {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .account-stat {
+    padding: 20px;
+  }
+}
