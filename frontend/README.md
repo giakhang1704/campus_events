@@ -1,11 +1,30 @@
-# Angular 21 — tài khoản I1
+# Frontend — Angular 21
 
-Node 24; npm ci; npm start. Mở http://localhost:4200. Backend 8080, proxy /api trong proxy.conf.json. npm run build xuất dist/campus-events/browser. Docker Compose chạy stack ở README gốc.
+Node 24; `npm ci`; `npm start` → http://localhost:4200. Backend 8080, proxy `/api` trong proxy.conf.json. `npm run build` xuất dist/campus-events/browser. Docker Compose chạy stack ở README gốc.
 
-core/api.ts: fetch cùng origin + CSRF, trạng thái user; không lưu token vào localStorage/sessionStorage. features/auth: đăng ký/đăng nhập; features/admin: danh sách/tìm/phân trang/cấp/khóa/mở. Mỗi tài khoản giữ một vai trò cố định; không có chức năng đổi vai trò. main.ts phục hồi phiên khi tải lại, logout và đổi mật khẩu bắt buộc.
+## Cấu trúc `src/app`
+```text
+core/api.ts              fetch cùng origin + CSRF, trạng thái user (Api.user); không lưu token vào localStorage/sessionStorage
+core/auth/session.ts     khôi phục phiên (/auth/me) một lần, guard đăng nhập/vai trò/đổi mật khẩu, trang chủ theo vai trò
+core/layout/             shell (sidebar + topbar) và menu theo vai trò (navigation.ts — giữ đồng bộ với app.routes.ts)
+core/catalog.service.ts  cache danh mục khoa/đơn vị cho màn chỉ đọc
+features/auth            /login (đăng nhập + đăng ký sinh viên), /change-password (đổi mật khẩu lần đầu)
+features/admin           /admin/accounts: danh sách/tìm/phân trang/cấp/khóa/mở; mỗi tài khoản một vai trò cố định
+features/events          /manage (organizer: nháp, sửa, công bố), /events + /events/:id (sinh viên xem sự kiện đã công bố)
+features/system          /system: kiểm tra /api/health + mockup tham khảo
+shared/                  icon, page-header, coming-soon
+```
 
-Nút Xem mockup giữ public/mockup để tham khảo phần chưa tích hợp. Tài khoản thật nằm ngoài khung; đăng nhập trong khung là dữ liệu mô phỏng riêng. Nguồn mockup cũ giữ nguyên trong docs/references.
+## Trạng thái I1
+- Đã nối API thật: đăng nhập/đăng ký/đăng xuất/đổi mật khẩu, quản lý tài khoản, sự kiện của người tổ chức, xem sự kiện đã công bố.
+- Nút "Đăng ký tham gia" ở chi tiết sự kiện đang tắt (`TODO(API)`) vì backend I1 chưa có API đăng ký.
+- Các route `my-events`, `scan`, `participants`, `attendance`, `reports` hiện trang "Đang xây dựng"; `data.mockupFn` ghi hàm nguồn trong `public/mockup/app.js`.
+- Giao diện dùng CSS của mockup (`src/styles.css`, phần đầu) + lớp Angular ở cuối file. Phần ngoài phạm vi (category, check-out, kết thúc thủ công) để trong comment `DEFERRED` theo docs/decisions/SCOPE.md.
 
-## Organizer events
+## Thêm một màn hình
+1. Tạo `features/<module>/<ten>.page.ts` (standalone, signals, `ChangeDetectionStrategy.OnPush`).
+2. Thêm route trong `app.routes.ts` (thay `comingSoon` nếu có) và mục menu trong `core/layout/navigation.ts`.
+3. Gọi API qua `Api.request` (hoặc service trong feature). Guard chỉ ẩn giao diện; backend vẫn kiểm tra quyền.
 
-`features/events/event-api.service.ts` tập trung endpoint; `event.models.ts` khai báo kiểu dữ liệu và chuyển đổi giờ Việt Nam. Component danh sách quản lý màn hình, tải dữ liệu và xác nhận công bố; component editor quản lý form, lỗi theo trường và tải lại bản mới khi conflict. Hai component có template HTML riêng. Organizer đã đổi mật khẩu sẽ thấy mục Sự kiện của tôi. Sinh viên tìm/xem chưa triển khai.
+## Kiểm thử giao diện
+`node scripts/smoke/i1_ui.cjs <đường dẫn module playwright>` với stack đang chạy và tài khoản seed (scripts/seed-local.ps1). Script dùng Edge (`channel: msedge`).
