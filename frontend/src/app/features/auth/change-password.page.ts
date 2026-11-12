@@ -16,12 +16,12 @@ import { ToastService } from '../../shared/toast/toast.service';
   template: `
     <section class="auth-shell">
       <div class="auth-art">
-        <div class="brand"><span class="brand-mark">ce</span><span>campus<em>events</em></span></div>
+        <div class="brand"><img class="brand-logo" src="/assets/hcmut.png" alt="Logo Bách khoa TP.HCM" width="60" height="48"><span>BK<em>event</em></span></div>
         <div>
           <p class="auth-statement">Đặt mật khẩu của riêng bạn.</p>
           <p>Tài khoản được cấp bằng mật khẩu tạm. Hãy đổi mật khẩu trước khi bắt đầu sử dụng hệ thống.</p>
         </div>
-        <small>© Campus Events</small>
+        <small>© BKevent</small>
       </div>
       <div class="auth-content">
         <div class="auth-box">

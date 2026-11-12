@@ -21,7 +21,7 @@ import { PageHeaderComponent } from '../../shared/page-header/page-header.compon
       <!-- DEV ONLY: HTML mockup of screens not built yet; never shown in production builds. -->
       <h2 class="gap-top">Bản mẫu giao diện (chỉ ở môi trường phát triển)</h2>
       <p class="muted gap-bottom">Dữ liệu trong khung mẫu nằm trên trình duyệt, không liên quan tài khoản thật.</p>
-      <iframe src="mockup/index.html" title="Bản mẫu giao diện Campus Events"></iframe>
+      <iframe src="mockup/index.html" title="Bản mẫu giao diện BKevent"></iframe>
     }
   `,
   styles: `iframe { width: 100%; height: 80vh; min-height: 600px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }`,
