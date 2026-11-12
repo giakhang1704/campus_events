@@ -4,15 +4,16 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import vn.edu.hcmut.campusevents.catalog.CatalogService;
+
+import vn.edu.hcmut.campusevents.service.ICatalogService;
 
 /** Reference data is required even when development accounts/events are not seeded. */
 @Component
 @Order(0)
 public class CatalogInitializer implements ApplicationRunner {
-    private final CatalogService catalogs;
+    private final ICatalogService catalogs;
 
-    public CatalogInitializer(CatalogService catalogs) {
+    public CatalogInitializer(ICatalogService catalogs) {
         this.catalogs = catalogs;
     }
 

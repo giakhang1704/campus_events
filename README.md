@@ -131,3 +131,7 @@ Workflow Git theo báo cáo mục 1.7.2: feature branch + Pull Request, ít nh�
 
 ### Kết quả task 1 và A05.1
 Đã triển khai và tự kiểm thử; bằng chứng ở [I1_RESULTS.md](docs/testing/I1_RESULTS.md). Các checkbox hoàn thành là trạng thái triển khai/tự kiểm tra, chưa thay review độc lập của nhóm. Luồng tạo/sửa/công bố và danh sách riêng của Organizer đã có API thật. Backend tìm/xem sự kiện đã có; FE Sinh viên, toàn bộ A06 và CP1 chưa được xác nhận hoàn tất.
+
+## Backend sau refactor I2
+
+Backend tổ chức theo tầng Controller → Service interface/implementation → Repository interface/JDBC implementation. Xem [backend/README.md](backend/README.md) để đọc tree, cơ chế transaction, luồng xử lý và lệnh chạy. Giữ nguyên API/database; refactor chưa bổ sung chức năng đăng ký sự kiện của I2.

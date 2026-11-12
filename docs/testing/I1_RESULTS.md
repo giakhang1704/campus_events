@@ -109,3 +109,7 @@ Browser test dùng localhost và dữ liệu seed trong .env; tạo tài khoản
 - Lockfile optional dependency trên Linux đã đồng bộ bằng npm trong container.
 - Client lấy CSRF mới trước thao tác ghi, tránh token cũ sau thay đổi trạng thái đăng nhập.
 - Select khoa/đơn vị/vai trò có aria-label rõ để thao tác bằng công cụ hỗ trợ.
+
+## Refactor backend — 12/11/2026
+
+Đã chuyển backend sang kiến trúc phân tầng có interface. Unit test, Docker build, HTTP/PostgreSQL regression và local smoke PASS; xem [BACKEND_REFACTOR_RESULTS.md](BACKEND_REFACTOR_RESULTS.md). Không bổ sung nghiệp vụ Increment 2 hoặc thay nghiệm thu I1/CP1.

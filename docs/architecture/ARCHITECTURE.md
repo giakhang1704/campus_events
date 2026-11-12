@@ -35,8 +35,16 @@ Single-instance không có high availability; cần test tải và bộ nhớ Ja
 ## Trạng thái bản chạy local
 Đã có Dockerfile frontend/backend và compose.yaml; đã có API tài khoản và nghiệp vụ Organizer tạo/sửa/công bố sự kiện. Angular nhúng mockup public/mockup để xem trước, không coi đó là Angular implementation của toàn bộ chức năng. Xem LOCAL_RUN.md và SMOKE_TEST.md trước khi chạy.
 
-## Module sự kiện Organizer
+## Backend phân tầng — cập nhật 12/11/2026
 
-`events/EventController` nhận request/validation và trả response; `EventService` điều phối quyền sở hữu, version và transaction; `EventRules` chứa quy tắc thuần để unit test; `EventRepository` chứa toàn bộ SQL và đọc eligibility theo lô. `events/model` là snapshot bất biến, không phụ thuộc DTO HTTP; `events/dto` định nghĩa payload và pagination. Module events gọi dịch vụ công khai `AuthService.requireActiveOrganizer` để recheck tài khoản/phiên khi ghi, không viết trực tiếp dữ liệu users.
+Backend hiện là **layered monolith**, tổ chức package theo tầng: `controller`, `service` + `impl`, `repository` + `jdbc`, `dto`, `model`, `mapper`, `validation`, `security`, `exception`, `config`. Các mô tả modular monolith/package theo chức năng ở phần lịch sử trước đây không còn mô tả cách nhóm package hiện hành.
 
-Frontend `features/events` tách model/thời gian, `EventApi`, `OrganizerEventsComponent` và `EventEditorComponent`; template ở file HTML riêng. Không viết SQL hoặc nghiệp vụ phân quyền trong component. Dữ liệu được tải từ API qua lớp core hiện có, không dùng localStorage cho sự kiện thật. Backend tìm/xem sự kiện PUBLISHED đã có trong module events: controller nhận q/page/size/id, service giữ snapshot read-only, repository lọc trạng thái ngay trong SQL và đọc eligibility theo lô. FE Sinh viên và tích hợp đăng ký/email là các phần tiếp theo, không đánh dấu toàn bộ A05.2/I1 đã xong.
+`Controller → IService → ServiceImpl → IRepository → JdbcRepository → PostgreSQL`. Service/Repository có interface; không lộ JdbcTemplate lên tầng nghiệp vụ. Các repository dùng chung transaction do Service mở. Interface là hợp đồng Java, không phải microservice. Toàn bộ backend vẫn deploy thành một JAR/Docker image.
+
+SQL tài khoản/phiên/audit/seed/health đã chuyển vào Repository. Controller không truy cập Repository trực tiếp. Request/response tách khỏi Controller và model nội bộ; AccountMapper chỉ đưa trường công khai vào JSON/audit, EventMapper giữ nguyên payload sự kiện. Security filter/cookie/token tách khỏi cấu hình và Controller.
+
+Công bố sự kiện: EventController → IEventService → EventServiceImpl; gọi IAuthService để recheck tài khoản/phiên và giữ khóa user trong cùng transaction, kiểm tra ownership/version bằng EventRules rồi ghi qua IEventRepository. Kiểm tra khoa/đơn vị qua ICatalogRepository. Đọc danh sách PUBLISHED tiếp tục dùng REPEATABLE_READ để fields và eligibility cùng snapshot; eligibility được đọc theo lô.
+
+Khóa tài khoản: AccountServiceImpl giữ advisory lock trước khi kiểm tra actor/target, bảo vệ Admin cuối cùng, cập nhật trạng thái/auth_version, thu hồi phiên và ghi audit nguyên tử. Preview vẫn không ghi; khi xác nhận sẽ kiểm tra lại điều kiện và version.
+
+Chi tiết cây thư mục, trách nhiệm và lệnh chạy: [backend/README.md](../../backend/README.md). Không thay endpoint, JSON, schema hoặc dữ liệu; không triển khai I2 registration/QR/cloud trong refactor này.
