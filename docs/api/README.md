@@ -1,3 +1,4 @@
 # Đặc tả API
 
-Chờ đặc tả API đã thống nhất. Ghi endpoint, method, request/response, xác thực và lỗi; không suy ra hợp đồng API chỉ từ mockup.
+- [I1 — tài khoản, phân quyền, sự kiện](I1.md).
+- [I2 — đăng ký, FIFO và email](I2.md).

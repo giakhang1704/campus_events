@@ -126,11 +126,6 @@ class EventRulesTest {
                         c.departmentIds(),
                         c.studyYears(),
                         1);
-        assertEquals(
-                "WAITLIST_PROCESSING_REQUIRED",
-                assertThrows(
-                                ApiException.class,
-                                () -> rules.validateParticipantImpact(before, increased, 10, 1))
-                        .code);
+        assertDoesNotThrow(() -> rules.validateParticipantImpact(before, increased, 10, 1));
     }
 }

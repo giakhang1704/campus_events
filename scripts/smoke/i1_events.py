@@ -91,9 +91,10 @@ def verify_events(admin, organizer, student, client_type, sql, password):
     assert sql(f"SELECT version FROM campus.events WHERE id={event_id};") == '4'
     student_id = student.call('GET', '/auth/me')['id']
     sql(f"INSERT INTO campus.registrations(event_id,student_id,status,registered_at) VALUES({event_id},{student_id},'REGISTERED',clock_timestamp());")
-    blocked = organizer.call('PATCH', f'/events/{event_id}', dict(edited, version=4, location='Changed room'), expected=409)
-    assert blocked['code'] == 'PARTICIPANT_NOTIFICATION_REQUIRED'
-    blocked = organizer.call('PATCH', f'/events/{event_id}', dict(edited, version=4, departmentIds=[departments[0]['id']]), expected=409)
+    saved = organizer.call('PATCH', f'/events/{event_id}', dict(edited, version=4, location='Changed room'))
+    assert saved['version'] == 5
+    assert sql(f"SELECT count(*) FROM campus.email_outbox WHERE event_id={event_id} AND kind='EVENT_CHANGED';") == '1'
+    blocked = organizer.call('PATCH', f'/events/{event_id}', dict(edited, version=5, departmentIds=[departments[0]['id']]), expected=409)
     assert blocked['code'] == 'REGISTERED_ELIGIBILITY_CHANGE'
     assert organizer.call('GET', f'/organizer/events/{event_id}') == saved
     verify_published_event_reads(admin, organizer, student, client_type, sql, content)

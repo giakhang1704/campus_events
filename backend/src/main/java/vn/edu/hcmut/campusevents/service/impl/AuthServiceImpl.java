@@ -141,4 +141,20 @@ public class AuthServiceImpl implements IAuthService {
                     "Cần tài khoản Người tổ chức đã đổi mật khẩu để quản lý sự kiện.");
         }
     }
+
+    @Override
+    @Transactional
+    public User requireActiveStudent(AuthPrincipal principal) {
+        users.lock(principal.userId());
+        User user = users.find(principal.userId());
+        if (!user.status().equals("ACTIVE")
+                || !sessions.hasActiveSession(user.id(), principal.sessionId()))
+            throw new ApiException(
+                    401, "UNAUTHENTICATED", "Phiên đã hết hiệu lực. Vui lòng đăng nhập lại.");
+        if (!user.role().equals("STUDENT")
+                || user.mustChangePassword()
+                || user.studentCode() == null)
+            throw new ApiException(403, "FORBIDDEN", "Cần tài khoản sinh viên hợp lệ.");
+        return user;
+    }
 }

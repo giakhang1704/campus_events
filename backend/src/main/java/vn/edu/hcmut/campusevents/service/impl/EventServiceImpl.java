@@ -14,7 +14,9 @@ import vn.edu.hcmut.campusevents.repository.ICatalogRepository;
 import vn.edu.hcmut.campusevents.repository.IEventRepository;
 import vn.edu.hcmut.campusevents.security.AuthPrincipal;
 import vn.edu.hcmut.campusevents.service.IAuthService;
+import vn.edu.hcmut.campusevents.service.IEmailQueueService;
 import vn.edu.hcmut.campusevents.service.IEventService;
+import vn.edu.hcmut.campusevents.service.IWaitlistService;
 import vn.edu.hcmut.campusevents.validation.EventRules;
 
 import java.util.Map;
@@ -25,16 +27,22 @@ public class EventServiceImpl implements IEventService {
     private final EventRules rules;
     private final ICatalogRepository catalogs;
     private final IAuthService auth;
+    private final IWaitlistService waitlist;
+    private final IEmailQueueService email;
 
     public EventServiceImpl(
             IEventRepository events,
             EventRules rules,
             IAuthService auth,
-            ICatalogRepository catalogs) {
+            ICatalogRepository catalogs,
+            IWaitlistService waitlist,
+            IEmailQueueService email) {
         this.events = events;
         this.rules = rules;
         this.auth = auth;
         this.catalogs = catalogs;
+        this.waitlist = waitlist;
+        this.email = email;
     }
 
     // A single snapshot keeps event fields and the two eligibility collections consistent.
@@ -84,8 +92,8 @@ public class EventServiceImpl implements IEventService {
 
     @Transactional
     public Event update(AuthPrincipal actor, long id, EventContent content) {
-        auth.requireActiveOrganizer(actor);
         Event before = owned(actor, id, true);
+        auth.requireActiveOrganizer(actor);
         rules.requireVersion(before, content.version());
         validate(content);
         rules.validateParticipantImpact(
@@ -94,13 +102,16 @@ public class EventServiceImpl implements IEventService {
                 events.countParticipants(id, "REGISTERED"),
                 events.countParticipants(id, "WAITLISTED"));
         if (!events.update(before, content)) throw versionConflict();
-        return events.find(id, false).orElseThrow();
+        Event after = events.find(id, false).orElseThrow();
+        if (rules.importantChange(before, content)) email.eventChanged(before, after);
+        waitlist.promote(after);
+        return after;
     }
 
     @Transactional
     public Event publish(AuthPrincipal actor, long id, int version) {
-        auth.requireActiveOrganizer(actor);
         Event before = owned(actor, id, true);
+        auth.requireActiveOrganizer(actor);
         rules.requireVersion(before, version);
         if (before.status() == EventStatus.PUBLISHED) return before;
         validate(EventContent.from(before));

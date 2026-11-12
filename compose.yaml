@@ -24,6 +24,10 @@ services:
       SERVER_ADDRESS: 0.0.0.0
       AUTH_COOKIE_SECURE: ${AUTH_COOKIE_SECURE:-false}
       TZ: Asia/Ho_Chi_Minh
+      MAIL_ENABLED: ${MAIL_ENABLED:-false}
+      BREVO_API_KEY: ${BREVO_API_KEY:-}
+      BREVO_SENDER_EMAIL: ${BREVO_SENDER_EMAIL:-}
+      BREVO_SENDER_NAME: ${BREVO_SENDER_NAME:-BKevent}
       DB_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-campus_events_dev}?currentSchema=campus
       DB_USER: ${POSTGRES_USER:-campus_app}
       DB_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}

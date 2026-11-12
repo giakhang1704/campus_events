@@ -60,13 +60,6 @@ public class EventRules {
                     "CAPACITY_BELOW_REGISTERED",
                     "Sức chứa không được thấp hơn số đã đăng ký.");
         }
-        if (next.capacity() > before.capacity() && waiting > 0) {
-            throw new ApiException(
-                    409,
-                    "WAITLIST_PROCESSING_REQUIRED",
-                    "Chưa thể tăng sức chứa khi còn người chờ. Vui lòng xử lý danh sách chờ"
-                            + " trước.");
-        }
         if (registered == 0) return;
         boolean eligibilityChanged =
                 !new HashSet<>(before.departmentIds()).equals(new HashSet<>(next.departmentIds()))
@@ -79,18 +72,13 @@ public class EventRules {
                     "Chưa thể đổi giới hạn đối tượng khi đã có người đăng ký; cần đối chiếu đăng ký"
                             + " hiện có.");
         }
-        boolean importantChange =
-                !before.location().equals(next.location().trim())
-                        || !before.registrationOpensAt().isEqual(next.registrationOpensAt())
-                        || !before.registrationClosesAt().isEqual(next.registrationClosesAt())
-                        || !before.startsAt().isEqual(next.startsAt())
-                        || !before.endsAt().isEqual(next.endsAt());
-        if (importantChange) {
-            throw new ApiException(
-                    409,
-                    "PARTICIPANT_NOTIFICATION_REQUIRED",
-                    "Đổi thời gian hoặc địa điểm cần thông báo cho người đã đăng ký. Chức năng này"
-                            + " chưa sẵn sàng.");
-        }
+    }
+
+    public boolean importantChange(Event before, EventContent next) {
+        return !before.location().equals(next.location().trim())
+                || !before.registrationOpensAt().isEqual(next.registrationOpensAt())
+                || !before.registrationClosesAt().isEqual(next.registrationClosesAt())
+                || !before.startsAt().isEqual(next.startsAt())
+                || !before.endsAt().isEqual(next.endsAt());
     }
 }

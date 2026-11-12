@@ -10,9 +10,9 @@ import urllib.request
 import uuid
 from i1_events import verify_events
 
-BASE = 'http://127.0.0.1:18080/api'
+BASE = os.environ.get('I1_API_BASE', 'http://127.0.0.1:18080/api')
 PASSWORD = os.environ['TEST_ACCOUNT_PASSWORD']
-COMPOSE = ['docker', 'compose', '-p', 'campus-events-i1-test', '-f', 'compose.i1-test.yaml']
+COMPOSE = ['docker', 'compose', '-p', os.environ.get('I1_TEST_PROJECT','campus-events-i1-test'), '-f', os.environ.get('I1_TEST_COMPOSE','compose.i1-test.yaml')]
 
 
 class Client:

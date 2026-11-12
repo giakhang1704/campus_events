@@ -39,7 +39,7 @@ export const WINDOW_BADGE: Record<RegistrationWindow, { label: string; css: stri
 
 /**
  * A student may join when their department AND their study year are allowed.
- * An empty list means "no restriction" for that condition (docs/decisions/SCOPE.md).
+ * An empty list means "no restriction" for that condition.
  * The server checks the same rule; this only decides what the screen shows.
  */
 export function isEligible(event: CampusEvent, user: User | null): boolean {

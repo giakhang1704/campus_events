@@ -77,6 +77,12 @@ public class SecurityConfig {
                                         .denyAll()
                                         .requestMatchers("/api/admin/**")
                                         .hasRole("ADMIN")
+                                        .requestMatchers(
+                                                "/api/me/registrations",
+                                                "/api/events/*/registration",
+                                                "/api/events/*/registrations",
+                                                "/api/events/*/registration/cancel")
+                                        .hasRole("STUDENT")
                                         .requestMatchers("/api/organizer/**")
                                         .hasRole("ORGANIZER")
                                         .requestMatchers(

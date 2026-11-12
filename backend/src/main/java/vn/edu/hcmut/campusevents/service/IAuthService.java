@@ -20,5 +20,7 @@ public interface IAuthService {
 
     void password(AuthPrincipal principal, String oldPassword, String newPassword);
 
+    User requireActiveStudent(AuthPrincipal principal);
+
     void requireActiveOrganizer(AuthPrincipal principal);
 }

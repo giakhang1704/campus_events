@@ -44,6 +44,8 @@ SQL regression tạo fixtures rồi ROLLBACK. `down` giữ named volume. Không 
 
 Angular đã gọi API thật cho tài khoản/phân quyền, Organizer tạo/sửa/công bố sự kiện và Sinh viên tìm/xem sự kiện; dữ liệu lưu PostgreSQL. Đăng ký tham gia, QR và báo cáo chưa tích hợp, các màn hình tương ứng hiển thị đang phát triển. Mockup localStorage chỉ để tham khảo qua server riêng hoặc dev server. Các khối đã thay trong mockup được giữ bằng comment, bản gốc nằm ở docs/references.
 
+Backend I2 đã có API đăng ký/hủy, danh sách chờ FIFO và email Brevo; phần giao diện đăng ký vẫn chờ nối API. Cấu hình gửi thật, truy vấn outbox và bộ test riêng xem [API I2](../api/I2.md). `MAIL_ENABLED=false` mặc định vẫn lưu outbox nhưng không gọi nhà cung cấp. Không cần sửa schema hoặc xóa volume để cập nhật backend I2.
+
 ## Phát triển với công cụ local
 
 Cần Node 24, JDK tương thích target 21, Maven 3.9+. Không chạy FE/BE local trùng cổng FE/BE Docker.

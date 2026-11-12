@@ -48,3 +48,9 @@ Công bố sự kiện: EventController → IEventService → EventServiceImpl; 
 Khóa tài khoản: AccountServiceImpl giữ advisory lock trước khi kiểm tra actor/target, bảo vệ Admin cuối cùng, cập nhật trạng thái/auth_version, thu hồi phiên và ghi audit nguyên tử. Preview vẫn không ghi; khi xác nhận sẽ kiểm tra lại điều kiện và version.
 
 Chi tiết cây thư mục, trách nhiệm và lệnh chạy: [backend/README.md](../../backend/README.md). Không thay endpoint, JSON, schema hoặc dữ liệu; không triển khai I2 registration/QR/cloud trong refactor này.
+
+## Backend I2 — 12/11/2026
+
+Trên nền refactor, thêm RegistrationController → IRegistrationService → RegistrationServiceImpl → IRegistrationRepository/JdbcRegistrationRepository. Service giữ event lock xuyên suốt đăng ký/hủy/FIFO, thứ tự event → actor user → registrations; cập nhật sự kiện dùng cùng thứ tự để tránh đảo khóa. RegistrationRules giữ điều kiện và biên thời gian. IWaitlistService được dùng chung bởi đăng ký, hủy và cập nhật sức chứa, không có endpoint đôn chờ tùy ý.
+
+IEmailQueueService ghi email_outbox trong transaction hiện hành. EmailDispatcher → IEmailOutboxService thực hiện claim/hoàn tất trong transaction ngắn; IEmailSender/BrevoEmailSender gọi HTTP bên ngoài transaction. Dedupe/lease/retry lưu PostgreSQL, không phụ thuộc RAM của một instance. Worker chạy cùng backend và chỉ hoạt động khi backend chạy. Chưa có worker độc lập hoặc cấu hình cloud được kiểm chứng; không coi cấu trúc này là bằng chứng đã deploy. Xem [API I2](../api/I2.md).

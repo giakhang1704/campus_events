@@ -12,6 +12,8 @@ import vn.edu.hcmut.campusevents.repository.ICatalogRepository;
 import vn.edu.hcmut.campusevents.repository.IEventRepository;
 import vn.edu.hcmut.campusevents.security.AuthPrincipal;
 import vn.edu.hcmut.campusevents.service.IAuthService;
+import vn.edu.hcmut.campusevents.service.IEmailQueueService;
+import vn.edu.hcmut.campusevents.service.IWaitlistService;
 import vn.edu.hcmut.campusevents.support.EventFixtures;
 import vn.edu.hcmut.campusevents.validation.EventRules;
 
@@ -26,7 +28,14 @@ class EventServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new EventServiceImpl(repository, new EventRules(), auth, catalogs);
+        service =
+                new EventServiceImpl(
+                        repository,
+                        new EventRules(),
+                        auth,
+                        catalogs,
+                        mock(IWaitlistService.class),
+                        mock(IEmailQueueService.class));
     }
 
     @Test

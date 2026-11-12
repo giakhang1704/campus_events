@@ -13,7 +13,6 @@
 
 ## Quy tắc còn cần xác nhận
 - Thời gian được mở QR, có cho mở trước starts_at không.
-- Đôn chờ sau registration_closes_at; người bị bỏ qua hợp lệ trở lại; tác vụ xử lý chỗ trống tồn dư.
 
 - Một organizer/sự kiện là mô hình hiện tại, chưa phải yêu cầu được xác nhận trong lượt này.
 
@@ -21,7 +20,13 @@
 Bản sao nguyên trạng nằm tại docs/references/mockup-original; đây là nguồn tham khảo, không phải frontend Angular đang chạy. Không chỉnh bản gốc. Khi chuyển giao diện sang Angular, giữ các khối check-out, chọn chế độ hai lượt, category và kết thúc thủ công trong comment có nhãn DEFERRED và lý do. Không đưa các khối đó vào UI hoạt động. Đã có bản mockup làm việc đồng bộ trong frontend/public/mockup; các khối cũ được giữ trong comment/tạm vô hiệu hóa. Chưa chuyển nghiệp vụ sang Angular/API.
 
 ## Chốt mô hình đăng ký
-Một dòng registrations hiện hành cho mỗi cặp event/student, UNIQUE(event_id,student_id), tái sử dụng sau hủy; lưu mọi chuyển trạng thái trong registration_history. Nếu đăng ký lại khi có attendance cũ, phải lưu snapshot và reset kết quả trong cùng transaction, không dùng PRESENT cũ. Đã có trigger reset SYSTEM + snapshot attendance_history và REREGISTER history trong cùng transaction khi tái sử dụng dòng. Backend service nghiệp vụ chưa triển khai. Việc chỉ mở QR từ starts_at vẫn là đề xuất, chưa coi người dùng đã chốt mốc thời gian này.
+Một dòng registrations hiện hành cho mỗi cặp event/student, UNIQUE(event_id,student_id), tái sử dụng sau hủy; lưu mọi chuyển trạng thái trong registration_history. Nếu đăng ký lại khi có attendance cũ, phải lưu snapshot và reset kết quả trong cùng transaction, không dùng PRESENT cũ. Đã có trigger reset SYSTEM + snapshot attendance_history và REREGISTER history trong cùng transaction khi tái sử dụng dòng. Backend I2 đã gọi quy trình này. Việc chỉ mở QR từ starts_at vẫn là đề xuất, chưa coi người dùng đã chốt mốc thời gian này.
+
+## FIFO và email I2 — 12/11/2026
+
+Người dùng chốt đôn người chờ hợp lệ, giữ luồng đơn giản, không bổ sung quy trình riêng Admin khóa/mở cho FIFO. Cho đôn sau đóng đăng ký đến trước starts_at khi có chỗ. Phương án triển khai: bỏ qua người không hợp lệ, ghi SKIP, giữ dòng WAITLISTED/timestamp; lần đăng ký/hủy/sửa tiếp theo kiểm tra lại. Chưa có tác vụ quét riêng khi hồ sơ đổi; không thêm cơ chế mất/khôi phục ưu tiên theo trạng thái Admin.
+
+Email I2 dùng Brevo HTTP API, ba mốc xác nhận có chỗ, đôn từ hàng chờ và thay đổi địa điểm/thời gian. Không có reminder. Ghi outbox cùng transaction, gửi sau commit; gửi thật opt-in qua biến môi trường. Người dùng đã xác nhận nhận được một thư thử thật; kiểm thử tự động I2 chỉ gọi mail giả lập. Xem [I2.md](../api/I2.md) về giới hạn gửi và trạng thái SENT.
 
 ## Vai trò cố định — quyết định ngày 04/11/2026
 

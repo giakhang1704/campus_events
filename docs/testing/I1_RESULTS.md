@@ -1,5 +1,9 @@
 # Kết quả kiểm thử Increment 1
 
+## Regression sau backend I2 — 12/11/2026
+
+Đã chạy lại HTTP/PostgreSQL và browser I1 bằng `scripts/test-i1.ps1 -PlaywrightModule`: PASS. Bản hiện hành cho phép đổi thời gian/địa điểm khi có đăng ký và tạo outbox EVENT_CHANGED, thay phần chặn tạm được mô tả trong lịch sử bên dưới. Kết quả đầy đủ: [I2_RESULTS.md](I2_RESULTS.md). Chưa thay review độc lập hoặc đóng CP1/CP2.
+
 ## Mới nhất — Backend tìm/xem sự kiện UC-04–05 ngày 04/11/2026
 
 Đã triển khai GET /api/events (q/page/size) và GET /api/events/{id}. Chỉ đọc PUBLISHED, dùng chung cho tài khoản đã đăng nhập; không có ngoại lệ xem nháp cho Admin hoặc chủ sở hữu tại hai route này. Organizer xem nháp qua route quản lý riêng. Dữ liệu truy vấn PostgreSQL theo lớp Controller–Service–Repository, không thay schema.

@@ -17,9 +17,9 @@ shared/                  icon, page-header, coming-soon
 
 ## Trạng thái I1
 - Đã nối API thật: đăng nhập/đăng ký/đăng xuất/đổi mật khẩu, quản lý tài khoản, sự kiện của người tổ chức, xem sự kiện đã công bố.
-- Nút "Đăng ký tham gia" ở chi tiết sự kiện đang tắt (`TODO(API)`) vì backend I1 chưa có API đăng ký.
+- Nút "Đăng ký tham gia" ở chi tiết sự kiện đang tắt (`TODO(API)`); backend I2 đã có API nhưng frontend chưa nối.
 - Các route `my-events`, `scan`, `participants`, `attendance`, `reports` hiện trang "Đang xây dựng"; `data.mockupFn` ghi hàm nguồn trong `public/mockup/app.js`.
-- Giao diện dùng CSS của mockup (`src/styles.css`, phần đầu) + lớp Angular ở cuối file. Phần ngoài phạm vi (category, check-out, kết thúc thủ công) để trong comment `DEFERRED` theo docs/decisions/SCOPE.md.
+- Giao diện dùng CSS của mockup (`src/styles.css`, phần đầu) + lớp Angular ở cuối file. Phần ngoài phạm vi (category, check-out, kết thúc thủ công) giữ trong comment `DEFERRED`, không xóa.
 
 ## Thêm một màn hình
 1. Tạo `features/<module>/<ten>.page.ts` (standalone, signals, `ChangeDetectionStrategy.OnPush`).
@@ -33,4 +33,4 @@ shared/                  icon, page-header, coming-soon
 
 Framework/compiler Angular 21.2.26, CLI/build 21.2.29, TypeScript 5.9.3, RxJS 7.8.2; Node 24. Lockfile được tạo mới trên Linux rồi cài sạch bằng npm ci, không dùng --force/--legacy-peer-deps. Sau khi pull đổi lockfile, chạy npm.cmd ci.
 
-`npm audit --omit=dev` hiện 0 cảnh báo; audit đầy đủ còn 16 moderate ở toolchain CLI (glob/minimatch), không còn high/critical. Đây là kiểm tra dependency npm tại thời điểm rà soát, không phải kết luận toàn hệ thống không còn lỗ hổng. Chi tiết: [REPOSITORY_REVIEW.md](../docs/testing/REPOSITORY_REVIEW.md).
+`npm audit --omit=dev` hiện 0 cảnh báo; audit đầy đủ còn 16 moderate ở toolchain CLI (glob/minimatch), không còn high/critical. Đây là kiểm tra dependency npm tại thời điểm rà soát, không phải kết luận toàn hệ thống không còn lỗ hổng.
