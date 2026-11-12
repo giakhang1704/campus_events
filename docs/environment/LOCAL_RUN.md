@@ -1,16 +1,16 @@
 # Chạy localhost
 
-Angular 21.0.0, Spring Boot 3.5.7, Java 21, PostgreSQL 17, Node 24, Maven 3.9.11. Đây là phiên bản khởi tạo mới, không thay phiên bản ứng dụng có sẵn.
+Angular 21.2.26 (CLI/build 21.2.29), Spring Boot 3.5.7, Java 21, PostgreSQL 17, Node 24, Maven 3.9.11. Phiên bản frontend được cập nhật trong đợt rà soát 12/11/2026.
 
 ## Xem mockup ngay, không cần Docker hoặc backend
 
 Nếu đã có Python, từ project root:
 
 ```powershell
-python -m http.server 4201 --bind 127.0.0.1 --directory .\frontend\public\mockup
+python -m http.server 4201 --bind 127.0.0.1 --directory .\frontend\public
 ```
 
-Mở http://localhost:4201. Dừng bằng Ctrl+C trong terminal. Đây chỉ là mockup localStorage, không kiểm tra kết nối DB. Có thể mở trực tiếp frontend/public/mockup/index.html bằng trình duyệt nếu không có Python.
+Mở http://localhost:4201/mockup/index.html. Phục vụ từ `frontend/public` để logo `/assets/hcmut.png` tải đúng. Dừng bằng Ctrl+C trong terminal. Đây chỉ là mockup localStorage, tách dữ liệu PostgreSQL. Docker mặc định build production nên không chứa mockup; `/mockup/` trả 404. Khi dùng `npm.cmd start` (development), mockup có tại http://localhost:4200/mockup/index.html.
 
 ## Docker Desktop — chạy toàn bộ
 
@@ -24,7 +24,7 @@ docker compose ps
 docker compose logs --tail 100 backend
 ```
 
-Mở http://localhost:4200, bấm **Kiểm tra kết nối**. API trực tiếp: http://localhost:8080/api/health. Đợi backend khởi động rồi thử lại. Lần đầu cần tải image và dependency.
+Mở http://localhost:4200/login. Admin đăng nhập rồi vào **Trạng thái hệ thống** để kiểm tra kết nối; API trực tiếp: http://localhost:8080/api/health. Compose chờ backend health check đạt trước khi mở frontend; smoke script đợi tối đa 60 giây nếu app còn khởi động. Lần đầu cần tải image và dependency.
 
 `.env` được Compose đọc và truyền vào container, Spring Boot không tự đọc file này. Không commit secret. Cổng chỉ bind 127.0.0.1; đây là cấu hình local.
 
@@ -42,7 +42,7 @@ SQL regression tạo fixtures rồi ROLLBACK. `down` giữ named volume. Không 
 
 ## Những gì bạn nhìn thấy
 
-Angular gọi API health thật, backend truy vấn PostgreSQL thật. Mockup bên dưới dùng localStorage; đăng nhập, QR, đăng ký và email vẫn mô phỏng, chưa có API nghiệp vụ. Các khối đã thay trong mockup được giữ bằng comment, bản gốc nằm ở docs/references.
+Angular đã gọi API thật cho tài khoản/phân quyền, Organizer tạo/sửa/công bố sự kiện và Sinh viên tìm/xem sự kiện; dữ liệu lưu PostgreSQL. Đăng ký tham gia, QR và báo cáo chưa tích hợp, các màn hình tương ứng hiển thị đang phát triển. Mockup localStorage chỉ để tham khảo qua server riêng hoặc dev server. Các khối đã thay trong mockup được giữ bằng comment, bản gốc nằm ở docs/references.
 
 ## Phát triển với công cụ local
 
@@ -58,7 +58,7 @@ $env:DB_URL='jdbc:postgresql://localhost:5432/campus_events_dev?currentSchema=ca
 $env:DB_USER='campus_app'
 # Đặt biến DB_PASSWORD trong terminal bằng mật khẩu local, không commit.
 Set-Location .\backend
-mvn spring-boot:run
+mvn clean spring-boot:run
 ```
 
 Terminal frontend từ root:
@@ -83,7 +83,7 @@ Nếu cổng bận, đổi FRONTEND_PORT/BACKEND_PORT/POSTGRES_PORT trong .env. 
 
 - Docker báo pipe dockerDesktopLinuxEngine không tồn tại: engine chưa chạy; mở Docker Desktop, đợi rồi dùng docker info.
 - Lịch sử: Docker Desktop từng crash ở initializing Inference manager/dockerInference; đã phục hồi socket runtime, stack Compose đã chạy và smoke test đạt. Xem SMOKE_TEST.md.
-- npm ERESOLVE do compiler-cli tự chọn patch khác compiler: đã pin cùng 21.0.0; dùng lockfile/npm ci, không dùng --force.
+- npm ERESOLVE do compiler-cli tự chọn patch khác compiler: đã pin các gói framework/compiler cùng 21.2.26 và CLI/build 21.2.29; dùng lockfile/npm ci, không dùng --force.
 - API 503: xem logs backend/db và kiểm tra schema; không xóa volume khi chưa xác định dữ liệu.
 
 ## Lịch sử lỗi runtime Java trên host (đã có cách xử lý)
@@ -100,3 +100,7 @@ Docker Compose đã chạy đủ frontend/backend/PostgreSQL; smoke test đạt.
 Múi giờ thống nhất: Asia/Ho_Chi_Minh (giờ Việt Nam, +07:00). Backend đặt trước khi tạo kết nối JDBC, PostgreSQL dùng timezone và log_timezone theo Compose. Giữ timestamptz để bảo toàn thời điểm. Không dùng alias Asia/Saigon vì image PostgreSQL hiện tại từ chối alias này.
 
 Backend local Windows: dùng ./scripts/start-backend.ps1 để tự nạp .env và đặt thư mục socket tạm; nếu chạy mvn trực tiếp có thể gặp lại lỗi loopback. Không chạy dev server trùng cổng với container: docker compose stop frontend backend trước khi chạy FE/BE local, db giữ nguyên.
+
+## Đồng bộ dependency khi đổi nhánh
+
+Sau khi pull/switch nhánh có thay đổi `frontend/package-lock.json`, chạy `npm.cmd ci` trong `frontend/` trước khi build/dev server. `node_modules` không được Git quản lý; thiếu `@angular/router` trong máy local dù package.json đã khai báo là lỗi dependency local chưa đồng bộ, không nên xóa import hoặc đổi source để né lỗi. Xem kết quả rà soát ở docs/testing/REPOSITORY_REVIEW.md.

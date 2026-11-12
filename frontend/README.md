@@ -28,3 +28,9 @@ shared/                  icon, page-header, coming-soon
 
 ## Kiểm thử giao diện
 `node scripts/smoke/i1_ui.cjs <đường dẫn module playwright>` với stack đang chạy và tài khoản seed (scripts/seed-local.ps1). Script dùng Edge (`channel: msedge`).
+
+## Phiên bản dependency — rà soát 12/11/2026
+
+Framework/compiler Angular 21.2.26, CLI/build 21.2.29, TypeScript 5.9.3, RxJS 7.8.2; Node 24. Lockfile được tạo mới trên Linux rồi cài sạch bằng npm ci, không dùng --force/--legacy-peer-deps. Sau khi pull đổi lockfile, chạy npm.cmd ci.
+
+`npm audit --omit=dev` hiện 0 cảnh báo; audit đầy đủ còn 16 moderate ở toolchain CLI (glob/minimatch), không còn high/critical. Đây là kiểm tra dependency npm tại thời điểm rà soát, không phải kết luận toàn hệ thống không còn lỗ hổng. Chi tiết: [REPOSITORY_REVIEW.md](../docs/testing/REPOSITORY_REVIEW.md).

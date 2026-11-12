@@ -1,6 +1,6 @@
-# Campus Events — môi trường local
+# BKevent — môi trường local
 
-Bộ khung chạy được theo thiết kế: Angular 21.0.0, Spring Boot 3.5.7 (Java 21), PostgreSQL 17, Docker Compose. Đây là các phiên bản khởi tạo mới; không thay phiên bản ứng dụng cũ.
+Bộ khung chạy được theo thiết kế: Angular 21.2.26 (CLI/build 21.2.29), Spring Boot 3.5.7 (Java 21), PostgreSQL 17, Docker Compose. Đã cập nhật dependency frontend trong đợt rà soát 12/11/2026.
 
 ## Lấy mã nguồn và chạy local
 
@@ -21,7 +21,7 @@ Mở http://localhost:4200. Các lệnh sau khi clone đều tính từ thư m�
 
 ## Phạm vi
 - Angular hiển thị kiểm tra kết nối môi trường qua API thật /api/health. Backend truy vấn PostgreSQL thật và xác nhận 15 bảng trong schema campus.
-- Tài khoản, đăng nhập/đăng xuất, quản trị người dùng và Organizer tạo/sửa/công bố sự kiện đã có màn hình Angular gọi API thật. Cookie HttpOnly + CSRF, phiên lưu PostgreSQL. Nút Xem mockup vẫn giữ bản localStorage cho phần chưa tích hợp; các chức năng trong khung chỉ mô phỏng; API Sinh viên tìm/xem đã có; màn Angular tương ứng chưa tích hợp.
+- Tài khoản, đăng nhập/đăng xuất, quản trị người dùng và Organizer tạo/sửa/công bố sự kiện đã có màn hình Angular gọi API thật. Cookie HttpOnly + CSRF, phiên lưu PostgreSQL. Sinh viên đã có màn Angular tìm/xem sự kiện gọi API thật. Mockup localStorage chỉ có trong dev server hoặc server tham khảo riêng, không chứa trong build production/Docker. Cách mở: [LOCAL_RUN.md](docs/environment/LOCAL_RUN.md).
 - Schema giữ một dòng đăng ký/student/event; hủy giữ attendance, đăng ký lại tự reset có snapshot audit trong cùng transaction.
 - Mockup làm việc có một lượt điểm danh, ends_at, giới hạn nhiều khoa/năm, sức chứa nguyên dương, bảo vệ Admin và CSV. Nguồn cũ giữ nguyên trong docs/references; mã thay thế được comment, không xóa.
 
@@ -135,3 +135,5 @@ Workflow Git theo báo cáo mục 1.7.2: feature branch + Pull Request, ít nh�
 ## Backend sau refactor I2
 
 Backend tổ chức theo tầng Controller → Service interface/implementation → Repository interface/JDBC implementation. Xem [backend/README.md](backend/README.md) để đọc tree, cơ chế transaction, luồng xử lý và lệnh chạy. Giữ nguyên API/database; refactor chưa bổ sung chức năng đăng ký sự kiện của I2.
+
+Rà soát tổng thể cấu trúc và các vấn đề còn lại: [REPOSITORY_REVIEW.md](docs/testing/REPOSITORY_REVIEW.md).

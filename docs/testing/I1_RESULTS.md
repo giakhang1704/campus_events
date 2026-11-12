@@ -113,3 +113,7 @@ Browser test dùng localhost và dữ liệu seed trong .env; tạo tài khoản
 ## Refactor backend — 12/11/2026
 
 Đã chuyển backend sang kiến trúc phân tầng có interface. Unit test, Docker build, HTTP/PostgreSQL regression và local smoke PASS; xem [BACKEND_REFACTOR_RESULTS.md](BACKEND_REFACTOR_RESULTS.md). Không bổ sung nghiệp vụ Increment 2 hoặc thay nghiệm thu I1/CP1.
+
+## Rà soát repo và cập nhật dependency — 12/11/2026
+
+Đã cập nhật Angular framework/compiler 21.2.26 và CLI/build 21.2.29; build host/Docker và HTTP + Edge regression PASS. npm audit còn 16 moderate ở toolchain, không còn high/critical; npm audit --omit=dev trả 0. Đã sửa readiness Compose, mockup 404 và hướng dẫn local. Chi tiết và giới hạn kiểm chứng: [REPOSITORY_REVIEW.md](REPOSITORY_REVIEW.md).
