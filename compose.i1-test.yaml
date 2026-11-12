@@ -1,0 +1,35 @@
+name: campus-events-i1-test
+services:
+  db:
+    image: postgres:17
+    command: ["postgres", "-c", "timezone=Asia/Ho_Chi_Minh"]
+    environment:
+      POSTGRES_DB: campus_i1_test
+      POSTGRES_USER: campus_test
+      POSTGRES_PASSWORD: ${TEST_DB_PASSWORD:?Use scripts/test-i1.ps1}
+    tmpfs:
+      - /var/lib/postgresql/data
+    volumes:
+      - ./database/schema/01_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U campus_test -d campus_i1_test"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  backend:
+    build: ./backend
+    environment:
+      SERVER_ADDRESS: 0.0.0.0
+      DB_URL: jdbc:postgresql://db:5432/campus_i1_test?currentSchema=campus
+      DB_USER: campus_test
+      DB_PASSWORD: ${TEST_DB_PASSWORD:?Use scripts/test-i1.ps1}
+      CAMPUS_BOOTSTRAP_ENABLED: "true"
+      CAMPUS_BOOTSTRAP_EMAIL: admin.i1@example.test
+      CAMPUS_BOOTSTRAP_PASSWORD: ${TEST_ACCOUNT_PASSWORD:?Use scripts/test-i1.ps1}
+      CAMPUS_DEV_SEED_ENABLED: "true"
+      CAMPUS_DEV_SEED_PASSWORD: ${TEST_ACCOUNT_PASSWORD:?Use scripts/test-i1.ps1}
+    ports:
+      - "127.0.0.1:18080:8080"
+    depends_on:
+      db:
+        condition: service_healthy

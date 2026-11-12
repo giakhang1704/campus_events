@@ -26,6 +26,10 @@ yarn-error.log*
 /backend/.gradle/
 *.class
 
+# Python smoke-test bytecode
+__pycache__/
+*.py[cod]
+
 # Editor / OS / logs
 .idea/
 .vscode/

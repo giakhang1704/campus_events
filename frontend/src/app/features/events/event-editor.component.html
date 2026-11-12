@@ -1,0 +1,130 @@
+<section class="manage-hero editor-hero">
+  <div class="editor-hero-main">
+    <button type="button" class="hero-back" [disabled]="busy()" (click)="requestClose()"><app-icon name="back" /> Quay lại</button>
+    <h1>{{ event ? 'Chỉnh sửa sự kiện' : 'Tạo sự kiện nháp' }}</h1>
+    <p>{{ event ? (model.title.trim() || event.title) : 'Điền thông tin cơ bản để lưu bản nháp. Bạn có thể chỉnh sửa trước khi công bố.' }}</p>
+  </div>
+  @if (event) {
+    <span class="hero-pill" [class.live]="event.status === 'PUBLISHED'">
+      {{ event.status === 'DRAFT' ? 'Bản nháp' : 'Đã công bố' }} · Phiên bản {{ event.version }}
+    </span>
+  }
+</section>
+
+@if (message()) { <p class="notice" [class.warn]="!message().startsWith('Đã')" [class.success]="message().startsWith('Đã')" role="status">{{ message() }}</p> }
+@if (conflict()) {
+  <div class="notice warn" role="alert">
+    Sự kiện vừa được lưu ở nơi khác. Bấm tải bản mới sẽ thay nội dung đang nhập bằng dữ liệu mới nhất.
+    <button type="button" class="small" [disabled]="busy()" (click)="reload()">Tải bản mới</button>
+  </div>
+}
+
+<form #form="ngForm" class="editor-form" (ngSubmit)="save(form)">
+  <section class="panel form-card" aria-labelledby="card-basic">
+    <h2 id="card-basic">Thông tin cơ bản</h2>
+    <label>Tên sự kiện
+      <input aria-label="Tên sự kiện" name="title" [(ngModel)]="model.title" required maxlength="250"
+        placeholder="Ví dụ: Ngày hội việc làm 2026"
+        [attr.aria-invalid]="!!error('title', form)" aria-describedby="event-title-error">
+      @if (error('title', form)) { <small class="field-error" id="event-title-error">{{ error('title', form) }}</small> }
+    </label>
+    <label>Mô tả
+      <textarea aria-label="Mô tả" name="description" [(ngModel)]="model.description" required maxlength="20000" rows="5"
+        placeholder="Nội dung, khách mời, những gì người tham gia cần chuẩn bị…"
+        [attr.aria-invalid]="!!error('description', form)" aria-describedby="event-description-error"></textarea>
+      <span class="field-foot">
+        @if (error('description', form)) { <small class="field-error" id="event-description-error">{{ error('description', form) }}</small> }
+        <small class="char-count" aria-live="off">{{ model.description.length }} ký tự</small>
+      </span>
+    </label>
+    <div class="columns">
+      <label>Địa điểm
+        <input aria-label="Địa điểm" name="location" [(ngModel)]="model.location" required maxlength="250"
+          placeholder="Ví dụ: Hội trường A4"
+          [attr.aria-invalid]="!!error('location', form)" aria-describedby="event-location-error">
+        @if (error('location', form)) { <small class="field-error" id="event-location-error">{{ error('location', form) }}</small> }
+      </label>
+      <label>Đơn vị tổ chức
+        <select aria-label="Đơn vị tổ chức" name="organizationUnitId" [(ngModel)]="model.organizationUnitId" [attr.aria-invalid]="!!error('organizationUnitId', form)" aria-describedby="event-unit-error" required>
+          <option [ngValue]="null">Chọn đơn vị</option>
+          @for (unit of units; track unit.id) { <option [ngValue]="unit.id">{{ unit.name }}</option> }
+        </select>
+        @if (error('organizationUnitId', form)) { <small class="field-error" id="event-unit-error">{{ error('organizationUnitId', form) }}</small> }
+      </label>
+    </div>
+  </section>
+
+  <section class="panel form-card" aria-labelledby="card-time">
+    <h2 id="card-time">Thời gian</h2>
+    <p class="card-hint">Theo giờ Việt Nam (UTC+07:00). Đóng đăng ký phải trước hoặc đúng lúc sự kiện bắt đầu.</p>
+    <div class="columns">
+      @for (t of timeFields; track t.key) {
+        <fieldset class="datetime" [attr.aria-describedby]="t.errorId">
+          <legend>{{ t.label }}</legend>
+          <div class="datetime-row">
+            <app-date-field [label]="t.label + ' – ngày'" [value]="parts[t.key].date" [invalid]="!!error(t.key, form)"
+              [describedBy]="t.errorId" (valueChange)="setPart(t.key, 'date', $event)" />
+            <app-time-field [label]="t.label + ' – giờ'" [value]="parts[t.key].time" [invalid]="!!error(t.key, form)"
+              [describedBy]="t.errorId" (valueChange)="setPart(t.key, 'time', $event)" />
+          </div>
+          @if (error(t.key, form)) { <small class="field-error" [id]="t.errorId">{{ error(t.key, form) }}</small> }
+        </fieldset>
+      }
+    </div>
+  </section>
+
+  <section class="panel form-card" aria-labelledby="card-audience">
+    <h2 id="card-audience">Sức chứa và đối tượng tham gia</h2>
+    <div class="columns">
+      <label>Sức chứa
+        <input aria-label="Sức chứa" type="number" min="1" max="2147483647" step="1" name="capacity" [(ngModel)]="model.capacity" [attr.aria-invalid]="!!error('capacity', form)" aria-describedby="event-capacity-error" required>
+        @if (error('capacity', form)) { <small class="field-error" id="event-capacity-error">{{ error('capacity', form) }}</small> }
+      </label>
+      <fieldset class="choice-group" aria-describedby="event-years-hint event-years-error">
+        <legend>Năm học được tham gia</legend>
+        <div class="chips-check">
+          @for (y of yearOptions; track y) {
+            <label class="check-chip"><input type="checkbox" [name]="'year' + y" [checked]="years.has(y)" (change)="toggleYear(y, $any($event.target).checked)"> Năm {{ y }}</label>
+          }
+          <label class="check-chip"><input type="checkbox" name="yearFivePlus" [checked]="fivePlus" (change)="fivePlus = $any($event.target).checked"> Năm 5+</label>
+        </div>
+        <small id="event-years-hint">Không chọn năm nào nghĩa là mọi năm học đều tham gia được.</small>
+        @if (error('studyYears', form)) { <small class="field-error" id="event-years-error">{{ error('studyYears', form) }}</small> }
+      </fieldset>
+    </div>
+    <fieldset class="choice-group" aria-describedby="event-departments-hint event-departments-error">
+      <legend>Khoa được tham gia</legend>
+      <div class="check-list" role="group" aria-label="Danh sách khoa">
+        <label class="check-row all"><input #allBox type="checkbox" name="allDepartments" [checked]="allDepartments()" (change)="setAllDepartments(allBox)"> Tất cả các khoa</label>
+        @for (department of departments; track department.id) {
+          <label class="check-row"><input type="checkbox" [name]="'department' + department.id" [checked]="model.departmentIds.includes(department.id)"
+            (change)="toggleDepartment(department.id, $any($event.target).checked)"> {{ department.name }}</label>
+        }
+      </div>
+      <small id="event-departments-hint">Điều kiện khoa và năm học được áp dụng đồng thời.</small>
+      @if (error('departmentIds', form)) { <small class="field-error" id="event-departments-error">{{ error('departmentIds', form) }}</small> }
+    </fieldset>
+  </section>
+
+  <div class="editor-footer" [class.confirming]="confirmDiscard()">
+    @if (confirmDiscard()) {
+      <span class="footer-errors" role="alert"><app-icon name="alert" /> Bỏ các thay đổi chưa lưu?</span>
+      <div class="actions">
+        <button class="secondary" type="button" (click)="confirmDiscard.set(false)">Tiếp tục sửa</button>
+        <button class="danger" type="button" (click)="discard()">Bỏ thay đổi</button>
+      </div>
+    } @else {
+      @if (errorCount(); as n) {
+        <span class="footer-errors" role="status"><app-icon name="alert" /> Còn {{ n }} trường chưa hợp lệ.</span>
+      } @else {
+        <span>{{ event ? 'Lưu để áp dụng thay đổi.' : 'Bản nháp chỉ bạn thấy cho đến khi công bố.' }}</span>
+      }
+      <div class="actions">
+        <button class="secondary" type="button" [disabled]="busy()" (click)="requestClose()">Hủy</button>
+        <button class="primary" type="submit" [disabled]="busy() || conflict()">
+          <app-icon name="save" /> {{ busy() ? 'Đang lưu…' : event ? 'Lưu thay đổi' : 'Lưu nháp' }}
+        </button>
+      </div>
+    }
+  </div>
+</form>

@@ -25,5 +25,7 @@ assert.equal(run('csvData(state.events[0],true).includes("Check-out")'), false);
 // Increasing capacity promotes the waiting user, preserving the same object.
 assert.equal(run(`(()=>{const e=state.events[0], old=e.regs.s4;e.capacity=4;const names=promote(e);return names.length===1 && e.regs.s4===old && old.status==='Registered';})()`), true);
 run(`globalThis.render=()=>{};globalThis.toast=()=>{};globalThis.modal=(title,body,apply)=>{globalThis.applyModal=apply;};`);
+assert.equal(run('accountView().includes("Đổi vai trò")'), false);
+assert.equal(run(`(()=>{const before=JSON.stringify(state.users);accountAction('s2','role');return JSON.stringify(state.users)===before;})()`), true);
 assert.equal(run(`(()=>{selected='e1';state.uid='s1';const e=event(),old=e.regs.s1;old.checkin=true;old.checkinAt='08:00';cancelEvent();applyModal();if(old.status!=='Cancelled'||!old.checkin)return false;registerEvent();applyModal();return e.regs.s1===old&&!old.checkin&&old.history.some(h=>h.action==='REREGISTER'&&h.before.checkin);})()`), true);
-console.log('PASS: single attendance, ends_at, multi-select eligibility, deferred controls, CSV and capacity promotion.');
+console.log('PASS: single attendance, ends_at, multi-select eligibility, deferred controls, fixed account roles, CSV and capacity promotion.');

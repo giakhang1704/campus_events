@@ -1,0 +1,5 @@
+services:
+  backend:
+    environment:
+      CAMPUS_DEV_SEED_ENABLED: "true"
+      CAMPUS_DEV_SEED_PASSWORD: ${DEV_SEED_PASSWORD:?Run scripts/seed-local.ps1 first}

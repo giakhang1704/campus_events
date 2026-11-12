@@ -1,0 +1,165 @@
+<section class="auth-shell">
+  <div class="auth-art">
+    <div class="brand">
+      <span class="brand-mark">ce</span>
+      <span>campus<em>events</em></span>
+    </div>
+    <div>
+      <p class="auth-statement">Những trải nghiệm bắt đầu từ đây.</p>
+      <p>Khám phá hội thảo, workshop và hoạt động ngoại khóa; đăng ký và điểm danh trong cùng một nơi.</p>
+    </div>
+    <small>© Campus Events</small>
+  </div>
+
+  <div class="auth-content">
+    <div class="auth-box">
+      <h1>{{ signup ? 'Tạo tài khoản sinh viên' : 'Đăng nhập' }}</h1>
+      <p>
+        {{ signup ? 'Khai báo hồ sơ để bắt đầu tham gia sự kiện.' : 'Sử dụng tài khoản được cấp hoặc tài khoản sinh viên đã đăng ký.' }}
+      </p>
+
+      <form #form="ngForm" (ngSubmit)="submit(form)">
+        @if (signup) {
+          <label>
+            Họ và tên
+            <input
+              aria-label="Họ và tên"
+              name="fullName"
+              [(ngModel)]="fullName"
+              required
+              maxlength="150"
+              autocomplete="name"
+              [attr.aria-invalid]="!!error('fullName', form)"
+              aria-describedby="fullName-error"
+            />
+            @if (error('fullName', form)) {
+              <small class="field-error" id="fullName-error">{{ error('fullName', form) }}</small>
+            }
+          </label>
+
+          <label>
+            Mã số sinh viên
+            <input
+              aria-label="Mã số sinh viên"
+              name="studentCode"
+              [(ngModel)]="studentCode"
+              required
+              maxlength="30"
+              [attr.aria-invalid]="!!error('studentCode', form)"
+              aria-describedby="studentCode-error"
+            />
+            @if (error('studentCode', form)) {
+              <small class="field-error" id="studentCode-error">{{ error('studentCode', form) }}</small>
+            }
+          </label>
+        }
+
+        <label>
+          Email
+          <input
+            type="email"
+            email
+            aria-label="Email"
+            name="email"
+            [(ngModel)]="email"
+            required
+            maxlength="254"
+            autocomplete="username"
+            [attr.aria-invalid]="!!error('email', form)"
+            aria-describedby="email-error"
+          />
+          @if (error('email', form)) {
+            <small class="field-error" id="email-error">{{ error('email', form) }}</small>
+          }
+        </label>
+
+        <label>
+          Mật khẩu
+          <span class="password-field">
+            <input
+              [type]="showPassword() ? 'text' : 'password'"
+              aria-label="Mật khẩu"
+              name="password"
+              [(ngModel)]="password"
+              required
+              [minlength]="signup ? 8 : 1"
+              maxlength="72"
+              [autocomplete]="signup ? 'new-password' : 'current-password'"
+              [attr.aria-invalid]="!!error('password', form)"
+              aria-describedby="password-error"
+            />
+            <button
+              type="button"
+              class="pw-toggle"
+              [attr.aria-label]="showPassword() ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'"
+              [attr.aria-pressed]="showPassword()"
+              (click)="showPassword.set(!showPassword())"
+            >
+              <app-icon [name]="showPassword() ? 'eye-off' : 'eye'" />
+            </button>
+          </span>
+          @if (error('password', form)) {
+            <small class="field-error" id="password-error">{{ error('password', form) }}</small>
+          }
+        </label>
+
+        @if (signup) {
+          <div class="columns">
+            <label>
+              Khoa
+              <select
+                aria-label="Khoa"
+                name="departmentId"
+                [(ngModel)]="departmentId"
+                required
+                [attr.aria-invalid]="!!error('departmentId', form)"
+                aria-describedby="departmentId-error"
+              >
+                <option [ngValue]="null">Chọn khoa</option>
+                @for (d of departments(); track d.id) {
+                  <option [ngValue]="d.id">{{ d.name }}</option>
+                }
+              </select>
+              @if (error('departmentId', form)) {
+                <small class="field-error" id="departmentId-error">{{ error('departmentId', form) }}</small>
+              }
+            </label>
+
+            <label>
+              Năm học
+              <input
+                type="number"
+                aria-label="Năm học"
+                name="studyYear"
+                [(ngModel)]="studyYear"
+                required
+                min="1"
+                max="32767"
+                step="1"
+                [attr.aria-invalid]="!!error('studyYear', form)"
+                aria-describedby="studyYear-error"
+              />
+              @if (error('studyYear', form)) {
+                <small class="field-error" id="studyYear-error">{{ error('studyYear', form) }}</small>
+              }
+            </label>
+          </div>
+        }
+
+        @if (message()) {
+          <p class="notice" [class.success]="message().startsWith('Tạo tài khoản thành công')" role="status">{{ message() }}</p>
+        }
+
+        <button type="submit" [disabled]="busy()">
+          {{ busy() ? 'Đang xử lý…' : signup ? 'Tạo tài khoản' : 'Đăng nhập' }}
+        </button>
+      </form>
+
+      <p class="auth-switch">
+        <button type="button" class="link" [disabled]="busy()" (click)="toggle(form)">
+          {{ signup ? 'Đã có tài khoản? Đăng nhập' : 'Đăng ký tài khoản sinh viên' }}
+        </button>
+      </p>
+    </div>
+  </div>
+</section>
