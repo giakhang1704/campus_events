@@ -22,6 +22,7 @@ services:
     build: ./backend
     environment:
       SERVER_ADDRESS: 0.0.0.0
+      ATTENDANCE_TOKEN_KEY: ${ATTENDANCE_TOKEN_KEY:-}
       AUTH_COOKIE_SECURE: ${AUTH_COOKIE_SECURE:-false}
       TZ: Asia/Ho_Chi_Minh
       MAIL_ENABLED: ${MAIL_ENABLED:-false}

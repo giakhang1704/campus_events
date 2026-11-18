@@ -81,7 +81,10 @@ public class SecurityConfig {
                                                 "/api/me/registrations",
                                                 "/api/events/*/registration",
                                                 "/api/events/*/registrations",
-                                                "/api/events/*/registration/cancel")
+                                                "/api/events/*/registration/cancel",
+                                                "/api/events/*/attendance",
+                                                "/api/events/*/attendance/preview",
+                                                "/api/events/*/attendance/check-in")
                                         .hasRole("STUDENT")
                                         .requestMatchers("/api/organizer/**")
                                         .hasRole("ORGANIZER")

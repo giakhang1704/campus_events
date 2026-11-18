@@ -110,6 +110,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataAccessException.class)
     ResponseEntity<?> unavailable(DataAccessException e) {
+        if (e.getMostSpecificCause() instanceof java.sql.SQLException sql
+                && "PQR01".equals(sql.getSQLState()))
+            return api(
+                    new ApiException(
+                            409,
+                            "QR_SESSION_INVALID",
+                            "Phiên QR đã đóng hoặc hết hiệu lực. Vui lòng quét lại mã mới."));
         return ResponseEntity.status(503)
                 .body(
                         Map.of(

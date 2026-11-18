@@ -1,0 +1,8 @@
+package vn.edu.hcmut.campusevents.dto.attendance;
+
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
+
+public record AttendanceScanRequest(
+        @Positive long sessionId, @NotNull @Pattern(regexp = "[A-Za-z0-9_-]{43}") String token) {}

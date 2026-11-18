@@ -48,8 +48,8 @@ class Client:
 def sql(query):
     result = subprocess.run(COMPOSE + ['exec', '-T', 'db', 'psql', '-v', 'ON_ERROR_STOP=1',
                                      '-U', 'campus_test', '-d', 'campus_i1_test', '-tA'],
-                            input=query, text=True, capture_output=True, check=True)
-    return result.stdout.strip()
+                            input=query.encode('utf-8'), capture_output=True, check=True)
+    return result.stdout.decode('utf-8').strip()
 
 
 def ready():

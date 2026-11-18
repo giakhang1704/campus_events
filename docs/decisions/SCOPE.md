@@ -12,7 +12,7 @@
 - Phần mockup vượt phạm vi phải giữ nguyên mã và comment/tạm vô hiệu hóa khi tích hợp, không xóa.
 
 ## Quy tắc còn cần xác nhận
-- Thời gian được mở QR, có cho mở trước starts_at không.
+- Không còn chờ chốt giờ mở QR: đã chọn từ 30 phút trước starts_at (18/11/2026).
 
 - Một organizer/sự kiện là mô hình hiện tại, chưa phải yêu cầu được xác nhận trong lượt này.
 
@@ -20,7 +20,15 @@
 Bản sao nguyên trạng nằm tại docs/references/mockup-original; đây là nguồn tham khảo, không phải frontend Angular đang chạy. Không chỉnh bản gốc. Khi chuyển giao diện sang Angular, giữ các khối check-out, chọn chế độ hai lượt, category và kết thúc thủ công trong comment có nhãn DEFERRED và lý do. Không đưa các khối đó vào UI hoạt động. Đã có bản mockup làm việc đồng bộ trong frontend/public/mockup; các khối cũ được giữ trong comment/tạm vô hiệu hóa. Chưa chuyển nghiệp vụ sang Angular/API.
 
 ## Chốt mô hình đăng ký
-Một dòng registrations hiện hành cho mỗi cặp event/student, UNIQUE(event_id,student_id), tái sử dụng sau hủy; lưu mọi chuyển trạng thái trong registration_history. Nếu đăng ký lại khi có attendance cũ, phải lưu snapshot và reset kết quả trong cùng transaction, không dùng PRESENT cũ. Đã có trigger reset SYSTEM + snapshot attendance_history và REREGISTER history trong cùng transaction khi tái sử dụng dòng. Backend I2 đã gọi quy trình này. Việc chỉ mở QR từ starts_at vẫn là đề xuất, chưa coi người dùng đã chốt mốc thời gian này.
+Một dòng registrations hiện hành cho mỗi cặp event/student, UNIQUE(event_id,student_id), tái sử dụng sau hủy; lưu mọi chuyển trạng thái trong registration_history. Nếu đăng ký lại khi có attendance cũ, phải lưu snapshot và reset kết quả trong cùng transaction, không dùng PRESENT cũ. Đã có trigger reset SYSTEM + snapshot attendance_history và REREGISTER history trong cùng transaction khi tái sử dụng dòng. Backend I2 đã gọi quy trình này. Giờ mở QR được chốt từ 30 phút trước starts_at ngày 18/11/2026.
+
+## QR và báo cáo I3 — 18/11/2026
+
+Người dùng chốt QR được mở từ 30 phút trước starts_at. Luồng đang triển khai: Organizer hiển thị QR của phiên, Student đăng nhập quét và chỉ điểm danh cho chính mình. Phiên 1–30 phút, không vượt ends_at; chỉ REGISTERED được ghi nhận. Một lượt check-in, không check-out.
+
+Phương án triển khai thủ công: Organizer phụ trách ghi từ cùng cửa sổ mở, được chỉnh sau sự kiện với lý do và hai version. Report chỉ suy ra vắng từ ends_at; không có cờ kết thúc thủ công. Xuất CSV only; không tính đăng ký hủy/chờ vào tỷ lệ. Các chi tiết kỹ thuật và giới hạn: [API I3](../api/I3.md).
+
+Người dùng chốt luồng sinh viên: bấm quét/cấp quyền camera → quét → xem thông tin → **bấm xác nhận** mới ghi điểm danh. Audit I3 bổ sung API preview chỉ đọc và kiểm tra version event/registration/attendance khi xác nhận; frontend không tự gửi check-in ngay khi vừa đọc được QR. Organizer chỉ điều khiển phiên của sự kiện phụ trách, chọn hạn 1–30 phút khi mở, đóng sớm hoặc đóng/mở để đổi mã; không có sửa trực tiếp expiry của phiên active.
 
 ## FIFO và email I2 — 12/11/2026
 

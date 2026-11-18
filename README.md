@@ -9,9 +9,9 @@ Mở Docker Desktop và đợi engine sẵn sàng. PowerShell:
 ```powershell
 git clone https://github.com/giakhang1704/campus_events.git
 Set-Location .\campus_events
-git switch feature/i2-backend
+git switch feature/i3-backend
 .\scripts\setup-local.ps1
-docker compose up --build -d
+docker compose up --build -d --wait
 .\scripts\smoke\local.ps1
 ```
 
@@ -20,11 +20,28 @@ Mở http://localhost:4200. Các lệnh sau khi clone đều tính từ thư m�
 ## Bắt đầu
 Các lệnh chạy localhost, tài khoản mẫu, PostgreSQL và xử lý lỗi nằm ngay trong README này. API và kiến trúc xem [backend/README.md](backend/README.md); giao diện xem [frontend/README.md](frontend/README.md).
 
+## Thử I3 ngay trên máy
+
+Từ root repository, mở Docker Desktop rồi chạy (cần Python):
+
+```powershell
+.\scripts\demo-i3.ps1 -Action Start
+.\scripts\demo-i3.ps1 -Action Preview
+.\scripts\demo-i3.ps1 -Action Confirm
+.\scripts\demo-i3.ps1 -Action Report
+.\scripts\demo-i3.ps1 -Action Export
+```
+
+Demo có API/PostgreSQL thật ở cổng 18083, QR SVG tại backend/target/i3-demo/qr.svg, database tmpfs riêng và mail tắt. Preview chưa ghi điểm danh; Confirm mới ghi PRESENT. Có thêm ManualPresent/ManualClear (kèm -Reason), History, Close, Refresh (-DurationMinutes 1–30) và Stop. Đây là test bằng lệnh, chưa có camera trên giao diện. Hướng dẫn và các ca thử âm: [I3_MANUAL.md](docs/testing/I3_MANUAL.md).
+
+Chạy toàn bộ test backend I3 bằng `./scripts/test-i3.ps1`: API test riêng ở 18082, không đụng volume local. Dừng/reset demo bằng `./scripts/demo-i3.ps1 -Action Stop` rồi Start lại. Tài khoản/khóa thử tự sinh trong target và không commit Git.
+
 ## Phạm vi
 - Angular hiển thị kiểm tra kết nối môi trường qua API thật /api/health. Backend truy vấn PostgreSQL thật và xác nhận 15 bảng trong schema campus.
 - Tài khoản, đăng nhập/đăng xuất, quản trị người dùng và Organizer tạo/sửa/công bố sự kiện đã có màn hình Angular gọi API thật. Cookie HttpOnly + CSRF, phiên lưu PostgreSQL. Sinh viên đã có màn Angular tìm/xem sự kiện gọi API thật. Mockup localStorage chỉ có trong dev server hoặc server tham khảo riêng, không chứa trong build production/Docker.
 - Schema giữ một dòng đăng ký/student/event; hủy giữ attendance, đăng ký lại tự reset có snapshot audit trong cùng transaction.
 - Backend I2 có API đăng ký/hủy, FIFO, danh sách đăng ký và email Brevo qua outbox. Frontend I2 chưa nối API; nút đăng ký/QR vẫn tạm vô hiệu hóa. Xem [API và cấu hình I2](backend/README.md#i2-api).
+- Backend I3 thêm QR thật, điểm danh thủ công có lịch sử, báo cáo và CSV. Student quét QR do Organizer hiển thị; mở từ 30 phút trước starts_at. Frontend I2/I3 chưa tích hợp. Xem [API I3](docs/api/I3.md).
 - Mockup làm việc có một lượt điểm danh, ends_at, giới hạn nhiều khoa/năm, sức chứa nguyên dương, bảo vệ Admin và CSV. Phần ngoài phạm vi giữ bằng comment/tạm vô hiệu hóa. Bản mockup làm việc vẫn nằm trong frontend/public/mockup.
 
 ## Cấu trúc
@@ -46,6 +63,10 @@ compose.yaml      stack local, cổng chỉ bind 127.0.0.1
 Không commit secret; Compose nạp .env, Spring Boot không tự đọc .env. Schema init chỉ chạy trên volume rỗng. Không dùng down -v với dữ liệu cần giữ. Không mặc định bảng nguồn trong references là schema hiện hành.
 
 ## Trạng thái kiểm tra mới nhất
+
+Audit 18/11/2026: 43 unit test, I3 và regression backend I1/I2 PASS. Bổ sung preview read-only và version khi xác nhận để chặn thao tác cũ; tăng cường guard tại DB cho đúng hạn QR/ends_at và lỗi 409; thêm demo từng bước. Database cũ cần chạy [migration hàm guard](database/migrations/README.md). [API I3](docs/api/I3.md) · [Hướng dẫn test thủ công](docs/testing/I3_MANUAL.md).
+
+18/11/2026: backend I3, 39 unit test, HTTP/PostgreSQL I3, regression backend I1/I2 và smoke localhost PASS. QR theo luồng Student quét mã Organizer, mở trước bắt đầu tối đa 30 phút; báo cáo/CSV có API thật. Giao diện I2/I3 còn chờ nối API. [Kết quả I3](docs/testing/I3_RESULTS.md).
 
 12/11/2026: backend I2, 29 unit test, HTTP/PostgreSQL I2, regression I1 (gồm browser) và smoke localhost PASS. Backend mới đã chạy local; gửi email thật đang tắt. Endpoint, cấu hình và giới hạn nằm trong [backend README](backend/README.md#i2-api). Đoạn dưới lưu trạng thái khởi tạo trước đây.
 
@@ -141,7 +162,7 @@ Workflow Git theo báo cáo mục 1.7.2: feature branch + Pull Request, ít nh�
 
 Backend tổ chức theo tầng Controller → Service interface/implementation → Repository interface/JDBC implementation. Xem [backend/README.md](backend/README.md) để đọc tree, cơ chế transaction, luồng xử lý và lệnh chạy. Giữ nguyên API/database; refactor chưa bổ sung chức năng đăng ký sự kiện của I2.
 
-Chưa deploy cloud; chức năng QR/điểm danh/CSV chưa tích hợp. Dependency frontend tại lần rà soát 12/11/2026: audit production 0 cảnh báo, audit đầy đủ còn 16 moderate trong toolchain CLI, không có high/critical.
+Chưa deploy cloud; backend I3 có QR/điểm danh/CSV nhưng frontend tương ứng chưa tích hợp. Dependency frontend tại lần rà soát 12/11/2026: audit production 0 cảnh báo, audit đầy đủ còn 16 moderate trong toolchain CLI, không có high/critical.
 
 ## Increment 2 — backend
 
@@ -160,13 +181,32 @@ Từ root repository:
 ```powershell
 mvn -f backend/pom.xml test
 ./scripts/test-i2.ps1
-docker compose up --build -d backend
+docker compose up --build -d --wait backend
 ./scripts/smoke/local.ps1
 ```
 
 I2 test có PostgreSQL tmpfs riêng (không dùng volume local) và mail giả lập (không gửi thư thật). Endpoint, lỗi, cấu hình `.env`, truy vấn outbox và cách dừng test: [backend/README.md](backend/README.md#i2-api). QR/CSV/nhắc lịch chưa thuộc bản backend này.
 
+## Increment 3 — backend
+
+- [x] A09.1: tạo/đọc/đóng phiên, QR SVG thật; xác thực session/token và đăng ký chính thức; check-in idempotent cho Student trong phiên đăng nhập.
+- [x] A09.2: Organizer phụ trách ghi/chỉnh thủ công, lý do bắt buộc, hai version và history nguyên tử; tương thích reset khi đăng ký lại I2.
+- [x] A10.1: summary/chi tiết phân trang, tỷ lệ chỉ tính REGISTERED, vắng suy ra sau ends_at, không chia cho 0.
+- [x] A10.2: CSV UTF-8 BOM, escape nội dung/công thức, số liệu cùng snapshot; giới hạn 10.000 dòng/export có thông báo rõ.
+- [x] Kiểm thử backend I3, regression I1/I2 và Docker localhost; không reset volume phát triển hoặc gửi email thật.
+- [ ] Tích hợp frontend I2/I3, camera/scan QR và báo cáo/CSV UI; demo đầu cuối.
+- [ ] A11/A12: deployment/restore, QA/review và các checkpoint CP3/CP4 theo báo cáo; chưa đánh dấu đã thử Lightsail.
+
+```powershell
+mvn -f backend/pom.xml test
+./scripts/test-i3.ps1
+```
+
+API test tại localhost:18082 dùng project/DB tmpfs riêng, không dùng database local. [API/cấu hình I3](docs/api/I3.md), [kết quả và giới hạn](docs/testing/I3_RESULTS.md). Các task là phần chia nhỏ từ kế hoạch, không cộng thêm giờ.
+
 ## Chạy từng phần, PostgreSQL và mockup
+
+Phần backend I3 dùng cùng stack và 15 bảng hiện có. Chạy `./scripts/setup-local.ps1` để sinh ATTENDANCE_TOKEN_KEY nếu chưa có, `./scripts/migrate-local.ps1` để nâng cấp hàm guard mà giữ dữ liệu, rồi `docker compose up --build -d --wait` và smoke test. Script giữ nguyên khóa/mật khẩu đã tồn tại. Khóa QR chỉ nằm ở backend và cần ổn định khi restart/deploy. Chi tiết: [API I3](docs/api/I3.md).
 
 Cần Node 24, JDK tương thích target 21 và Maven 3.9+ nếu chạy ngoài Docker. Từ root, dùng các terminal riêng:
 

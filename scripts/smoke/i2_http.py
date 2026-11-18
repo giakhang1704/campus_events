@@ -223,27 +223,37 @@ def main():
     assert 'giờ Việt Nam' in payload['textContent'] and '\n' in payload['textContent']
     assert '&lt;BK&gt;' in payload['htmlContent']
     retry, retry_id = mail_case('[retry]',7)
-    eventually(lambda: sql(f"SELECT status FROM campus.email_outbox WHERE id={retry_id};")=='FAILED')
-    assert sql(f"SELECT attempts||':'||last_error FROM campus.email_outbox WHERE id={retry_id};")=='1:BREVO_HTTP_503'
-    sql(f"UPDATE campus.email_outbox SET next_attempt_at=clock_timestamp() WHERE id={retry_id};")
+    def provider_responses(event):
+        state=stub()
+        keys=[key for key,subject in state['subjects'].items() if subject.endswith(event['title'])]
+        assert len(keys)<=1, 'Provider idempotency key changed across retries'
+        return state['responses'].get(keys[0],[]) if keys else []
+    eventually(lambda: (codes:=provider_responses(retry)) and codes[0]==503)
+    sql(f"UPDATE campus.email_outbox SET next_attempt_at=clock_timestamp() WHERE id={retry_id} AND status='FAILED' AND attempts=1;")
     eventually(lambda: sql(f"SELECT status FROM campus.email_outbox WHERE id={retry_id};")=='SENT')
     assert sql(f"SELECT attempts FROM campus.email_outbox WHERE id={retry_id};")=='2'
+    assert provider_responses(retry)==[503,201]
     _, reject_id = mail_case('[reject]',7)
     eventually(lambda: sql(f"SELECT status FROM campus.email_outbox WHERE id={reject_id};")=='FAILED')
     assert sql(f"SELECT attempts||':'||last_error FROM campus.email_outbox WHERE id={reject_id};")=='1:BREVO_HTTP_400'
     assert sql(f"SELECT next_attempt_at='infinity'::timestamptz FROM campus.email_outbox WHERE id={reject_id};")=='t'
     uncertain, uncertain_id = mail_case('[uncertain]',7)
-    eventually(lambda: sql(f"SELECT status FROM campus.email_outbox WHERE id={uncertain_id};")=='FAILED')
-    sql(f"UPDATE campus.email_outbox SET next_attempt_at=clock_timestamp() WHERE id={uncertain_id};")
+    eventually(lambda: (codes:=provider_responses(uncertain)) and codes[0]==500)
+    sql(f"UPDATE campus.email_outbox SET next_attempt_at=clock_timestamp() WHERE id={uncertain_id} AND status='FAILED' AND attempts=1;")
     eventually(lambda: sql(f"SELECT status FROM campus.email_outbox WHERE id={uncertain_id};")=='SENT')
     assert sql(f"SELECT payload->>'providerMessageId' FROM campus.email_outbox WHERE id={uncertain_id};")=='deduplicated'
     assert sum(uncertain['title'] in p['subject'] for p in stub()['accepted'].values())==1
-    _, exhausted_id = mail_case('[exhaust]',7)
-    for attempt in range(1,6):
-        eventually(lambda: sql(f"SELECT status||':'||attempts FROM campus.email_outbox WHERE id={exhausted_id};")==f'FAILED:{attempt}')
-        sql(f"UPDATE campus.email_outbox SET next_attempt_at=clock_timestamp() WHERE id={exhausted_id};")
+    assert provider_responses(uncertain)==[500,400]
+    exhausted, exhausted_id = mail_case('[exhaust]',7)
+    def exhausted_done():
+        snapshot=sql(f"SELECT status||':'||attempts FROM campus.email_outbox WHERE id={exhausted_id};")
+        if snapshot=='FAILED:5':return True
+        sql(f"UPDATE campus.email_outbox SET next_attempt_at=clock_timestamp() WHERE id={exhausted_id} AND status='FAILED' AND attempts<5;")
+        return False
+    eventually(exhausted_done,seconds=60)
     time.sleep(1)
     assert sql(f"SELECT status||':'||attempts FROM campus.email_outbox WHERE id={exhausted_id};")=='FAILED:5'
+    assert provider_responses(exhausted)==[503]*5
     stale_id = int(sql(f"WITH added AS (INSERT INTO campus.email_outbox(event_id,registration_id,recipient_user_id,recipient_email,kind,dedupe_key,payload) SELECT event_id,registration_id,recipient_user_id,recipient_email,kind,dedupe_key||':stale',jsonb_set(payload,'{{registrationVersion}}','0'::jsonb) FROM campus.email_outbox WHERE id={mail} RETURNING id) SELECT id FROM added;"))
     eventually(lambda: sql(f"SELECT last_error FROM campus.email_outbox WHERE id={stale_id};")=='STALE_REGISTRATION')
     eventually(lambda: all(any(kind in p.get('tags',[]) for p in stub()['accepted'].values()) for kind in ('REGISTRATION_CONFIRMED','WAITLIST_PROMOTED','EVENT_CHANGED')))

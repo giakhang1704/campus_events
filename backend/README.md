@@ -12,11 +12,13 @@ src/main/java/vn/edu/hcmut/campusevents/
 │   │                        IEventService, IRegistrationService, IWaitlistService,
 │   │                        IEmailQueueService, IEmailOutboxService, IEmailSender,
 │   │                        IEnvironmentService, ISeedService
+│   │                        IAttendanceService, IReportService (I3)
 │   └── impl/                *ServiceImpl: nghiệp vụ và transaction
 ├── repository/              IUserRepository, ISessionRepository,
 │   │                        IAccountHistoryRepository, ICatalogRepository,
 │   │                        IEventRepository, IRegistrationRepository,
 │   │                        IEmailOutboxRepository, IEnvironmentRepository, ISeedRepository
+│   │                        IAttendanceRepository, IReportRepository (I3)
 │   └── jdbc/                Jdbc*Repository: toàn bộ SQL PostgreSQL
 │       └── mapper/          RowMapper: ResultSet → model
 ├── dto/                     Request/response HTTP
@@ -24,11 +26,13 @@ src/main/java/vn/edu/hcmut/campusevents/
 │   ├── account/
 │   ├── catalog/
 │   ├── event/
-│   └── registration/
+│   ├── registration/
+│   ├── attendance/
+│   └── report/
 ├── model/                   Snapshot nội bộ, EventContent, cấu hình seed
 ├── mapper/                  Model → response, loại bỏ dữ liệu nhạy cảm
-├── validation/              PasswordValidator, EventRules, RegistrationRules
-├── security/                SecurityConfig, AuthPrincipal, filter, cookie, token
+├── validation/              PasswordValidator, EventRules, RegistrationRules, AttendanceRules
+├── security/                SecurityConfig, AuthPrincipal, filter, cookie, token, QrTokenCipher
 ├── exception/               ApiException, GlobalExceptionHandler
 └── config/                  Khởi tạo danh mục/seed, MailSettings, EmailDispatcher
 ```
@@ -60,7 +64,7 @@ Từ **root repository**, mở Docker Desktop rồi chạy:
 
 ```powershell
 ./scripts/setup-local.ps1
-docker compose up --build -d
+docker compose up --build -d --wait
 ./scripts/smoke/local.ps1
 ```
 
@@ -86,7 +90,7 @@ Integration test I1 dùng project campus-events-i1-test, DB tmpfs riêng và API
 
 DDL nằm ở database/schema, không tự chạy khi backend khởi động. Các lệnh seed và biến môi trường I1 giữ nguyên. Health `/api/health`: 200 UP nếu đủ 15 bảng và truy vấn events được, 503 nếu chưa sẵn sàng. Tham khảo [seed/bootstrap](../database/seeds/README.md).
 
-I2 đã bổ sung đăng ký/hủy/FIFO/email theo API bên dưới. Mặc định không gửi thư thật; cấu hình Brevo đặt ở backend. Worker chạy chung JAR, lease/outbox lưu trong PostgreSQL. Backend vẫn là một JAR/Docker image; chưa triển khai QR hoặc cloud Render/Neon.
+I2 đã bổ sung đăng ký/hủy/FIFO/email theo API bên dưới. Mặc định không gửi thư thật; cấu hình Brevo đặt ở backend. Worker chạy chung JAR, lease/outbox lưu trong PostgreSQL. I3 bổ sung QR/thủ công/report/CSV trên cùng kiến trúc: [API I3](../docs/api/I3.md). Backend vẫn là một JAR/Docker image; chưa triển khai cloud Render/Neon.
 
 Backend I2 đã qua 29 unit test, HTTP/PostgreSQL I2, regression I1 gồm browser và smoke local ngày 12/11/2026. Kết quả này chưa thay review độc lập hoặc đóng CP2.
 
