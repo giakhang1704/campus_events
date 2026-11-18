@@ -1,19 +1,20 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Api, ApiError, Catalog } from '../../core/api';
-import { CatalogService } from '../../core/catalog.service';
+import { catalogName, CatalogService } from '../../core/catalog.service';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { ToastService } from '../../shared/toast/toast.service';
 import { EventApi } from './event-api.service';
 import { CampusEvent } from './event.models';
 import { dateTile, formatDateTime, formatLongDate, formatTime, formatTimeRange } from '../../shared/utils/date.utils';
 import { formatCount } from '../../shared/utils/number.utils';
-import { isEligible, registrationWindow, WINDOW_BADGE } from './event-view';
+import { registrationWindow, WINDOW_BADGE } from './event-view';
+import { RegistrationPanelComponent } from '../registrations/registration-panel.component';
 
 /** /events/:id: published event detail from GET /api/events/{id} (mockup `detail()`). */
 @Component({
   selector: 'app-student-event-detail',
-  imports: [RouterLink, IconComponent],
+  imports: [RouterLink, IconComponent, RegistrationPanelComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <a class="text-button back" routerLink="/events"><app-icon name="back" /> Quay lại danh sách</a>
@@ -73,14 +74,11 @@ import { isEligible, registrationWindow, WINDOW_BADGE } from './event-view';
           <div class="info-row"><span>Đối tượng</span><b>{{ audience() }}</b></div>
           <div class="info-row"><span>Điểm danh</span><b>1 lần điểm danh đầu vào</b></div>
 
-          @if (!eligible()) {
-            <div class="notice warn">Bạn không thuộc khoa/năm học được tham gia sự kiện này.</div>
+          @if (isStudent()) {
+            <app-registration-panel [event]="e" />
+          } @else {
+            <div class="notice">Bạn đang xem với vai trò người tổ chức; chỉ sinh viên đăng ký được.</div>
           }
-          <!-- TODO(API): registration endpoints are not in increment I1; enable once BE ships them. -->
-          <button class="primary block gap-top" disabled title="Chức năng đăng ký sẽ có ở increment sau">
-            Đăng ký tham gia <app-icon name="arrow" />
-          </button>
-          <p class="muted small-text gap-top">Chức năng đăng ký trực tuyến đang được phát triển và sẽ mở ở phiên bản sau.</p>
         </aside>
       </div>
     }
@@ -110,21 +108,16 @@ export class StudentEventDetailPage {
     const badge = WINDOW_BADGE[event ? registrationWindow(event) : 'UPCOMING'];
     return { label: badge.label, css: ('badge ' + badge.css).trim() };
   });
-  /** Shows the "not eligible" notice; the server applies the same rule when registration opens. */
-  protected readonly eligible = computed(() => {
-    const event = this.event();
-    return !!event && isEligible(event, this.api.user());
-  });
-  protected readonly unitName = computed(
-    () => this.units().find((unit) => unit.id === this.event()?.organizationUnitId)?.name ?? '',
-  );
+  /** Only students register; an organizer previewing the page sees no call-to-action. */
+  protected readonly isStudent = computed(() => this.api.user()?.role === 'STUDENT');
+  protected readonly unitName = computed(() => catalogName(this.units(), this.event()?.organizationUnitId) ?? '');
   /** "Khoa A, Khoa B · năm 1, 2" — who may join; an empty list means everyone. */
   protected readonly audience = computed(() => {
     const event = this.event();
     if (!event) return '';
     const departmentNames = event.departmentIds.length
       ? event.departmentIds
-          .map((id) => this.departments().find((department) => department.id === id)?.name ?? `Khoa #${id}`)
+          .map((id) => catalogName(this.departments(), id) ?? `Khoa #${id}`)
           .join(', ')
       : 'Mọi khoa';
     const studyYears = event.studyYears.length

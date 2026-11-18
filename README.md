@@ -24,7 +24,7 @@ Các lệnh chạy localhost, tài khoản mẫu, PostgreSQL và xử lý lỗi 
 - Angular hiển thị kiểm tra kết nối môi trường qua API thật /api/health. Backend truy vấn PostgreSQL thật và xác nhận 15 bảng trong schema campus.
 - Tài khoản, đăng nhập/đăng xuất, quản trị người dùng và Organizer tạo/sửa/công bố sự kiện đã có màn hình Angular gọi API thật. Cookie HttpOnly + CSRF, phiên lưu PostgreSQL. Sinh viên đã có màn Angular tìm/xem sự kiện gọi API thật. Mockup localStorage chỉ có trong dev server hoặc server tham khảo riêng, không chứa trong build production/Docker.
 - Schema giữ một dòng đăng ký/student/event; hủy giữ attendance, đăng ký lại tự reset có snapshot audit trong cùng transaction.
-- Backend I2 có API đăng ký/hủy, FIFO, danh sách đăng ký và email Brevo qua outbox. Frontend I2 chưa nối API; nút đăng ký/QR vẫn tạm vô hiệu hóa. Xem [API và cấu hình I2](backend/README.md#i2-api).
+- Backend I2 có API đăng ký/hủy, FIFO, danh sách đăng ký và email Brevo qua outbox. Frontend I2 đã nối API: đăng ký/danh sách chờ/hủy ở chi tiết sự kiện, Sự kiện của tôi và Người tham gia; QR vẫn tạm vô hiệu hóa. Xem [API và cấu hình I2](backend/README.md#i2-api).
 - Mockup làm việc có một lượt điểm danh, ends_at, giới hạn nhiều khoa/năm, sức chứa nguyên dương, bảo vệ Admin và CSV. Phần ngoài phạm vi giữ bằng comment/tạm vô hiệu hóa. Bản mockup làm việc vẫn nằm trong frontend/public/mockup.
 
 ## Cấu trúc
@@ -152,8 +152,8 @@ Triển khai trên `feature/i2-backend`, tiếp tục kiến trúc phân tầng 
 - [x] A07.2: đôn FIFO người hợp lệ khi hủy/tăng sức chứa; tiếp tục sau đóng đăng ký đến trước bắt đầu; không để người mới vượt người chờ cũ hợp lệ.
 - [x] A07.3: email xác nhận/đôn chờ/thay đổi lịch hoặc địa điểm qua Brevo HTTP; outbox nguyên tử, retry hữu hạn, lease và dedupe; tắt gửi thật mặc định.
 - [x] A08 phần backend: unit/integration I2, regression I1 và smoke local; xem log/kịch bản trong tài liệu kết quả.
-- [ ] Frontend I2: nối API đăng ký/hủy, danh sách của tôi/người tham gia và các trạng thái giao diện.
-- [ ] A08/CP2: hoàn tất tích hợp frontend, demo/biên bản/phản hồi và review độc lập.
+- [x] Frontend I2: nối API đăng ký/hủy, danh sách của tôi/người tham gia và các trạng thái giao diện; kiểm thử trình duyệt `scripts/smoke/i2_ui.cjs`.
+- [ ] A08/CP2: demo/biên bản/phản hồi và review độc lập.
 
 Từ root repository:
 

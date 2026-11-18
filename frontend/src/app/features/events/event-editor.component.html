@@ -18,6 +18,12 @@
     <button type="button" class="small" [disabled]="busy()" (click)="reload()">Tải bản mới</button>
   </div>
 }
+@if (event?.status === 'PUBLISHED') {
+  <p class="notice">
+    Sự kiện đã công bố: đổi địa điểm hoặc thời gian sẽ gửi email thông báo tới người đã đăng ký và người đang chờ.
+    Tăng sức chứa sẽ tự chuyển người chờ lên. Không giảm sức chứa dưới số đã đăng ký và chưa đổi khoa/năm khi đã có người đăng ký.
+  </p>
+}
 
 <form #form="ngForm" class="editor-form" (ngSubmit)="save(form)">
   <section class="panel form-card" aria-labelledby="card-basic">

@@ -1,6 +1,6 @@
 import { Component, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { map } from 'rxjs';
 import { Api, Catalog } from '../../core/api';
 import { IconComponent } from '../../shared/icon/icon.component';
@@ -10,7 +10,7 @@ import { CampusEvent } from './event.models';
 import { formatDate, formatDateTime, formatLongDate, formatTime, ORGANIZER_BADGE, organizerStatus } from './event-view';
 
 @Component({
-  selector: 'app-organizer-events', standalone: true, imports: [EventEditorComponent, IconComponent],
+  selector: 'app-organizer-events', standalone: true, imports: [EventEditorComponent, IconComponent, RouterLink],
   templateUrl: './organizer-events.component.html'
 })
 export class OrganizerEventsComponent {

@@ -42,9 +42,23 @@ Sau bài test đầy đủ, database test có SENT cho cả ba kind: EVENT_CHANG
 
 HTTP/PostgreSQL tiếp tục đạt: đăng ký tài khoản, email/MSSV trùng và rollback, login/logout, khóa/mở/thu hồi phiên, quyền cố định, bảo vệ Admin cuối cùng khi đồng thời, seed idempotence/restart, Organizer create/edit/publish, optimistic version, tìm kiếm Unicode/literal, phân trang và ẩn nháp.
 
-Browser regression đạt: validation, tài khoản/phiên/reload, quản trị và xác nhận/hủy, mật khẩu tạm, logout khi mất mạng, form sự kiện, xung đột hai tab, công bố, bố cục mobile. Frontend I2 chưa nằm trong bộ này.
+Browser regression đạt: validation, tài khoản/phiên/reload, quản trị và xác nhận/hủy, mật khẩu tạm, logout khi mất mạng, form sự kiện, xung đột hai tab, công bố, bố cục mobile. Frontend I2 có bộ riêng, xem mục bên dưới.
 
 Một expectation cũ của I1 được cập nhật có chủ đích: đổi lịch/địa điểm khi có người đăng ký nay thành công và tạo EVENT_CHANGED cùng transaction, thay vì chặn tạm 409. Giới hạn khoa/năm khi đã có REGISTERED vẫn 409.
+
+## Frontend I2 — 18/11/2026
+
+Nhánh `feature/i2-frontend` (dựa trên `feature/i2-backend`). Chạy bằng Chromium (Playwright 1.56.1) trên stack test riêng: HTTP thật → nginx với bản build Angular production → Spring Boot → PostgreSQL tmpfs; không dùng database local.
+
+| Kiểm tra | Kết quả |
+| --- | --- |
+| `ng build` (production) | PASS, không lỗi/cảnh báo |
+| `scripts/smoke/i2_http.py` rồi `scripts/smoke/i2_ui.cjs` trên cùng stack | PASS |
+| `scripts/smoke/i1_ui.cjs` trên stack I1 mới (regression form sự kiện, quản trị, đăng nhập) | PASS |
+
+`i2_ui.cjs` kiểm tra: sinh viên đăng nhập qua form và đăng ký khi còn chỗ (số chỗ 1/1 → 0/1); sinh viên thứ hai vào danh sách chờ #1; Sự kiện của tôi hiện "Danh sách chờ · #1", lọc trạng thái giữ qua reload, trạng thái trống; Organizer mở Người tham gia từ /manage, đúng số đã đăng ký/chờ, lọc và tìm trong trang; sinh viên đầu hủy → người chờ được đôn; trang cũ của người được đôn bấm "Rời danh sách chờ" nhận VERSION_CONFLICT, không mất chỗ, giao diện cập nhật "đã có chỗ"; nút tắt kèm lý do khi khác năm học và khi chưa mở đăng ký; sửa năm học khi đã có REGISTERED báo lỗi tại ô năm học; /my-events và /participants không cuộn ngang ở 390px; không có lỗi JavaScript.
+
+Không kiểm tự động: nhận email thật (test dùng outbox/mail giả lập), nhiều organizer cùng lúc, trình duyệt ngoài Chromium.
 
 ## Local và các phần còn lại
 
@@ -52,7 +66,6 @@ Backend mới chạy tại http://localhost:8080; Angular qua http://localhost:4
 
 Cần làm tiếp để đóng toàn I2/CP2:
 
-- Nối frontend đăng ký/hủy, danh sách của tôi và danh sách người tham gia; kiểm thử loading/error/empty/conflict trên giao diện.
 - Demo nghiệp vụ đầu cuối với frontend I2, lưu biên bản/phản hồi và review độc lập theo quy trình nhóm.
 - Nếu deploy: cấu hình HTTPS/proxy/cookie, backend Render/DB Neon, secret, kiểm tra cold start và thời gian worker hoạt động trên môi trường thực. Chưa coi RA02 Lightsail đã thực hiện.
 

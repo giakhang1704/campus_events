@@ -1,8 +1,7 @@
-import { User } from '../../core/api';
 import { CampusEvent } from './event.models';
 
 /**
- * Event rules shown on screen: registration status, badges and who may join.
+ * Event rules shown on screen: registration status and badges (eligibility is decided by the server, see registrations/).
  * Pure functions (no API calls, no Angular), so they are easy to test and reuse in any component.
  * Date/number formatting lives in shared/utils; it is re-exported at the bottom for existing imports.
  */
@@ -34,22 +33,6 @@ export const WINDOW_BADGE: Record<RegistrationWindow, { label: string; css: stri
   CLOSED: { label: 'Đã đóng đăng ký', css: 'amber' },
   FINISHED: { label: 'Đã kết thúc', css: 'dark' },
 };
-
-// ── Eligibility ──────────────────────────────────────────────────────────────
-
-/**
- * A student may join when their department AND their study year are allowed.
- * An empty list means "no restriction" for that condition.
- * The server checks the same rule; this only decides what the screen shows.
- */
-export function isEligible(event: CampusEvent, user: User | null): boolean {
-  if (!user || user.role !== 'STUDENT') return false;
-  const departmentAllowed =
-    !event.departmentIds.length || (user.departmentId !== null && event.departmentIds.includes(user.departmentId));
-  const studyYearAllowed =
-    !event.studyYears.length || (user.studyYear !== null && event.studyYears.includes(user.studyYear));
-  return departmentAllowed && studyYearAllowed;
-}
 
 // ── Status for organizers ────────────────────────────────────────────────────
 
