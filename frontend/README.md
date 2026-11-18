@@ -12,6 +12,9 @@ features/auth            /login (đăng nhập + đăng ký sinh viên), /change
 features/admin           /admin/accounts: danh sách/tìm/phân trang/cấp/khóa/mở; mỗi tài khoản một vai trò cố định
 features/events          /manage (organizer: nháp, sửa, công bố), /events + /events/:id (sinh viên xem sự kiện đã công bố)
 features/registrations   I2: khung đăng ký trên /events/:id, /my-events (sinh viên), /participants (organizer)
+features/attendance      I3: models + AttendanceApi (12 endpoint), /attendance (organizer: phiên QR, danh sách, thủ công, lịch sử)
+features/scan            I3: /scan (sinh viên quét QR) — đang làm
+features/reports         I3: /reports (organizer: báo cáo + CSV) — đang làm
 features/system          /system: kiểm tra /api/health + mockup tham khảo
 shared/                  icon, page-header, coming-soon
 ```
@@ -26,6 +29,25 @@ shared/                  icon, page-header, coming-soon
 - Các route `scan`, `attendance`, `reports` hiện trang "Đang xây dựng"; `data.mockupFn` ghi hàm nguồn trong `public/mockup/app.js`.
 - Giao diện dùng CSS của mockup (`src/styles.css`, phần đầu) + lớp Angular ở cuối file. Phần ngoài phạm vi (category, check-out, kết thúc thủ công) giữ trong comment `DEFERRED`, không xóa.
 
+## I3 — phần nền dùng chung và chia việc
+
+Hợp đồng API: `docs/api/I3.md`. Phần nền đã có, các màn hình chỉ cần dùng lại:
+
+- `features/attendance/attendance.models.ts`: kiểu dữ liệu I3, `parseCheckInQr(text)` (đọc nội dung QR, trả null nếu không phải mã BKevent), nhãn huy hiệu `ATTENDANCE_STATE_BADGE`, `METHOD_LABEL`.
+- `features/attendance/attendance-api.service.ts` (`AttendanceApi`): đủ 12 endpoint. `reportCsv()` và `qrSvg()` trả `Blob` qua `Api.requestBlob`; danh sách/CSV dùng `AttendanceFilter` (`'ALL'` gửi `status=` rỗng vì thiếu tham số thì server mặc định REGISTERED).
+- `features/events/owned-event-picker.ts`: `OwnedEventPicker` (khai báo `providers: [OwnedEventPicker]` trên trang) + `<app-owned-event-select>` (ô chọn ở header) + `<app-owned-event-states>` (đang tải/lỗi/chưa có sự kiện). Sự kiện chọn nằm trên URL `?event=<id>`. Mẫu dùng: `participants.page.ts`, `attendance.page.ts`.
+- Dùng chung khác: `<app-pager>`, `pageFromQuery`/`pageToQuery`, `formatDateTime`…, `ToastService`.
+
+| Màn | Route / file | Người làm |
+| --- | --- | --- |
+| A. Điểm danh QR (sinh viên) | `/scan` → `features/scan/scan.page.ts` (đang là trang tạm, thay file này) | Người 2 |
+| B. Điểm danh (organizer) | `/attendance` → `features/attendance/attendance.page.ts` | Trinh — đã xong |
+| C. Báo cáo + CSV (organizer) | `/reports` → `features/reports/reports.page.ts` (đang là trang tạm, thay file này) | Người 3 |
+
+Quy ước để không xung đột: mỗi người chỉ sửa trong thư mục màn của mình; route đã khai báo sẵn trong `app.routes.ts`. Cần đổi file dùng chung (models, service, `styles.css`) thì báo nhóm trước. Màn A tự thêm thư viện đọc QR (`package.json`) trong PR của mình; camera chỉ chạy trên HTTPS hoặc `localhost`. Không gọi check-in ngay khi camera đọc được mã: preview → người dùng bấm Xác nhận → check-in; 409 `CONFIRMATION_STALE` thì preview lại và hỏi lại.
+
+Chạy local cần migration I3 và khóa QR: `./scripts/setup-local.ps1` (thêm `ATTENDANCE_TOKEN_KEY` vào `.env`) rồi `./scripts/migrate-local.ps1`; thiếu khóa thì mở QR trả 503 `QR_KEY_NOT_CONFIGURED`.
+
 ## Thêm một màn hình
 1. Tạo `features/<module>/<ten>.page.ts` (standalone, signals, `ChangeDetectionStrategy.OnPush`).
 2. Thêm route trong `app.routes.ts` (thay `comingSoon` nếu có) và mục menu trong `core/layout/navigation.ts`.
@@ -35,6 +57,8 @@ shared/                  icon, page-header, coming-soon
 `node scripts/smoke/i1_ui.cjs <đường dẫn module playwright>` với stack đang chạy và tài khoản seed (scripts/seed-local.ps1). Script dùng Edge (`channel: msedge`).
 
 I2: `./scripts/test-i2.ps1 -PlaywrightModule <đường dẫn module playwright>` chạy kiểm thử HTTP I2 rồi `scripts/smoke/i2_ui.cjs` trên stack test riêng (API 18081, Angular 14201; mặc định Edge, đổi bằng biến `I2_UI_CHANNEL`). Script tự tạo sinh viên/sự kiện trong database tmpfs, không chạm dữ liệu local. Ảnh chụp lưu ở `frontend/.angular/i2-*.png`.
+
+I3 màn B: `node scripts/smoke/i3_attendance_ui.cjs <module playwright>` trên stack test I3 (`compose.i3-test.yaml`, API 18082) với Angular trỏ `/api` tới API đó; biến `TEST_ACCOUNT_PASSWORD`, `I3_UI_BASE_URL` (mặc định http://127.0.0.1:14202). Script tự tạo sự kiện bắt đầu sau 10 phút và ba sinh viên trong database tmpfs.
 
 ## Phiên bản dependency — rà soát 12/11/2026
 

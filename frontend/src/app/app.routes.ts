@@ -2,10 +2,8 @@ import { Routes } from '@angular/router';
 import { authGuard, guestGuard, homeRedirectGuard, mustChangePasswordGuard, roleGuard } from './core/auth/session';
 import { ShellComponent } from './core/layout/shell.component';
 
-const comingSoon = () => import('./shared/coming-soon/coming-soon.page').then((module) => module.ComingSoonPage);
-
 /**
- * Screens marked comingSoon wait for backend APIs (later increments); data.mockupFn = source function in public/mockup/app.js.
+ * Placeholder pages re-export ComingSoonPage until built; data.mockupFn = source function in public/mockup/app.js.
  * Sidebar menu lives in core/layout/navigation.ts – keep both in sync.
  */
 export const routes: Routes = [
@@ -50,7 +48,13 @@ export const routes: Routes = [
         title: 'Sự kiện của tôi · BKevent',
         loadComponent: () => import('./features/registrations/my-registrations.page').then((module) => module.MyRegistrationsPage),
       },
-      { path: 'scan', canActivate: [roleGuard('STUDENT')], data: { title: 'Điểm danh QR', mockupFn: 'scan' }, loadComponent: comingSoon },
+      {
+        path: 'scan',
+        canActivate: [roleGuard('STUDENT')],
+        data: { title: 'Điểm danh QR', mockupFn: 'scan' },
+        title: 'Điểm danh QR · BKevent',
+        loadComponent: () => import('./features/scan/scan.page').then((module) => module.ScanPage),
+      },
 
       // ── ORGANIZER ──
       {
@@ -67,8 +71,20 @@ export const routes: Routes = [
         title: 'Người tham gia · BKevent',
         loadComponent: () => import('./features/registrations/participants.page').then((module) => module.ParticipantsPage),
       },
-      { path: 'attendance', canActivate: [roleGuard('ORGANIZER')], data: { title: 'Điểm danh', mockupFn: 'attendance' }, loadComponent: comingSoon },
-      { path: 'reports', canActivate: [roleGuard('ORGANIZER')], data: { title: 'Báo cáo', mockupFn: 'report' }, loadComponent: comingSoon },
+      {
+        path: 'attendance',
+        canActivate: [roleGuard('ORGANIZER')],
+        data: { title: 'Điểm danh' },
+        title: 'Điểm danh · BKevent',
+        loadComponent: () => import('./features/attendance/attendance.page').then((module) => module.AttendancePage),
+      },
+      {
+        path: 'reports',
+        canActivate: [roleGuard('ORGANIZER')],
+        data: { title: 'Báo cáo', mockupFn: 'report' },
+        title: 'Báo cáo · BKevent',
+        loadComponent: () => import('./features/reports/reports.page').then((module) => module.ReportsPage),
+      },
 
       // ── ADMIN ──
       {

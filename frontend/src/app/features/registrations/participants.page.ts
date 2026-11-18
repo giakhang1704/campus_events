@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { map } from 'rxjs';
 import { Catalog } from '../../core/api';
 import { catalogName, CatalogService } from '../../core/catalog.service';
@@ -9,53 +9,26 @@ import { initials } from '../../shared/initials';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { PagerComponent } from '../../shared/pager/pager.component';
 import { ToastService } from '../../shared/toast/toast.service';
-import { formatDateTime, formatLongDate } from '../../shared/utils/date.utils';
+import { formatDateTime } from '../../shared/utils/date.utils';
 import { formatCount } from '../../shared/utils/number.utils';
 import { pageFromQuery, pageToQuery } from '../../shared/utils/page-query.utils';
-import { EventApi } from '../events/event-api.service';
-import { CampusEvent } from '../events/event.models';
+import { OwnedEventPicker, OwnedEventSelectComponent, OwnedEventStatesComponent } from '../events/owned-event-picker';
 import { RegistrationApi } from './registration-api.service';
 import { ParticipantPage, parseStatusFilter, STATUS_FILTERS, statusBadge, statusSince } from './registration.models';
-
-/** Largest page the API accepts; enough for the event picker of one organizer. */
-const EVENT_PICKER_SIZE = 100;
 
 /** /participants: registrations of one owned event from GET /api/organizer/events/{id}/registrations (mockup `participants()`). */
 @Component({
   selector: 'app-participants',
-  imports: [PageHeaderComponent, IconComponent, PagerComponent, RouterLink],
+  imports: [PageHeaderComponent, IconComponent, PagerComponent, OwnedEventSelectComponent, OwnedEventStatesComponent],
+  providers: [OwnedEventPicker],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-page-header title="Danh sách người tham gia" subtitle="Theo dõi danh sách chính thức và thứ tự chờ của từng sự kiện.">
-      @if (events().length) {
-        <select class="event-select" aria-label="Chọn sự kiện" (change)="setEvent($any($event.target).value)">
-          @for (e of events(); track e.id) {
-            <option [value]="e.id" [selected]="e.id === eventId()">{{ e.title }} · {{ shortDate(e.startsAt) }}</option>
-          }
-        </select>
-      }
+      <app-owned-event-select />
     </app-page-header>
 
-    @if (eventsLoading()) {
-      <span class="sr-only" role="status">Đang tải sự kiện…</span>
-      <div class="stats" aria-hidden="true">
-        @for (n of skeletonRows; track n) { <div class="stat"><span class="sk sk-line short"></span><span class="sk sk-line heading"></span></div> }
-      </div>
-    } @else if (eventsError()) {
-      <div class="empty">
-        <app-icon name="info" />
-        <h3>Chưa tải được danh sách sự kiện</h3>
-        <p>{{ eventsError() }}</p>
-        <button type="button" class="primary" (click)="loadEvents()">Thử lại</button>
-      </div>
-    } @else if (!events().length) {
-      <div class="empty panel">
-        <app-icon name="users" />
-        <h3>Chưa có sự kiện nào được công bố</h3>
-        <p>Sinh viên chỉ đăng ký được sự kiện đã công bố. Hãy công bố một sự kiện trước.</p>
-        <a class="button primary" routerLink="/manage">Đến Sự kiện quản lý <app-icon name="arrow" /></a>
-      </div>
-    } @else {
+    <app-owned-event-states />
+    @if (picker.selected()) {
       @if (result(); as s) {
         <div class="stats">
           <div class="stat green"><div class="stat-top">Đã đăng ký <app-icon name="check" /></div><strong>{{ count(s.registeredCount) }}</strong><small>trên {{ count(s.capacity) }} chỗ</small></div>
@@ -135,7 +108,6 @@ const EVENT_PICKER_SIZE = 100;
 })
 export class ParticipantsPage {
   private readonly registrations = inject(RegistrationApi);
-  private readonly eventApi = inject(EventApi);
   private readonly catalogs = inject(CatalogService);
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
@@ -144,9 +116,7 @@ export class ParticipantsPage {
   protected readonly skeletonRows = [1, 2, 3, 4];
   protected readonly pageToQuery = pageToQuery;
 
-  protected readonly events = signal<CampusEvent[]>([]);
-  protected readonly eventsLoading = signal(true);
-  protected readonly eventsError = signal('');
+  protected readonly picker = inject(OwnedEventPicker);
   private readonly departments = signal<Catalog[]>([]);
 
   /** Last response: items, hasNext and the counters shown in the stat cards. */
@@ -158,19 +128,12 @@ export class ParticipantsPage {
 
   /** ?event=12&status=WAITLISTED&page=2 keeps the view across reloads and Back; links from /manage use it. */
   private readonly url = toSignal(
-    inject(ActivatedRoute).queryParamMap.pipe(
-      map((q) => ({ event: Number(q.get('event')) || null, status: parseStatusFilter(q.get('status')), page: pageFromQuery(q) })),
-    ),
+    inject(ActivatedRoute).queryParamMap.pipe(map((q) => ({ status: parseStatusFilter(q.get('status')), page: pageFromQuery(q) }))),
     { requireSync: true },
   );
   protected readonly status = computed(() => this.url().status);
   protected readonly page = computed(() => this.url().page);
-  /** The URL's event when it is one of ours, else the first in the picker. */
-  protected readonly eventId = computed(() => {
-    const list = this.events();
-    const wanted = this.url().event;
-    return list.find((e) => e.id === wanted)?.id ?? list[0]?.id ?? null;
-  });
+  private readonly eventId = computed(() => this.picker.selected()?.id ?? null);
 
   /** Display values per row, computed once per response/catalog change instead of on every change detection. */
   private readonly allRows = computed(() => {
@@ -202,34 +165,18 @@ export class ParticipantsPage {
   });
 
   protected readonly count = formatCount;
-  protected readonly shortDate = formatLongDate;
 
   constructor() {
-    void this.loadEvents();
     this.catalogs.getDepartments().then((d) => this.departments.set(d)).catch(() => this.toast.error('Chưa tải được danh mục khoa; tên khoa có thể chưa hiện.'));
     effect(() => {
       this.url();
       if (this.eventId()) void this.load();
     });
-  }
-
-  /** Only published events can have registrations; newest first as returned by the API. */
-  async loadEvents(): Promise<void> {
-    this.eventsLoading.set(true);
-    this.eventsError.set('');
-    try {
-      const page = await this.eventApi.listOwned(0, EVENT_PICKER_SIZE);
-      this.events.set(page.items.filter((e) => e.status === 'PUBLISHED'));
-    } catch (error) {
-      this.eventsError.set(error instanceof Error ? error.message : 'Kiểm tra kết nối mạng rồi thử lại.');
-    } finally {
-      this.eventsLoading.set(false);
-    }
-  }
-
-  protected setEvent(value: string): void {
-    this.search.set('');
-    this.navigate({ event: Number(value) || null, page: null });
+    // The search box filters the loaded page; a different event starts with an empty search.
+    effect(() => {
+      this.eventId();
+      untracked(() => this.search.set(''));
+    });
   }
 
   protected navigate(queryParams: Record<string, string | number | null>): void {

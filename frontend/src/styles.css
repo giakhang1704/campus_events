@@ -479,3 +479,7 @@ body:has(.auth-shell) .toast-stack{top:20px}
 
 /* Shared BKevent branding: preserve the supplied school logo. */
 .brand-logo{display:block;width:60px;height:48px;object-fit:cover;flex:none;background:#fff;border-radius:8px}
+
+/* Scrolling table containers are the containing block of their content, so absolutely positioned
+   children (e.g. .sr-only column labels) scroll with the table instead of widening the page on mobile. */
+.table-wrap,.table-scroll{position:relative}

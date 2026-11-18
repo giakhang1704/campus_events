@@ -16,6 +16,13 @@ export class Api {
  }
  private logoutPending(){return localStorage.getItem(this.pendingKey)==='1';}
  async request<T>(path:string,method='GET',body?:unknown):Promise<T>{
+  // An empty body (204, or 200 with a null result such as "no open QR session") becomes undefined.
+  const text=await (await this.send(path,method,body)).text();
+  return (text?JSON.parse(text):undefined) as T;
+ }
+ /** Non-JSON downloads (QR SVG, CSV): same session, CSRF and error handling as request(). */
+ async requestBlob(path:string):Promise<Blob>{return (await this.send(path,'GET')).blob();}
+ private async send(path:string,method:string,body?:unknown):Promise<Response>{
   // A pending logout must never restore access through the remaining HttpOnly cookie.
   const publicRead=method==='GET'&&['/catalog/departments','/catalog/organization-units','/health'].includes(path);
   if(this.logoutPending()&&!publicRead&&!['/auth/logout','/auth/csrf'].includes(path)){
@@ -32,7 +39,7 @@ export class Api {
    if(response.status===401)this.user.set(null);
    throw new ApiError(response.status,error.code||'REQUEST_FAILED',error.message||'Dịch vụ tạm thời gián đoạn. Vui lòng thử lại.',error.fields||{});
   }
-  return response.status===204?undefined as T:response.json();
+  return response;
  }
  async refresh(){
   if(this.logoutPending()){this.user.set(null);await this.finishLogout();return;}
