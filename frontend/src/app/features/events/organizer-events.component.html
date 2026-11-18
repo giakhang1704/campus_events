@@ -83,6 +83,9 @@
                   <div class="row-actions">
                     <button type="button" class="small" [disabled]="busy() || !catalogsReady()"
                       (click)="publishing.set(null); edit(event)"><app-icon name="pencil" /> Chỉnh sửa</button>
+                    @if (event.status === 'PUBLISHED') {
+                      <a class="button small" [routerLink]="['/participants']" [queryParams]="{ event: event.id }"><app-icon name="users" /> Người tham gia</a>
+                    }
                     @if (event.status === 'DRAFT') {
                       <button type="button" class="small primary" [disabled]="busy() || !catalogsReady()"
                         (click)="publishing.set(event); message.set('')">Công bố</button>

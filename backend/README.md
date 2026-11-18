@@ -98,7 +98,7 @@ Backend I2 đã qua 29 unit test, HTTP/PostgreSQL I2, regression I1 gồm browse
 
 ## API Increment 2 — đăng ký, FIFO và email
 
-Phạm vi backend A07.1–A07.3 theo Bảng 23/Bảng 33 trong báo cáo `main (8).pdf`. Dùng PostgreSQL và cơ chế cookie HttpOnly + CSRF của I1. Frontend I2 chưa nối API; QR/điểm danh và CSV thuộc increment sau. Không đổi schema hiện hành hoặc reset dữ liệu.
+Phạm vi backend A07.1–A07.3 theo Bảng 23/Bảng 33 trong báo cáo `main (8).pdf`. Dùng PostgreSQL và cơ chế cookie HttpOnly + CSRF của I1. Frontend I2 đã nối các endpoint dưới đây (xem [frontend/README.md](../frontend/README.md)); QR/điểm danh và CSV thuộc increment sau. Không đổi schema hiện hành hoặc reset dữ liệu.
 
 ### Endpoint
 
@@ -218,4 +218,4 @@ I2 test dùng project `campus-events-i2-test`: PostgreSQL tmpfs riêng, API loca
 docker compose -p campus-events-i2-test -f compose.i2-test.yaml down
 ```
 
-Frontend I2, demo/biên bản/phản hồi và review độc lập vẫn cần hoàn tất trước khi đóng CP2. Chưa triển khai cloud.
+Frontend I2 đã nối API; demo/biên bản/phản hồi và review độc lập vẫn cần hoàn tất trước khi đóng CP2. Chưa triển khai cloud.
