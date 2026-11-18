@@ -43,7 +43,13 @@ export const routes: Routes = [
         title: 'Chi tiết sự kiện · BKevent',
         loadComponent: () => import('./features/events/student-event-detail.page').then((module) => module.StudentEventDetailPage),
       },
-      { path: 'my-events', canActivate: [roleGuard('STUDENT')], data: { title: 'Sự kiện của tôi', mockupFn: 'explore(true)' }, loadComponent: comingSoon },
+      {
+        path: 'my-events',
+        canActivate: [roleGuard('STUDENT')],
+        data: { title: 'Sự kiện của tôi' },
+        title: 'Sự kiện của tôi · BKevent',
+        loadComponent: () => import('./features/registrations/my-registrations.page').then((module) => module.MyRegistrationsPage),
+      },
       { path: 'scan', canActivate: [roleGuard('STUDENT')], data: { title: 'Điểm danh QR', mockupFn: 'scan' }, loadComponent: comingSoon },
 
       // ── ORGANIZER ──
@@ -54,7 +60,13 @@ export const routes: Routes = [
         title: 'Sự kiện quản lý · BKevent',
         loadComponent: () => import('./features/events/organizer-events.component').then((module) => module.OrganizerEventsComponent),
       },
-      { path: 'participants', canActivate: [roleGuard('ORGANIZER')], data: { title: 'Người tham gia', mockupFn: 'participants' }, loadComponent: comingSoon },
+      {
+        path: 'participants',
+        canActivate: [roleGuard('ORGANIZER')],
+        data: { title: 'Người tham gia' },
+        title: 'Người tham gia · BKevent',
+        loadComponent: () => import('./features/registrations/participants.page').then((module) => module.ParticipantsPage),
+      },
       { path: 'attendance', canActivate: [roleGuard('ORGANIZER')], data: { title: 'Điểm danh', mockupFn: 'attendance' }, loadComponent: comingSoon },
       { path: 'reports', canActivate: [roleGuard('ORGANIZER')], data: { title: 'Báo cáo', mockupFn: 'report' }, loadComponent: comingSoon },
 
