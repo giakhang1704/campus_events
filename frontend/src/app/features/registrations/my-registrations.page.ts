@@ -6,7 +6,7 @@ import { IconComponent } from '../../shared/icon/icon.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { PagerComponent } from '../../shared/pager/pager.component';
 import { formatDateTime, formatLongDate, formatTimeRange } from '../../shared/utils/date.utils';
-import { pageFromQuery, pageToQuery } from '../../shared/utils/page-query.utils';
+import { mergeQueryParams, pageFromQuery, pageToQuery } from '../../shared/utils/page-query.utils';
 import { RegistrationApi } from './registration-api.service';
 import { parseStatusFilter, RegistrationPage, STATUS_FILTERS, statusBadge, statusSince } from './registration.models';
 
@@ -123,7 +123,7 @@ export class MyRegistrationsPage {
   }
 
   protected navigate(queryParams: Record<string, string | number | null>): void {
-    void this.router.navigate([], { queryParams, queryParamsHandling: 'merge' });
+    mergeQueryParams(this.router, queryParams);
   }
 
   protected async load(): Promise<void> {

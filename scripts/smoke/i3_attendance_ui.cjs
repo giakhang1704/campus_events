@@ -6,6 +6,7 @@ const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
+const { makeApi, contextFactory, inMinutes, createPublishedEvent } = require('./ui_fixtures.cjs');
 
 const root = path.resolve(__dirname, '../..');
 const base = process.env.I3_UI_BASE_URL || 'http://127.0.0.1:14202';
@@ -14,37 +15,23 @@ if (!password) throw new Error('TEST_ACCOUNT_PASSWORD is required.');
 const shots = path.join(root, 'frontend/.angular');
 fs.mkdirSync(shots, { recursive: true });
 
-/** JSON call through a browser context (shares its session cookie). One write at a time per context: each CSRF fetch rotates the token. */
-async function api(context, method, url, body, expected = [200, 201]) {
-  const headers = {};
-  if (method !== 'GET') headers['X-XSRF-TOKEN'] = (await (await context.request.get(base + '/api/auth/csrf')).json()).token;
-  const response = await context.request.fetch(base + '/api' + url, { method, headers, data: body });
-  const text = await response.text();
-  assert.ok([].concat(expected).includes(response.status()), `${method} ${url}: ${response.status()} ${text}`);
-  return text ? JSON.parse(text) : null;
-}
-const at = (minutes) => new Date(Date.now() + minutes * 60_000).toISOString();
+const api = makeApi(base);
+const at = inMinutes;
 
 (async () => {
   const browser = await chromium.launch(process.env.I3_UI_CHANNEL ? { channel: process.env.I3_UI_CHANNEL } : {});
   const errors = [];
-  const newContext = async () => {
-    const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
-    context.on('page', (p) => p.on('pageerror', (e) => errors.push(e.message)));
-    return context;
-  };
+  const newContext = contextFactory(browser, errors);
   try {
     // ── Fixtures: an event starting in 10 minutes (QR window open), three registered students ──
     const org = await newContext();
     await api(org, 'POST', '/auth/login', { email: 'organizer.i1@example.test', password });
     const [departments, units] = await Promise.all([api(org, 'GET', '/catalog/departments'), api(org, 'GET', '/catalog/organization-units')]);
     const suffix = crypto.randomBytes(4).toString('hex');
-    const draft = await api(org, 'POST', '/events', {
-      title: `Điểm danh UI ${suffix}`, description: 'Kiểm thử giao diện I3', location: 'Hội trường B',
-      organizationUnitId: units[0].id, registrationOpensAt: at(-24 * 60), registrationClosesAt: at(5),
-      startsAt: at(10), endsAt: at(120), capacity: 5, departmentIds: [], studyYears: [],
+    const event = await createPublishedEvent(api, org, units[0].id, {
+      title: `Điểm danh UI ${suffix}`, location: 'Hội trường B',
+      registrationClosesAt: at(5), startsAt: at(10), endsAt: at(120), capacity: 5,
     });
-    const event = await api(org, 'POST', `/events/${draft.id}/publish`, { version: draft.version });
 
     const student = async (key) => {
       const context = await newContext();

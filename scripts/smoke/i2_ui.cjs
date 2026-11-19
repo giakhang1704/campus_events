@@ -6,6 +6,7 @@ const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
+const { makeApi, contextFactory, inMinutes, createPublishedEvent } = require('./ui_fixtures.cjs');
 
 const root = path.resolve(__dirname, '../..');
 const base = process.env.I2_UI_BASE_URL || 'http://127.0.0.1:14201';
@@ -14,26 +15,13 @@ if (!password) throw new Error('TEST_ACCOUNT_PASSWORD is required (set by script
 const shots = path.join(root, 'frontend/.angular');
 fs.mkdirSync(shots, { recursive: true });
 
-/** JSON call through a browser context, so the session cookie is shared with its pages. */
-async function api(context, method, url, body, expected = [200, 201]) {
-  const headers = {};
-  if (method !== 'GET') headers['X-XSRF-TOKEN'] = (await (await context.request.get(base + '/api/auth/csrf')).json()).token;
-  const response = await context.request.fetch(base + '/api' + url, { method, headers, data: body });
-  const text = await response.text();
-  assert.ok([].concat(expected).includes(response.status()), `${method} ${url}: ${response.status()} ${text}`);
-  return text ? JSON.parse(text) : null;
-}
-
-const at = (hours) => new Date(Date.now() + hours * 3600_000).toISOString();
+const api = makeApi(base);
+const at = (hours) => inMinutes(hours * 60);
 
 (async () => {
   const browser = await chromium.launch(process.env.I2_UI_CHANNEL ? { channel: process.env.I2_UI_CHANNEL } : {});
   const errors = [];
-  const newContext = async () => {
-    const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
-    context.on('page', (p) => p.on('pageerror', (e) => errors.push(e.message)));
-    return context;
-  };
+  const newContext = contextFactory(browser, errors);
   try {
     // ── Fixtures through the API ──
     const org = await newContext();
@@ -42,16 +30,8 @@ const at = (hours) => new Date(Date.now() + hours * 3600_000).toISOString();
     const department = departments[0].id;
     const unit = units[0].id;
     const suffix = crypto.randomBytes(4).toString('hex');
-    const createEvent = async (title, overrides = {}) => {
-      const event = await api(org, 'POST', '/events', {
-        title: `${title} ${suffix}`, description: 'Kiểm thử giao diện I2', location: 'Hội trường A',
-        organizationUnitId: unit, registrationOpensAt: at(-24), registrationClosesAt: at(1),
-        startsAt: at(2), endsAt: at(4), capacity: 1, departmentIds: [], studyYears: [], ...overrides,
-      });
-      return api(org, 'POST', `/events/${event.id}/publish`, { version: event.version });
-    };
-    // Sequential on purpose: each /auth/csrf call issues a new token for the session, so parallel writes
-    // from one context would invalidate each other's token.
+    const createEvent = (title, overrides = {}) => createPublishedEvent(api, org, unit, { title: `${title} ${suffix}`, ...overrides });
+    // Sequential on purpose: writes of one context must not overlap (see ui_fixtures.cjs).
     const main = await createEvent('Workshop I2 UI');
     const yearFour = await createEvent('Chỉ năm 4', { studyYears: [4] });
     const later = await createEvent('Mở đăng ký sau', { registrationOpensAt: at(24), registrationClosesAt: at(48), startsAt: at(72), endsAt: at(74) });

@@ -3,6 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { map } from 'rxjs';
 import { IconComponent } from '../../shared/icon/icon.component';
+import { errorMessage } from '../../shared/utils/error.utils';
 import { formatLongDate } from '../../shared/utils/date.utils';
 import { EventApi } from './event-api.service';
 import { CampusEvent } from './event.models';
@@ -30,6 +31,8 @@ export class OwnedEventPicker {
     const list = this.events();
     return list.find((e) => e.id === this.wanted()) ?? list.at(0) ?? null;
   });
+  /** Just the id: a reloaded list with the same event does not retrigger loads that depend on it. */
+  readonly selectedId = computed(() => this.selected()?.id ?? null);
 
   constructor() {
     void this.load();
@@ -42,7 +45,7 @@ export class OwnedEventPicker {
       const page = await this.eventApi.listOwned(0, PICKER_SIZE);
       this.events.set(page.items.filter((e) => e.status === 'PUBLISHED'));
     } catch (error) {
-      this.error.set(error instanceof Error ? error.message : 'Kiểm tra kết nối mạng rồi thử lại.');
+      this.error.set(errorMessage(error, 'Kiểm tra kết nối mạng rồi thử lại.'));
     } finally {
       this.loading.set(false);
     }

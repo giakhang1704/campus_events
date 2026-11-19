@@ -77,6 +77,12 @@ export function formatTimeRange(startIso: string, endIso: string): string {
   return `${formatTime(startIso)} – ${formatDateTime(endIso)}`;
 }
 
+/** "04:59": minutes and seconds left until `untilMs` (never negative). */
+export function formatCountdown(untilMs: number, nowMs: number): string {
+  const seconds = Math.max(0, Math.ceil((untilMs - nowMs) / 1000));
+  return `${padTwoDigits(Math.floor(seconds / 60))}:${padTwoDigits(seconds % 60)}`;
+}
+
 /** The pieces of the date tile on event cards and the detail banner: "08" / "Tháng 11" / "Chủ Nhật" / "14:00". */
 export function dateTile(iso: string): { day: string; month: string; weekday: string; time: string } {
   const date = new Date(iso);

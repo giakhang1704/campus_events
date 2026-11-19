@@ -2,7 +2,7 @@
  * I3 contracts (docs/api/I3.md): QR sessions, check-in, manual attendance, history, report.
  * Shared by /scan (student), /attendance and /reports (organizer). Timestamps are ISO 8601 with offset.
  */
-import { RegistrationStatus } from '../registrations/registration.models';
+import { parseStatusFilter, RegistrationStatus, STATUS_BADGE } from '../registrations/registration.models';
 
 export type AttendanceResult = 'PRESENT' | 'NOT_RECORDED';
 export type AttendanceMethod = 'QR' | 'MANUAL' | 'SYSTEM';
@@ -23,9 +23,8 @@ export interface QrSession {
   qrPayload: string | null;
 }
 
-/** Session length the API accepts (always cut at ends_at by the server). */
-export const QR_DURATION_MIN = 1;
-export const QR_DURATION_MAX = 30;
+/** Session lengths offered (the API accepts 1–30 minutes and always cuts at ends_at). */
+export const QR_DURATIONS = [5, 10, 15, 30];
 /** The QR can be opened from this long before starts_at until ends_at. */
 export const QR_OPENS_BEFORE_START_MS = 30 * 60 * 1000;
 
@@ -182,6 +181,18 @@ export interface AttendanceListPage {
  * when the parameter is missing; 'ALL' sends `status=` to include every registration.
  */
 export type AttendanceFilter = 'REGISTERED' | 'WAITLISTED' | 'CANCELLED' | 'ALL';
+
+export const ATTENDANCE_FILTERS: { value: AttendanceFilter; label: string }[] = [
+  { value: 'REGISTERED', label: 'Đăng ký chính thức' },
+  { value: 'ALL', label: 'Tất cả lượt đăng ký' },
+  { value: 'WAITLISTED', label: STATUS_BADGE.WAITLISTED.label },
+  { value: 'CANCELLED', label: STATUS_BADGE.CANCELLED.label },
+];
+
+/** `?status=` of /attendance and /reports: missing or unknown means REGISTERED, like the API. */
+export function parseAttendanceFilter(value: string | null): AttendanceFilter {
+  return value === 'ALL' ? 'ALL' : parseStatusFilter(value) || 'REGISTERED';
+}
 
 export const ATTENDANCE_STATE_BADGE: Record<AttendanceState, { label: string; css: string }> = {
   PRESENT: { label: 'Có mặt', css: 'badge' },

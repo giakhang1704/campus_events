@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, linkedSignal, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { map } from 'rxjs';
@@ -11,7 +11,7 @@ import { PagerComponent } from '../../shared/pager/pager.component';
 import { ToastService } from '../../shared/toast/toast.service';
 import { formatDateTime } from '../../shared/utils/date.utils';
 import { formatCount } from '../../shared/utils/number.utils';
-import { pageFromQuery, pageToQuery } from '../../shared/utils/page-query.utils';
+import { mergeQueryParams, pageFromQuery, pageToQuery } from '../../shared/utils/page-query.utils';
 import { OwnedEventPicker, OwnedEventSelectComponent, OwnedEventStatesComponent } from '../events/owned-event-picker';
 import { RegistrationApi } from './registration-api.service';
 import { ParticipantPage, parseStatusFilter, STATUS_FILTERS, statusBadge, statusSince } from './registration.models';
@@ -123,7 +123,8 @@ export class ParticipantsPage {
   protected readonly result = signal<ParticipantPage | null>(null);
   protected readonly loading = signal(true);
   protected readonly error = signal('');
-  protected readonly search = signal('');
+  /** Filters the loaded page; a different event starts with an empty search. */
+  protected readonly search = linkedSignal({ source: () => this.picker.selectedId(), computation: () => '' });
   private requestId = 0;
 
   /** ?event=12&status=WAITLISTED&page=2 keeps the view across reloads and Back; links from /manage use it. */
@@ -133,7 +134,7 @@ export class ParticipantsPage {
   );
   protected readonly status = computed(() => this.url().status);
   protected readonly page = computed(() => this.url().page);
-  private readonly eventId = computed(() => this.picker.selected()?.id ?? null);
+  private readonly eventId = this.picker.selectedId;
 
   /** Display values per row, computed once per response/catalog change instead of on every change detection. */
   private readonly allRows = computed(() => {
@@ -172,15 +173,10 @@ export class ParticipantsPage {
       this.url();
       if (this.eventId()) void this.load();
     });
-    // The search box filters the loaded page; a different event starts with an empty search.
-    effect(() => {
-      this.eventId();
-      untracked(() => this.search.set(''));
-    });
   }
 
   protected navigate(queryParams: Record<string, string | number | null>): void {
-    void this.router.navigate([], { queryParams, queryParamsHandling: 'merge' });
+    mergeQueryParams(this.router, queryParams);
   }
 
   async load(): Promise<void> {

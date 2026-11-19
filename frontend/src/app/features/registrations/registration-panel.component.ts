@@ -3,6 +3,7 @@ import { ApiError } from '../../core/api';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { ToastService } from '../../shared/toast/toast.service';
 import { formatDateTime } from '../../shared/utils/date.utils';
+import { errorMessage } from '../../shared/utils/error.utils';
 import { formatCount } from '../../shared/utils/number.utils';
 import { CampusEvent } from '../events/event.models';
 import { RegistrationApi } from './registration-api.service';
@@ -170,7 +171,7 @@ export class RegistrationPanelComponent {
           : `Sự kiện đã đủ chỗ. Bạn ở vị trí #${r.queuePosition ?? '?'} trong danh sách chờ.`,
       );
     } catch (error) {
-      this.toast.error(this.describe(error));
+      this.toast.error(errorMessage(error));
     } finally {
       await this.load(this.eventId(), true);
       this.busy.set(false);
@@ -188,7 +189,7 @@ export class RegistrationPanelComponent {
       this.toast.error(
         error instanceof ApiError && error.code === 'VERSION_CONFLICT'
           ? 'Trạng thái đăng ký vừa thay đổi (ví dụ bạn vừa được chuyển lên từ danh sách chờ). Hãy xem lại rồi thử lại.'
-          : this.describe(error),
+          : errorMessage(error),
       );
     } finally {
       this.confirming.set(false);
@@ -197,7 +198,4 @@ export class RegistrationPanelComponent {
     }
   }
 
-  private describe(error: unknown): string {
-    return error instanceof Error && error.message ? error.message : 'Không thực hiện được. Vui lòng thử lại.';
-  }
 }

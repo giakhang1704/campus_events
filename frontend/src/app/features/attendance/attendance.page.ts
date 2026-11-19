@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, signal, untracked } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, linkedSignal, signal, untracked } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { map } from 'rxjs';
@@ -8,44 +8,37 @@ import { initials } from '../../shared/initials';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { PagerComponent } from '../../shared/pager/pager.component';
 import { ToastService } from '../../shared/toast/toast.service';
-import { formatDateTime, formatTime } from '../../shared/utils/date.utils';
+import { formatCountdown, formatDateTime, formatTime } from '../../shared/utils/date.utils';
+import { errorMessage } from '../../shared/utils/error.utils';
 import { formatCount } from '../../shared/utils/number.utils';
-import { pageFromQuery, pageToQuery } from '../../shared/utils/page-query.utils';
+import { mergeQueryParams, pageFromQuery, pageToQuery } from '../../shared/utils/page-query.utils';
 import { OwnedEventPicker, OwnedEventSelectComponent, OwnedEventStatesComponent } from '../events/owned-event-picker';
 import { STATUS_BADGE } from '../registrations/registration.models';
 import { AttendanceApi } from './attendance-api.service';
 import {
+  ATTENDANCE_FILTERS,
   ATTENDANCE_STATE_BADGE,
-  AttendanceFilter,
   AttendanceHistoryPage,
   AttendanceListPage,
   AttendanceResult,
   AttendanceRow,
   MANUAL_REASON_MAX,
   METHOD_LABEL,
+  parseAttendanceFilter,
+  QR_DURATIONS,
   QR_OPENS_BEFORE_START_MS,
   QrSession,
 } from './attendance.models';
 
-const FILTERS: { value: AttendanceFilter; label: string }[] = [
-  { value: 'REGISTERED', label: 'Đăng ký chính thức' },
-  { value: 'ALL', label: 'Tất cả lượt đăng ký' },
-  { value: 'WAITLISTED', label: 'Danh sách chờ' },
-  { value: 'CANCELLED', label: 'Đã hủy' },
-];
-const DURATIONS = [5, 10, 15, 30];
 /** While a QR session is open the list refreshes on its own so new check-ins appear. */
 const LIVE_REFRESH_MS = 10_000;
+/** If the device clock runs ahead of the server, re-ask about an "expired" session at most this often. */
+const EXPIRY_RECHECK_MS = 5_000;
+/** setTimeout's upper limit (~24.8 days); later boundaries are re-planned when the timer fires. */
+const MAX_TIMEOUT_MS = 2_147_483_647;
 
-function parseFilter(value: string | null): AttendanceFilter {
-  return value === 'ALL' || value === 'WAITLISTED' || value === 'CANCELLED' ? value : 'REGISTERED';
-}
-
-/** "04:59" until the given moment. */
-function countdown(untilMs: number, nowMs: number): string {
-  const seconds = Math.max(0, Math.ceil((untilMs - nowMs) / 1000));
-  return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
-}
+/** One display row: the API row plus values computed once per response. */
+type Row = AttendanceRow & { initials: string; state: { label: string; css: string }; registrationBadge: { label: string; css: string }; recorded: string };
 
 /** /attendance?event=<id>: QR session, live attendance list, manual changes and history (mockup `attendance()`, I3 màn B). */
 @Component({
@@ -78,9 +71,9 @@ function countdown(untilMs: number, nowMs: number): string {
           <div class="att-top">
             <div>
               <h3 id="qr-heading">Phiên điểm danh QR</h3>
-              <p class="small-text muted">Mở được từ {{ stamp(qrOpensAt()) }} đến {{ stamp(e.endsAt) }}.</p>
+              <p class="small-text muted">Mở được từ {{ qrOpensText() }} đến {{ stamp(e.endsAt) }}.</p>
             </div>
-            <span [class]="sessionBadge().css">{{ sessionBadge().label }}</span>
+            <span [class]="session()?.active ? 'badge blue' : 'badge gray'">{{ session()?.active ? 'Đang mở' : 'Chưa mở' }}</span>
           </div>
 
           @if (sessionLoading()) {
@@ -123,38 +116,38 @@ function countdown(untilMs: number, nowMs: number): string {
         </section>
       </div>
 
-      @if (editing(); as ed) {
+      @if (manual(); as ed) {
         <section class="panel" aria-labelledby="manual-heading">
           <h2 id="manual-heading">{{ ed.result === 'PRESENT' ? 'Ghi nhận có mặt' : 'Bỏ ghi nhận có mặt' }}</h2>
-          <p>{{ ed.row.fullName }} · {{ ed.row.studentCode }} · hiện tại: {{ stateBadge(ed.row).label }}</p>
+          <p>{{ ed.row.fullName }} · {{ ed.row.studentCode }} · hiện tại: {{ ed.row.state.label }}</p>
           <label>Lý do
-            <textarea aria-label="Lý do" [maxLength]="reasonMax" [value]="reason()" (input)="reason.set($any($event.target).value)"
+            <textarea aria-label="Lý do" [maxLength]="reasonMax" [value]="ed.reason" (input)="setReason($any($event.target).value)"
               placeholder="Ví dụ: Bổ sung từ danh sách ký tên dự phòng"></textarea>
             <small>Bắt buộc, tối đa {{ reasonMax }} ký tự. Được lưu vào lịch sử điểm danh.</small>
           </label>
-          @if (formError(); as err) { <p class="notice warn" role="alert">{{ err }}</p> }
+          @if (ed.error) { <p class="notice warn" role="alert">{{ ed.error }}</p> }
           <div class="actions">
-            <button type="button" [disabled]="saving()" (click)="editing.set(null)">Hủy</button>
-            <button type="button" class="primary" [disabled]="saving() || !reason().trim()" (click)="saveManual()">{{ saving() ? 'Đang lưu…' : 'Lưu' }}</button>
+            <button type="button" [disabled]="saving()" (click)="manual.set(null)">Hủy</button>
+            <button type="button" class="primary" [disabled]="saving() || !ed.reason.trim()" (click)="saveManual()">{{ saving() ? 'Đang lưu…' : 'Lưu' }}</button>
           </div>
         </section>
       }
 
-      @if (historyFor(); as row) {
+      @if (historyView(); as hv) {
         <section class="panel" aria-labelledby="history-heading">
           <div class="att-top">
-            <div><h2 id="history-heading">Lịch sử điểm danh</h2><p class="small-text muted">{{ row.fullName }} · {{ row.studentCode }}</p></div>
-            <button type="button" class="small" (click)="historyFor.set(null)"><app-icon name="close" /> Đóng</button>
+            <div><h2 id="history-heading">Lịch sử điểm danh</h2><p class="small-text muted">{{ hv.row.fullName }} · {{ hv.row.studentCode }}</p></div>
+            <button type="button" class="small" (click)="historyView.set(null)"><app-icon name="close" /> Đóng</button>
           </div>
-          @if (historyLoading()) {
+          @if (hv.loading) {
             <div class="sk sk-line" aria-hidden="true"></div>
-          } @else if (historyError(); as err) {
-            <p class="notice warn">{{ err }}</p>
-          } @else if (!history()?.items?.length) {
+          } @else if (hv.error) {
+            <p class="notice warn">{{ hv.error }}</p>
+          } @else if (!hv.data?.items?.length) {
             <p class="muted">Chưa có thay đổi nào.</p>
           } @else {
             <div class="timeline">
-              @for (h of history()!.items; track h.id) {
+              @for (h of hv.data!.items; track h.id) {
                 <div class="step done">
                   <span class="step-icon">{{ h.newResult === 'PRESENT' ? '✓' : '–' }}</span>
                   <b>{{ resultLabel(h.oldResult) }} → {{ resultLabel(h.newResult) }}</b>
@@ -163,13 +156,13 @@ function countdown(untilMs: number, nowMs: number): string {
                 </div>
               }
             </div>
-            <app-pager [page]="historyPage()" [hasNext]="history()!.hasNext" (pageChange)="loadHistory(row, $event)" />
+            <app-pager [page]="hv.data!.page" [hasNext]="hv.data!.hasNext" (pageChange)="loadHistory(hv.row, $event)" />
           }
         </section>
       }
 
       <div class="toolbar">
-        <select class="role-select" aria-label="Lọc lượt đăng ký" (change)="navigate({ status: $any($event.target).value === 'REGISTERED' ? null : $any($event.target).value, page: null })">
+        <select class="role-select" aria-label="Lọc lượt đăng ký" (change)="setFilter($any($event.target).value)">
           @for (f of filters; track f.value) { <option [value]="f.value" [selected]="f.value === filter()">{{ f.label }}</option> }
         </select>
         <button type="button" class="small" [disabled]="loading()" (click)="load()">Tải lại</button>
@@ -217,12 +210,12 @@ function countdown(untilMs: number, nowMs: number): string {
                       <div class="row-actions">
                         @if (r.registrationStatus === 'REGISTERED') {
                           @if (r.result === 'PRESENT') {
-                            <button type="button" class="small" [disabled]="!manualOpen()" (click)="startManual(r.source, 'NOT_RECORDED')">Bỏ ghi nhận</button>
+                            <button type="button" class="small" [disabled]="!manualOpen()" (click)="startManual(r, 'NOT_RECORDED')">Bỏ ghi nhận</button>
                           } @else {
-                            <button type="button" class="small primary" [disabled]="!manualOpen()" (click)="startManual(r.source, 'PRESENT')">Ghi có mặt</button>
+                            <button type="button" class="small primary" [disabled]="!manualOpen()" (click)="startManual(r, 'PRESENT')">Ghi có mặt</button>
                           }
                         }
-                        <button type="button" class="small" (click)="loadHistory(r.source, 0)">Lịch sử</button>
+                        <button type="button" class="small" (click)="loadHistory(r, 0)">Lịch sử</button>
                       </div>
                     </td>
                   </tr>
@@ -231,7 +224,7 @@ function countdown(untilMs: number, nowMs: number): string {
             </table>
           </div>
           @if (!manualOpen()) {
-            <p class="small-text muted gap-top">Ghi nhận thủ công mở từ {{ stamp(qrOpensAt()) }}.</p>
+            <p class="small-text muted gap-top">Ghi nhận thủ công mở từ {{ qrOpensText() }}.</p>
           }
         }
         @if (!error()) {
@@ -255,8 +248,8 @@ export class AttendancePage {
   private readonly router = inject(Router);
   protected readonly picker = inject(OwnedEventPicker);
 
-  protected readonly filters = FILTERS;
-  protected readonly durations = DURATIONS;
+  protected readonly filters = ATTENDANCE_FILTERS;
+  protected readonly durations = QR_DURATIONS;
   protected readonly skeleton = [1, 2, 3];
   protected readonly reasonMax = MANUAL_REASON_MAX;
   protected readonly pageToQuery = pageToQuery;
@@ -264,55 +257,58 @@ export class AttendancePage {
   protected readonly stamp = formatDateTime;
   protected readonly time = formatTime;
   protected readonly resultLabel = (r: AttendanceResult | null) => (r === 'PRESENT' ? 'Có mặt' : r ? 'Chưa ghi nhận' : 'Chưa có');
-  protected readonly stateBadge = (r: AttendanceRow) => ATTENDANCE_STATE_BADGE[r.attendanceState];
 
-  /** Ticks every second: countdown, QR window and expiry. */
+  /**
+   * "Now" for the countdown and the QR window. It ticks every second only while a session is open;
+   * otherwise it is refreshed once at the next window boundary (see the timer effect).
+   */
   private readonly now = signal(Date.now());
 
   // ── URL state ──
   private readonly url = toSignal(
-    inject(ActivatedRoute).queryParamMap.pipe(map((q) => ({ filter: parseFilter(q.get('status')), page: pageFromQuery(q) }))),
+    inject(ActivatedRoute).queryParamMap.pipe(map((q) => ({ filter: parseAttendanceFilter(q.get('status')), page: pageFromQuery(q) }))),
     { requireSync: true },
   );
   protected readonly filter = computed(() => this.url().filter);
   protected readonly page = computed(() => this.url().page);
-  private readonly eventId = computed(() => this.picker.selected()?.id ?? null);
+  private readonly eventId = this.picker.selectedId;
 
-  // ── QR session ──
-  protected readonly session = signal<QrSession | null>(null);
+  // ── QR session (reset when the event changes) ──
+  protected readonly session = linkedSignal<number | null, QrSession | null>({ source: this.eventId, computation: () => null });
+  protected readonly sessionError = linkedSignal({ source: this.eventId, computation: () => '' });
   protected readonly sessionLoading = signal(false);
   protected readonly sessionBusy = signal(false);
-  protected readonly sessionError = signal('');
   protected readonly duration = signal(10);
   protected readonly qrUrl = signal<string | null>(null);
+  /** Changes only when another session becomes active (or none is): the QR image is fetched once per session. */
+  private readonly activeSession = computed(() => {
+    const s = this.session();
+    return s?.active ? { eventId: s.eventId, id: s.id } : null;
+  }, { equal: (a, b) => a?.id === b?.id });
 
-  protected readonly qrOpensAt = computed(() => {
+  private readonly qrOpensAtMs = computed(() => {
     const e = this.picker.selected();
-    return e ? new Date(Date.parse(e.startsAt) - QR_OPENS_BEFORE_START_MS).toISOString() : new Date().toISOString();
+    return e ? Date.parse(e.startsAt) - QR_OPENS_BEFORE_START_MS : 0;
   });
+  protected readonly qrOpensText = computed(() => formatDateTime(new Date(this.qrOpensAtMs()).toISOString()));
   protected readonly qrWindow = computed<'BEFORE' | 'OPEN' | 'ENDED'>(() => {
     const e = this.picker.selected();
-    if (!e) return 'BEFORE';
-    if (this.now() < Date.parse(this.qrOpensAt())) return 'BEFORE';
+    if (!e || this.now() < this.qrOpensAtMs()) return 'BEFORE';
     return this.now() < Date.parse(e.endsAt) ? 'OPEN' : 'ENDED';
   });
   /** Manual recording opens with the QR window and stays open after the event ended. */
   protected readonly manualOpen = computed(() => this.qrWindow() !== 'BEFORE');
-  protected readonly remaining = computed(() => countdown(Date.parse(this.session()?.expiresAt ?? ''), this.now()));
-  protected readonly sessionBadge = computed(() =>
-    this.session()?.active ? { label: 'Đang mở', css: 'badge blue' } : { label: 'Chưa mở', css: 'badge gray' },
-  );
+  protected readonly remaining = computed(() => formatCountdown(Date.parse(this.session()?.expiresAt ?? ''), this.now()));
 
   // ── Attendance list ──
   protected readonly result = signal<AttendanceListPage | null>(null);
   protected readonly loading = signal(true);
   protected readonly error = signal('');
   private requestId = 0;
-  /** Display values per row, computed once per response. */
-  protected readonly rows = computed(() =>
+  private refreshing = false;
+  protected readonly rows = computed<Row[]>(() =>
     (this.result()?.items ?? []).map((r) => ({
       ...r,
-      source: r,
       initials: initials(r.fullName),
       state: ATTENDANCE_STATE_BADGE[r.attendanceState],
       registrationBadge: STATUS_BADGE[r.registrationStatus],
@@ -320,66 +316,75 @@ export class AttendancePage {
     })),
   );
 
-  // ── Manual change ──
-  protected readonly editing = signal<{ row: AttendanceRow; result: AttendanceResult } | null>(null);
-  protected readonly reason = signal('');
+  // ── Manual change and history panels (one open at a time; both close when the event changes) ──
+  protected readonly manual = linkedSignal<number | null, { row: Row; result: AttendanceResult; reason: string; error: string } | null>({
+    source: this.eventId,
+    computation: () => null,
+  });
   protected readonly saving = signal(false);
-  protected readonly formError = signal('');
-
-  // ── History ──
-  protected readonly historyFor = signal<AttendanceRow | null>(null);
-  protected readonly history = signal<AttendanceHistoryPage | null>(null);
-  protected readonly historyPage = signal(0);
-  protected readonly historyLoading = signal(false);
-  protected readonly historyError = signal('');
+  protected readonly historyView = linkedSignal<number | null, { row: Row; data: AttendanceHistoryPage | null; loading: boolean; error: string } | null>({
+    source: this.eventId,
+    computation: () => null,
+  });
 
   constructor() {
-    const clock = setInterval(() => this.now.set(Date.now()), 1000);
-    const live = setInterval(() => {
-      if (this.session()?.active && document.visibilityState === 'visible') void this.load(true);
-    }, LIVE_REFRESH_MS);
-    inject(DestroyRef).onDestroy(() => {
-      clearInterval(clock);
-      clearInterval(live);
-      this.setQrUrl(null);
-    });
+    inject(DestroyRef).onDestroy(() => this.setQrUrl(null));
 
-    // New event: its session, and close panels that belong to the previous one.
     effect(() => {
-      const id = this.eventId();
-      untracked(() => {
-        this.editing.set(null);
-        this.historyFor.set(null);
-        this.session.set(null);
-        this.sessionError.set('');
-        if (id) void this.loadSession();
-      });
+      if (this.eventId()) untracked(() => void this.loadSession());
     });
     // List follows the event, filter and page.
     effect(() => {
       this.url();
       if (this.eventId()) untracked(() => void this.load());
     });
-    // The QR image follows the active session.
     effect(() => {
-      const s = this.session();
+      const s = this.activeSession();
       untracked(() => void this.showQr(s));
     });
-    // When the session runs out, ask the server (at most every 5 s, in case the device clock runs ahead);
-    // the page then offers a new session.
-    let lastExpiryCheck = 0;
-    effect(() => {
-      const s = this.session();
-      const now = this.now();
-      if (s?.active && now >= Date.parse(s.expiresAt) && now - lastExpiryCheck > 5000 && !untracked(() => this.sessionLoading())) {
-        lastExpiryCheck = now;
-        untracked(() => void this.loadSession());
+    // Timers. With an open session: 1 s clock (countdown, expiry) and the live list refresh.
+    // Without: a single timeout at the next QR window boundary, so the buttons enable/disable on time.
+    effect((onCleanup) => {
+      const active = this.activeSession();
+      const e = this.picker.selected();
+      if (active) {
+        let lastExpiryCheck = 0;
+        const clock = setInterval(() => {
+          const now = Date.now();
+          this.now.set(now);
+          const s = this.session();
+          if (s?.active && now >= Date.parse(s.expiresAt) && now - lastExpiryCheck > EXPIRY_RECHECK_MS && !this.sessionLoading()) {
+            lastExpiryCheck = now;
+            void this.loadSession();
+          }
+        }, 1000);
+        const live = setInterval(() => {
+          if (document.visibilityState === 'visible') void this.load(true);
+        }, LIVE_REFRESH_MS);
+        onCleanup(() => {
+          clearInterval(clock);
+          clearInterval(live);
+        });
+      } else if (e) {
+        const now = Date.now();
+        untracked(() => this.now.set(now));
+        const next = [this.qrOpensAtMs(), Date.parse(e.endsAt)].find((t) => t > now);
+        if (next !== undefined) {
+          const timer = setTimeout(() => this.now.set(Date.now()), Math.min(next - now + 50, MAX_TIMEOUT_MS));
+          onCleanup(() => clearTimeout(timer));
+        }
       }
     });
   }
 
   protected navigate(queryParams: Record<string, string | number | null>): void {
-    void this.router.navigate([], { queryParams, queryParamsHandling: 'merge' });
+    mergeQueryParams(this.router, queryParams);
+  }
+
+  /** REGISTERED is the default, so it is left out of the URL. */
+  protected setFilter(value: string): void {
+    const filter = parseAttendanceFilter(value);
+    this.navigate({ status: filter === 'REGISTERED' ? null : filter, page: null });
   }
 
   // ── QR session ──
@@ -393,7 +398,7 @@ export class AttendancePage {
       const s = await this.attendance.currentSession(eventId);
       if (eventId === this.eventId()) this.session.set(s);
     } catch (error) {
-      this.sessionError.set(message(error));
+      this.sessionError.set(errorMessage(error));
     } finally {
       this.sessionLoading.set(false);
     }
@@ -407,7 +412,7 @@ export class AttendancePage {
     try {
       this.session.set(await this.attendance.openSession(eventId, this.duration()));
     } catch (error) {
-      this.sessionError.set(message(error));
+      this.sessionError.set(errorMessage(error));
     } finally {
       this.sessionBusy.set(false);
     }
@@ -422,21 +427,21 @@ export class AttendancePage {
       this.session.set(await this.attendance.closeSession(eventId, s.id));
       this.toast.success('Đã đóng phiên QR. Mã cũ không còn dùng được.');
     } catch (error) {
-      this.sessionError.set(message(error));
+      this.sessionError.set(errorMessage(error));
     } finally {
       this.sessionBusy.set(false);
     }
   }
 
-  private async showQr(s: QrSession | null): Promise<void> {
-    if (!s?.active) return this.setQrUrl(null);
+  private async showQr(active: { eventId: number; id: number } | null): Promise<void> {
+    if (!active) return this.setQrUrl(null);
     try {
-      const svg = await this.attendance.qrSvg(s.eventId, s.id);
-      // Ignore the image if the session changed while it was loading.
-      if (this.session()?.id === s.id && this.session()?.active) this.setQrUrl(URL.createObjectURL(svg));
+      const svg = await this.attendance.qrSvg(active.eventId, active.id);
+      // Ignore the image if another session became active while it was loading.
+      if (this.activeSession()?.id === active.id) this.setQrUrl(URL.createObjectURL(svg));
     } catch (error) {
       this.setQrUrl(null);
-      this.sessionError.set(message(error));
+      this.sessionError.set(errorMessage(error));
     }
   }
 
@@ -448,12 +453,13 @@ export class AttendancePage {
 
   // ── List ──
 
-  /** quiet: background refresh, keeps the table on screen and ignores errors. */
+  /** quiet: background refresh; keeps the table on screen, ignores errors and never overlaps another refresh. */
   async load(quiet = false): Promise<void> {
     const eventId = this.eventId();
-    if (!eventId) return;
+    if (!eventId || (quiet && this.refreshing)) return;
     const id = ++this.requestId;
-    if (!quiet) {
+    if (quiet) this.refreshing = true;
+    else {
       this.loading.set(true);
       this.error.set('');
     }
@@ -463,47 +469,49 @@ export class AttendancePage {
     } catch (error) {
       if (id === this.requestId && !quiet) {
         this.result.set(null);
-        this.error.set(message(error));
+        this.error.set(errorMessage(error));
       }
     } finally {
+      if (quiet) this.refreshing = false;
       if (id === this.requestId) this.loading.set(false);
     }
   }
 
   // ── Manual change ──
 
-  protected startManual(row: AttendanceRow, result: AttendanceResult): void {
-    this.historyFor.set(null);
-    this.reason.set('');
-    this.formError.set('');
-    this.editing.set({ row, result });
+  protected startManual(row: Row, result: AttendanceResult): void {
+    this.historyView.set(null);
+    this.manual.set({ row, result, reason: '', error: '' });
+  }
+
+  protected setReason(reason: string): void {
+    this.manual.update((m) => m && { ...m, reason });
   }
 
   protected async saveManual(): Promise<void> {
-    const ed = this.editing();
+    const m = this.manual();
     const eventId = this.eventId();
-    const reason = this.reason().trim();
-    if (!ed || !eventId || !reason || this.saving()) return;
+    const reason = m?.reason.trim();
+    if (!m || !eventId || !reason || this.saving()) return;
     this.saving.set(true);
-    this.formError.set('');
     try {
-      await this.attendance.setManual(eventId, ed.row.registrationId, {
-        result: ed.result,
-        version: ed.row.attendanceVersion,
-        registrationVersion: ed.row.registrationVersion,
+      await this.attendance.setManual(eventId, m.row.registrationId, {
+        result: m.result,
+        version: m.row.attendanceVersion,
+        registrationVersion: m.row.registrationVersion,
         reason,
       });
-      this.editing.set(null);
-      this.toast.success(ed.result === 'PRESENT' ? `Đã ghi nhận ${ed.row.fullName} có mặt.` : `Đã bỏ ghi nhận của ${ed.row.fullName}.`);
+      this.manual.set(null);
+      this.toast.success(m.result === 'PRESENT' ? `Đã ghi nhận ${m.row.fullName} có mặt.` : `Đã bỏ ghi nhận của ${m.row.fullName}.`);
       await this.load(true);
     } catch (error) {
       if (error instanceof ApiError && error.code === 'VERSION_CONFLICT') {
         // Never overwrite a newer result: reload and let the organizer decide again.
-        this.editing.set(null);
+        this.manual.set(null);
         this.toast.error('Kết quả của sinh viên này vừa thay đổi (ví dụ vừa quét QR). Danh sách đã được tải lại, hãy kiểm tra rồi thao tác lại.');
         await this.load(true);
       } else {
-        this.formError.set(message(error));
+        this.manual.update((current) => current && { ...current, error: errorMessage(error) });
       }
     } finally {
       this.saving.set(false);
@@ -512,25 +520,16 @@ export class AttendancePage {
 
   // ── History ──
 
-  async loadHistory(row: AttendanceRow, page: number): Promise<void> {
+  async loadHistory(row: Row, page: number): Promise<void> {
     const eventId = this.eventId();
     if (!eventId) return;
-    this.editing.set(null);
-    this.historyFor.set(row);
-    this.historyPage.set(page);
-    this.historyLoading.set(true);
-    this.historyError.set('');
+    this.manual.set(null);
+    this.historyView.update((h) => ({ row, data: h?.row.registrationId === row.registrationId ? h.data : null, loading: true, error: '' }));
     try {
-      const result = await this.attendance.history(eventId, row.registrationId, page);
-      if (this.historyFor()?.registrationId === row.registrationId) this.history.set(result);
+      const data = await this.attendance.history(eventId, row.registrationId, page);
+      this.historyView.update((h) => (h?.row.registrationId === row.registrationId ? { ...h, data, loading: false } : h));
     } catch (error) {
-      this.historyError.set(message(error));
-    } finally {
-      this.historyLoading.set(false);
+      this.historyView.update((h) => (h?.row.registrationId === row.registrationId ? { ...h, loading: false, error: errorMessage(error) } : h));
     }
   }
-}
-
-function message(error: unknown): string {
-  return error instanceof Error && error.message ? error.message : 'Không thực hiện được. Vui lòng thử lại.';
 }
