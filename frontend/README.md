@@ -13,7 +13,7 @@ features/admin           /admin/accounts: danh sách/tìm/phân trang/cấp/khó
 features/events          /manage (organizer: nháp, sửa, công bố), /events + /events/:id (sinh viên xem sự kiện đã công bố)
 features/registrations   I2: khung đăng ký trên /events/:id, /my-events (sinh viên), /participants (organizer)
 features/attendance      I3: models + AttendanceApi (12 endpoint), /attendance (organizer: phiên QR, danh sách, thủ công, lịch sử)
-features/scan            I3: /scan (sinh viên quét QR) — đang làm
+features/scan            I3: /scan (sinh viên quét QR, @zxing/browser)
 features/reports         I3: /reports (organizer: thống kê, chi tiết phân trang, tải CSV theo bộ lọc)
 features/system          /system: kiểm tra /api/health + mockup tham khảo
 shared/                  icon, page-header, coming-soon
@@ -26,7 +26,7 @@ shared/                  icon, page-header, coming-soon
   - `/my-events`: đăng ký của sinh viên, lọc trạng thái, phân trang; trạng thái nằm trên URL.
   - `/participants?event=<id>`: organizer chọn sự kiện đã công bố, xem số đã đăng ký/chờ/còn trống, bảng sinh viên, lọc trạng thái. Ô tìm chỉ lọc trong trang hiện tại vì API chưa có tham số tìm kiếm; danh sách chọn sự kiện lấy tối đa 100 sự kiện.
   - Form sửa sự kiện: lỗi 409 `CAPACITY_BELOW_REGISTERED` hiện tại ô sức chứa, `REGISTERED_ELIGIBILITY_CHANGE` tại khoa/năm.
-- I3: `/attendance` đã có phiên QR/điểm danh thủ công/lịch sử; `/reports` đã nối báo cáo + CSV; `/scan` vẫn là trang "Đang xây dựng". Mockup tham khảo giữ trong `public/mockup/app.js`.
+- I3: `/attendance` đã có phiên QR/điểm danh thủ công/lịch sử; `/reports` đã nối báo cáo + CSV; `/scan` quét QR bằng camera → xem trước → Xác nhận → check-in. Mockup tham khảo giữ trong `public/mockup/app.js`.
 - Giao diện dùng CSS của mockup (`src/styles.css`, phần đầu) + lớp Angular ở cuối file. Phần ngoài phạm vi (category, check-out, kết thúc thủ công) giữ trong comment `DEFERRED`, không xóa.
 
 ## I3 — phần nền dùng chung và chia việc
@@ -40,7 +40,7 @@ Hợp đồng API: `docs/api/I3.md`. Phần nền đã có, các màn hình ch�
 
 | Màn | Route / file | Người làm |
 | --- | --- | --- |
-| A. Điểm danh QR (sinh viên) | `/scan` → `features/scan/scan.page.ts` (đang là trang tạm, thay file này) | Người 2 |
+| A. Điểm danh QR (sinh viên) | `/scan` → `features/scan/scan.page.ts` | Người 2 |
 | B. Điểm danh (organizer) | `/attendance` → `features/attendance/attendance.page.ts` | Trinh — đã xong |
 | C. Báo cáo + CSV (organizer) | `/reports` → `features/reports/reports.page.ts` + `.html` + `.css` | Đã triển khai; xem kiểm thử bên dưới |
 

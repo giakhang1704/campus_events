@@ -73,14 +73,14 @@ type Row = AttendanceRow & { initials: string; state: { label: string; css: stri
               <h3 id="qr-heading">Phiên điểm danh QR</h3>
               <p class="small-text muted">Mở được từ {{ qrOpensText() }} đến {{ stamp(e.endsAt) }}.</p>
             </div>
-            <span [class]="session()?.active ? 'badge blue' : 'badge gray'">{{ session()?.active ? 'Đang mở' : 'Chưa mở' }}</span>
+            <span [class]="sessionBadge().css">{{ sessionBadge().label }}</span>
           </div>
 
           @if (sessionLoading()) {
             <div class="sk sk-line" aria-hidden="true"></div>
           } @else if (session()?.active) {
             <div class="notice">Sinh viên quét mã bên cạnh rồi bấm Xác nhận trên điện thoại. Mở lại khi phiên còn hiệu lực sẽ giữ nguyên mã, không gia hạn.</div>
-            <button type="button" class="block" [disabled]="sessionBusy()" (click)="closeSession()"><app-icon name="lock" /> Đóng phiên</button>
+            <button type="button" class="block" [disabled]="sessionBusy()" (click)="closeSession()"><app-icon name="lock" /> {{ sessionBusy() ? 'Đang đóng…' : 'Đóng điểm danh' }}</button>
           } @else {
             @if (session(); as old) {
               <p class="small-text muted">Phiên trước {{ old.closedAt ? 'đã đóng lúc ' + time(old.closedAt) : 'đã hết hạn lúc ' + time(old.expiresAt) }}. Mở phiên mới sẽ tạo mã mới.</p>
@@ -96,7 +96,7 @@ type Row = AttendanceRow & { initials: string; state: { label: string; css: stri
               </select>
             </label>
             <button type="button" class="primary block" [disabled]="sessionBusy() || qrWindow() !== 'OPEN'" (click)="openSession()">
-              <app-icon name="qr" /> {{ sessionBusy() ? 'Đang mở…' : 'Mở phiên QR' }}
+              <app-icon name="qr" /> {{ sessionBusy() ? 'Đang mở…' : 'Mở điểm danh' }}
             </button>
           }
           @if (sessionError(); as err) {
@@ -111,7 +111,7 @@ type Row = AttendanceRow & { initials: string; state: { label: string; css: stri
             <p class="qr-caption">Hết hạn lúc {{ time(session()!.expiresAt) }} · còn <b>{{ remaining() }}</b></p>
           } @else {
             <div class="qr-empty"><app-icon name="qr" /></div>
-            <p class="qr-caption">{{ session()?.active ? 'Đang tải mã QR…' : 'Mã QR hiện ở đây khi phiên được mở.' }}</p>
+            <p class="qr-caption">{{ !session()?.active ? 'Mã QR hiện ở đây khi phiên được mở.' : sessionError() ? 'Chưa hiển thị được mã QR.' : 'Đang tải mã QR…' }}</p>
           }
         </section>
       </div>
@@ -298,6 +298,12 @@ export class AttendancePage {
   });
   /** Manual recording opens with the QR window and stays open after the event ended. */
   protected readonly manualOpen = computed(() => this.qrWindow() !== 'BEFORE');
+  /** Đang mở = active; Đã đóng = the last session was closed or expired; Chưa mở = no session yet. */
+  protected readonly sessionBadge = computed(() => {
+    const s = this.session();
+    if (s?.active) return { label: 'Đang mở', css: 'badge blue' };
+    return s ? { label: 'Đã đóng', css: 'badge gray' } : { label: 'Chưa mở', css: 'badge gray' };
+  });
   protected readonly remaining = computed(() => formatCountdown(Date.parse(this.session()?.expiresAt ?? ''), this.now()));
 
   // ── Attendance list ──
@@ -427,7 +433,11 @@ export class AttendancePage {
       this.session.set(await this.attendance.closeSession(eventId, s.id));
       this.toast.success('Đã đóng phiên QR. Mã cũ không còn dùng được.');
     } catch (error) {
-      this.sessionError.set(errorMessage(error));
+      // The session may still be open (or already closed elsewhere): show the server's state, never a guess.
+      const message = errorMessage(error);
+      this.toast.error('Đóng điểm danh chưa thành công. Đã tải lại trạng thái phiên từ máy chủ.');
+      await this.loadSession();
+      this.sessionError.set(`Đóng điểm danh chưa thành công: ${message}`);
     } finally {
       this.sessionBusy.set(false);
     }

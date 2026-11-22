@@ -63,7 +63,7 @@ const at = inMinutes;
     assert.equal((await page.locator('.stat.green strong').innerText()).trim(), '0');
 
     // Open a QR session: image + countdown.
-    await page.getByRole('button', { name: /Mở phiên QR/ }).click();
+    await page.getByRole('button', { name: /Mở điểm danh/ }).click();
     await page.getByRole('img', { name: 'Mã QR điểm danh' }).waitFor();
     await page.getByText(/còn \d\d:\d\d/).waitFor();
     assert.equal(await page.getByText('Đang mở', { exact: true }).count(), 1);
@@ -117,10 +117,10 @@ const at = inMinutes;
     await page.setViewportSize({ width: 1440, height: 1000 });
 
     // Close the session: the image goes away and the old code no longer works.
-    await page.getByRole('button', { name: /Đóng phiên/ }).click();
+    await page.getByRole('button', { name: /Đóng điểm danh/ }).click();
     await page.getByText('Đã đóng phiên QR', { exact: false }).waitFor();
     await page.getByRole('img', { name: 'Mã QR điểm danh' }).waitFor({ state: 'detached' });
-    await page.getByRole('button', { name: /Mở phiên QR/ }).waitFor();
+    await page.getByRole('button', { name: /Mở điểm danh/ }).waitFor();
 
     assert.deepEqual(errors, [], 'Uncaught page errors: ' + errors.join(' | '));
     console.log('I3 attendance UI checks passed.');
