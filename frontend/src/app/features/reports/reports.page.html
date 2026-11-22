@@ -1,0 +1,89 @@
+<app-page-header title="Báo cáo sự kiện">
+  <app-owned-event-select />
+</app-page-header>
+
+<app-owned-event-states />
+@if (!picker.loading() && !picker.error() && picker.selected()) {
+  <div class="toolbar report-toolbar">
+    <label class="report-filter">Trạng thái đăng ký
+      <select class="role-select" aria-label="Lọc lượt đăng ký" (change)="setFilter($any($event.target).value)">
+        @for (f of filters; track f.value) { <option [value]="f.value" [selected]="f.value === filter()">{{ f.label }}</option> }
+      </select>
+    </label>
+    <div class="actions">
+      <button type="button" [disabled]="loading()" (click)="load()">Tải lại</button>
+      <button type="button" class="primary" [disabled]="loading() || !!error() || !result() || exporting()" (click)="exportCsv()">
+        <app-icon name="download" /> {{ exporting() ? 'Đang tải CSV…' : 'Tải CSV' }}
+      </button>
+    </div>
+  </div>
+  @if (exportError()) { <div class="notice report-export-error" role="alert">{{ exportError() }}</div> }
+  @if (exporting()) { <span class="sr-only" role="status">Đang chuẩn bị báo cáo CSV…</span> }
+
+  <div [attr.aria-busy]="loading()">
+    @if (loading()) {
+      <span class="sr-only" role="status">Đang tải báo cáo…</span>
+      <div class="stats" aria-hidden="true">
+        @for (n of skeleton; track n) { <div class="stat"><span class="sk sk-line short"></span><span class="sk sk-line heading"></span></div> }
+      </div>
+      <div class="panel" aria-hidden="true"><span class="sk sk-line title"></span><span class="sk sk-line"></span><span class="sk sk-line"></span></div>
+    } @else if (error()) {
+      <div class="empty panel" role="alert">
+        <app-icon name="info" /><h2>Chưa tải được báo cáo</h2><p>{{ error() }}</p>
+        <button type="button" class="primary" (click)="load()">Thử lại</button>
+      </div>
+    } @else if (summary(); as s) {
+      <section class="report-overview" aria-label="Thông tin báo cáo">
+        <div class="report-heading">
+          <h2>{{ s.title }}</h2>
+          <span [class]="s.hasEnded ? 'badge gray' : 'badge amber'">{{ s.hasEnded ? 'Đã kết thúc' : 'Tạm tính' }}</span>
+        </div>
+        <div class="report-meta">
+          <span>Cập nhật {{ stamp(s.generatedAt) }} · Giờ Việt Nam</span>
+          <span>Danh sách chờ: <b>{{ count(s.waitingCount) }}</b> · Đã hủy: <b>{{ count(s.cancelledCount) }}</b></span>
+        </div>
+      </section>
+
+      <section aria-label="Tổng quan báo cáo" class="stats report-stats">
+        <div class="stat"><div class="stat-top">Đăng ký chính thức <app-icon name="users" /></div><strong>{{ count(s.registeredCount) }}</strong></div>
+        <div class="stat green"><div class="stat-top">Có mặt <app-icon name="check" /></div><strong>{{ count(s.presentCount) }}</strong></div>
+        <div class="stat"><div class="stat-top">{{ s.hasEnded ? 'Vắng' : 'Chưa ghi nhận' }} <app-icon name="clock" /></div><strong>{{ count(s.hasEnded ? (s.absentCount ?? 0) : s.notRecordedCount) }}</strong></div>
+        <div class="stat"><div class="stat-top">Tỷ lệ có mặt <app-icon name="chart" /></div><strong class="report-rate">{{ rate() }}</strong><small>Có mặt / Đăng ký chính thức</small></div>
+      </section>
+
+      <!-- DEFERRED: check-out, xuất Excel/PDF và tổng hợp nhiều sự kiện chưa có API. -->
+
+      <section class="panel" aria-labelledby="report-details-title">
+        <div class="section-head report-details-head"><h2 id="report-details-title">Chi tiết người tham gia</h2><span class="badge gray">{{ filterLabel() }}</span></div>
+        @if (!rows().length) {
+          <div class="empty">
+            <app-icon name="users" /><h3>Không có lượt đăng ký phù hợp</h3>
+            <p>{{ page() ? 'Về trang đầu hoặc chọn trạng thái khác.' : 'Thử chọn trạng thái khác.' }}</p>
+            @if (page()) { <button type="button" (click)="navigate({ page: null })">Về trang đầu</button> }
+          </div>
+        } @else {
+          <p class="small-text muted report-table-hint">Vuốt ngang bảng để xem đủ các cột.</p>
+          <div class="table-wrap">
+            <table>
+              <caption class="sr-only">Chi tiết điểm danh — {{ filterLabel() }} — {{ s.title }}</caption>
+              <thead><tr><th scope="col">Sinh viên</th><th scope="col">MSSV</th><th scope="col">Khoa · Năm</th><th scope="col">Đăng ký</th><th scope="col">Điểm danh</th><th scope="col">Ghi nhận</th></tr></thead>
+              <tbody>
+                @for (row of rows(); track row.registrationId) {
+                  <tr>
+                    <td><strong>{{ row.fullName }}</strong><small>{{ row.email }}</small></td>
+                    <td class="nowrap">{{ row.studentCode }}</td>
+                    <td>{{ row.department }}<small>Năm {{ row.studyYear }}</small></td>
+                    <td><span [class]="row.registrationBadge.css">{{ row.registrationBadge.label }}</span></td>
+                    <td><span [class]="row.badge.css">{{ row.badge.label }}</span></td>
+                    <td>{{ row.recorded }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+        <app-pager [page]="page()" [hasNext]="result()?.hasNext ?? false" (pageChange)="navigate({ event: s.eventId, page: pageToQuery($event) })" />
+      </section>
+    }
+  </div>
+}

@@ -14,7 +14,7 @@ features/events          /manage (organizer: nháp, sửa, công bố), /events 
 features/registrations   I2: khung đăng ký trên /events/:id, /my-events (sinh viên), /participants (organizer)
 features/attendance      I3: models + AttendanceApi (12 endpoint), /attendance (organizer: phiên QR, danh sách, thủ công, lịch sử)
 features/scan            I3: /scan (sinh viên quét QR) — đang làm
-features/reports         I3: /reports (organizer: báo cáo + CSV) — đang làm
+features/reports         I3: /reports (organizer: thống kê, chi tiết phân trang, tải CSV theo bộ lọc)
 features/system          /system: kiểm tra /api/health + mockup tham khảo
 shared/                  icon, page-header, coming-soon
 ```
@@ -26,7 +26,7 @@ shared/                  icon, page-header, coming-soon
   - `/my-events`: đăng ký của sinh viên, lọc trạng thái, phân trang; trạng thái nằm trên URL.
   - `/participants?event=<id>`: organizer chọn sự kiện đã công bố, xem số đã đăng ký/chờ/còn trống, bảng sinh viên, lọc trạng thái. Ô tìm chỉ lọc trong trang hiện tại vì API chưa có tham số tìm kiếm; danh sách chọn sự kiện lấy tối đa 100 sự kiện.
   - Form sửa sự kiện: lỗi 409 `CAPACITY_BELOW_REGISTERED` hiện tại ô sức chứa, `REGISTERED_ELIGIBILITY_CHANGE` tại khoa/năm.
-- Các route `scan`, `attendance`, `reports` hiện trang "Đang xây dựng"; `data.mockupFn` ghi hàm nguồn trong `public/mockup/app.js`.
+- I3: `/attendance` đã có phiên QR/điểm danh thủ công/lịch sử; `/reports` đã nối báo cáo + CSV; `/scan` vẫn là trang "Đang xây dựng". Mockup tham khảo giữ trong `public/mockup/app.js`.
 - Giao diện dùng CSS của mockup (`src/styles.css`, phần đầu) + lớp Angular ở cuối file. Phần ngoài phạm vi (category, check-out, kết thúc thủ công) giữ trong comment `DEFERRED`, không xóa.
 
 ## I3 — phần nền dùng chung và chia việc
@@ -42,7 +42,7 @@ Hợp đồng API: `docs/api/I3.md`. Phần nền đã có, các màn hình ch�
 | --- | --- | --- |
 | A. Điểm danh QR (sinh viên) | `/scan` → `features/scan/scan.page.ts` (đang là trang tạm, thay file này) | Người 2 |
 | B. Điểm danh (organizer) | `/attendance` → `features/attendance/attendance.page.ts` | Trinh — đã xong |
-| C. Báo cáo + CSV (organizer) | `/reports` → `features/reports/reports.page.ts` (đang là trang tạm, thay file này) | Người 3 |
+| C. Báo cáo + CSV (organizer) | `/reports` → `features/reports/reports.page.ts` + `.html` + `.css` | Đã triển khai; xem kiểm thử bên dưới |
 
 Quy ước để không xung đột: mỗi người chỉ sửa trong thư mục màn của mình; route đã khai báo sẵn trong `app.routes.ts`. Cần đổi file dùng chung (models, service, `styles.css`) thì báo nhóm trước. Màn A tự thêm thư viện đọc QR (`package.json`) trong PR của mình; camera chỉ chạy trên HTTPS hoặc `localhost`. Không gọi check-in ngay khi camera đọc được mã: preview → người dùng bấm Xác nhận → check-in; 409 `CONFIRMATION_STALE` thì preview lại và hỏi lại.
 
@@ -59,6 +59,18 @@ Chạy local cần migration I3 và khóa QR: `./scripts/setup-local.ps1` (thêm
 I2: `./scripts/test-i2.ps1 -PlaywrightModule <đường dẫn module playwright>` chạy kiểm thử HTTP I2 rồi `scripts/smoke/i2_ui.cjs` trên stack test riêng (API 18081, Angular 14201; mặc định Edge, đổi bằng biến `I2_UI_CHANNEL`). Script tự tạo sinh viên/sự kiện trong database tmpfs, không chạm dữ liệu local. Ảnh chụp lưu ở `frontend/.angular/i2-*.png`.
 
 I3 màn B: `node scripts/smoke/i3_attendance_ui.cjs <module playwright>` trên stack test I3 (`compose.i3-test.yaml`, API 18082) với Angular trỏ `/api` tới API đó; biến `TEST_ACCOUNT_PASSWORD`, `I3_UI_BASE_URL` (mặc định http://127.0.0.1:14202). Script tự tạo sự kiện bắt đầu sau 10 phút và ba sinh viên trong database tmpfs.
+
+I3 màn C, từ **root repository**:
+
+```powershell
+npm.cmd ci --prefix frontend
+npm.cmd ci --prefix scripts/smoke
+./scripts/test-i3-reports.ps1
+```
+
+Runner tự chạy API 18084 + Angular 14204 và PostgreSQL tmpfs thuộc project `campus-events-i3-reports-test`, tạo dữ liệu thử, dùng Edge headless, tắt email, rồi dừng stack test kể cả khi kiểm thử thất bại. Playwright được khóa phiên bản trong `scripts/smoke/package-lock.json`, độc lập dependency ứng dụng; không cần cài browser bổ sung nếu máy đã có Edge. Có thể dùng `-PlaywrightModule <đường dẫn module playwright>` nếu đã cài module riêng. Không dùng `.env` hoặc database phát triển. Log, ảnh desktop/mobile và CSV thực tải ở `frontend/.angular/i3-reports/` (Git ignore).
+
+Màn `/reports?event=<id>` chỉ dành cho Organizer. Chọn sự kiện đã công bố → xem thống kê → lọc lượt đăng ký → tải CSV. Lọc/phân trang được giữ trên URL; CSV chứa toàn bộ dữ liệu của bộ lọc, không chỉ trang đang xem. Tổng quan luôn tính trên REGISTERED hiện hành. Trước `ends_at` hiển thị số liệu tạm/chưa ghi nhận; sau đó mới hiển thị vắng. Không có đăng ký thì tỷ lệ là "Không áp dụng". Nút Tải lại lấy snapshot mới; không tự cập nhật liên tục. Hướng dẫn, phạm vi kiểm thử và giới hạn: [I3_REPORTS_UI.md](../docs/testing/I3_REPORTS_UI.md).
 
 ## Phiên bản dependency — rà soát 12/11/2026
 

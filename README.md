@@ -162,7 +162,7 @@ Workflow Git theo báo cáo mục 1.7.2: feature branch + Pull Request, ít nh�
 
 Backend tổ chức theo tầng Controller → Service interface/implementation → Repository interface/JDBC implementation. Xem [backend/README.md](backend/README.md) để đọc tree, cơ chế transaction, luồng xử lý và lệnh chạy. Giữ nguyên API/database; refactor chưa bổ sung chức năng đăng ký sự kiện của I2.
 
-Chưa deploy cloud; backend I3 có QR/điểm danh/CSV nhưng frontend tương ứng chưa tích hợp. Dependency frontend tại lần rà soát 12/11/2026: audit production 0 cảnh báo, audit đầy đủ còn 16 moderate trong toolchain CLI, không có high/critical.
+Chưa deploy cloud. Trên nhánh I3 frontend, màn Organizer điểm danh và báo cáo/CSV đã nối API; màn sinh viên quét QR còn cần hoàn tất. Dependency frontend tại lần rà soát 12/11/2026: audit production 0 cảnh báo, audit đầy đủ còn 16 moderate trong toolchain CLI, không có high/critical.
 
 ## Increment 2 — backend
 
@@ -194,7 +194,9 @@ I2 test có PostgreSQL tmpfs riêng (không dùng volume local) và mail giả l
 - [x] A10.1: summary/chi tiết phân trang, tỷ lệ chỉ tính REGISTERED, vắng suy ra sau ends_at, không chia cho 0.
 - [x] A10.2: CSV UTF-8 BOM, escape nội dung/công thức, số liệu cùng snapshot; giới hạn 10.000 dòng/export có thông báo rõ.
 - [x] Kiểm thử backend I3, regression I1/I2 và Docker localhost; không reset volume phát triển hoặc gửi email thật.
-- [ ] Tích hợp frontend I2/I3, camera/scan QR và báo cáo/CSV UI; demo đầu cuối.
+- [x] Frontend I2: đăng ký/hủy, danh sách cá nhân và người tham gia đã nối API.
+- [x] Frontend I3 Organizer: phiên QR/điểm danh thủ công/lịch sử; màn báo cáo có thống kê, chi tiết phân trang và CSV theo bộ lọc.
+- [ ] Frontend I3 Student: camera/scan QR và trạng thái điểm danh ở chi tiết sự kiện; demo đầu cuối.
 - [ ] A11/A12: deployment/restore, QA/review và các checkpoint CP3/CP4 theo báo cáo; chưa đánh dấu đã thử Lightsail.
 
 ```powershell
@@ -203,6 +205,16 @@ mvn -f backend/pom.xml test
 ```
 
 API test tại localhost:18082 dùng project/DB tmpfs riêng, không dùng database local. [API/cấu hình I3](docs/api/I3.md), [kết quả và giới hạn](docs/testing/I3_RESULTS.md). Các task là phần chia nhỏ từ kế hoạch, không cộng thêm giờ.
+
+Kiểm thử màn **Báo cáo + CSV** bằng trình duyệt thật, từ root repository (Docker Desktop đang chạy, Node 24 và Microsoft Edge):
+
+```powershell
+npm.cmd ci --prefix frontend
+npm.cmd ci --prefix scripts/smoke
+./scripts/test-i3-reports.ps1
+```
+
+API 18084, Angular 14204 và PostgreSQL tmpfs riêng; tự dừng sau test, không đụng database local hoặc gửi email thật. Cách xem giao diện, các ca thử và bằng chứng: [I3_REPORTS_UI.md](docs/testing/I3_REPORTS_UI.md).
 
 ## Chạy từng phần, PostgreSQL và mockup
 
