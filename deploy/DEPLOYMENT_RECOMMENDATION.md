@@ -20,6 +20,8 @@ Không chuyển token sang localStorage để xử lý lỗi deploy. Cookie bả
 
 ## Các bước
 
+Nếu build báo Maven Central `429 Too Many Requests`: Dockerfile dùng mirror Central trên Google Cloud Storage và retry tối đa 3 lần, giữ nguyên version dependency và các test. Sau khi cập nhật source, chọn Manual Deploy → Deploy latest commit trên Render. Hướng dẫn mirror: [Google Cloud](https://docs.cloud.google.com/docs/buildpacks/java#google_cloud_hosted_maven_central_mirror).
+
 1. Chốt nhánh chứa I1/I2/I3, phần chi tiết điểm danh và sửa nội dung dài. Hoàn thành review/regression trước khi đưa candidate lên cloud.
 2. Tạo project Neon PostgreSQL, chọn vùng gần backend. Database rỗng được Flyway tạo/nâng schema khi backend khởi động; không chạy baseline SQL thủ công trước. Database I3 cũ cần backup và bước nhận baseline một lần theo [OPERATIONS.md](OPERATIONS.md). 12 khoa đã đồng bộ riêng; nhập đơn vị tổ chức dùng thật, không bật dev-seed.
 3. Tạo Render Blueprint từ `render.yaml`, chọn đúng nhánh candidate. Hoặc tạo Web Service Docker thủ công: **Root Directory `backend`**, Dockerfile `Dockerfile`, health check `/api/live`. Cấu hình đã có SERVER_ADDRESS=0.0.0.0 và đọc PORT. `/api/live` không đánh thức database; kiểm tra `/api/health` riêng sau triển khai. Blueprint dùng plan Free, tự deploy tắt; kiểm tra plan trên dashboard trước khi tạo. [Render: Blueprint](https://render.com/docs/blueprint-spec), [port](https://render.com/docs/web-services#port-binding).
