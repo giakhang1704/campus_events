@@ -24,6 +24,8 @@ try {
  if ($LASTEXITCODE -ne 0) { throw 'Student attendance UI checks failed.' }
  & node scripts/smoke/system_regressions_ui.cjs $PlaywrightModule
  if ($LASTEXITCODE -ne 0) { throw 'System regression UI checks failed.' }
+ & node scripts/smoke/startup_ui.cjs $PlaywrightModule
+ if ($LASTEXITCODE -ne 0) { throw 'Startup UI checks failed.' }
 } finally {
  if ($uiProcess) { $uiProcess.Refresh(); if (!$uiProcess.HasExited) { Stop-Process -Id $uiProcess.Id } }
  [Environment]::SetEnvironmentVariable('I3_DETAIL_UI_BASE_URL', $previousBase, 'Process')

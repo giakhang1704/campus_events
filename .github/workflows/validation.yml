@@ -59,6 +59,7 @@ jobs:
           done
           node scripts/smoke/i3_student_attendance_ui.cjs ./node_modules/playwright
           node scripts/smoke/system_regressions_ui.cjs ./node_modules/playwright
+          node scripts/smoke/startup_ui.cjs ./node_modules/playwright
       - uses: actions/upload-artifact@v4
         if: always()
         with:
