@@ -104,7 +104,8 @@ export class AuthComponent {
         this.message.set('Tạo tài khoản thành công. Bạn có thể đăng nhập.');
       } else {
         await this.api.login(this.email, this.password);
-        this.password = '';
+        // Clear credentials and submitted/touched state together while the route changes.
+        form.resetForm({ email: this.email, password: '' });
       }
     } catch (e) {
       if (e instanceof ApiError) this.fields.set(e.fields);
