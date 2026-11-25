@@ -1,6 +1,6 @@
 # Đề xuất deploy BKevent — 25/11/2026
 
-Đề xuất cho demo nhóm: **Angular trên Vercel, Spring Boot Docker trên Render, PostgreSQL trên Neon, email qua Brevo HTTP**. Đã có `render.yaml` và `frontend/vercel.mjs` để cấu hình dịch vụ; chưa tạo môi trường cloud hoặc nghiệm thu HTTPS. Giữ backend phân tầng hiện tại.
+Đề xuất cho demo nhóm: **Angular trên Vercel, Spring Boot Docker trên Render, PostgreSQL trên Neon, email qua Brevo HTTP**. Đã có `render.yaml` và `frontend/vercel.json` để cấu hình dịch vụ; chưa tạo môi trường cloud hoặc nghiệm thu HTTPS. Giữ backend phân tầng hiện tại.
 
 Hệ thống vẫn theo ba tầng frontend/API/database; bên trong backend là layered monolith (Controller → Service → Repository). Việc đặt các tầng trên các dịch vụ khác nhau không biến backend thành microservices.
 
@@ -26,7 +26,7 @@ Nếu build báo Maven Central `429 Too Many Requests`: Dockerfile dùng mirror 
 2. Tạo project Neon PostgreSQL, chọn vùng gần backend. Database rỗng được Flyway tạo/nâng schema khi backend khởi động; không chạy baseline SQL thủ công trước. Database I3 cũ cần backup và bước nhận baseline một lần theo [OPERATIONS.md](OPERATIONS.md). 12 khoa đã đồng bộ riêng; nhập đơn vị tổ chức dùng thật, không bật dev-seed.
 3. Tạo Render Blueprint từ `render.yaml`, chọn đúng nhánh candidate. Hoặc tạo Web Service Docker thủ công: **Root Directory `backend`**, Dockerfile `Dockerfile`, health check `/api/live`. Cấu hình đã có SERVER_ADDRESS=0.0.0.0 và đọc PORT. `/api/live` không đánh thức database; kiểm tra `/api/health` riêng sau triển khai. Blueprint dùng plan Free, tự deploy tắt; kiểm tra plan trên dashboard trước khi tạo. [Render: Blueprint](https://render.com/docs/blueprint-spec), [port](https://render.com/docs/web-services#port-binding).
 4. Đặt secrets/environment dưới đây ở backend. Tạo Admin đầu tiên bằng bootstrap; sau khi kiểm tra đăng nhập, tắt bootstrap và gỡ mật khẩu bootstrap khỏi cấu hình. Giữ dev-seed tắt.
-5. Tạo Vercel project: Root Directory `frontend`, Node 24. Đặt biến **BACKEND_ORIGIN=https://<tên-backend>.onrender.com** cho Preview và Production tương ứng, rồi deploy. `frontend/vercel.mjs` đã khai báo install/build/output, proxy và SPA fallback; thiếu biến hoặc URL chứa path/credential thì dừng. Chạy preview để kiểm tra đường dẫn trực tiếp.
+5. Tạo Vercel project: Root Directory `frontend`, Node 24. Proxy đã trỏ tới **https://bkevent-api.onrender.com**; không cần biến BACKEND_ORIGIN, rồi deploy. `frontend/vercel.json` đã khai báo install/build/output, proxy và SPA fallback. Chạy preview để kiểm tra đường dẫn trực tiếp.
 6. Test qua HTTPS: Admin cấp Organizer → đổi mật khẩu → tạo/công bố → Student đăng ký → mail → quét QR/xác nhận → trang chi tiết → thủ công/lịch sử → báo cáo/CSV → logout và thử request trái quyền. Sau đó kiểm tra restart backend vẫn đọc phiên/QR bằng khóa ổn định, backup/restore và log lỗi.
 
 ## Environment backend
@@ -55,13 +55,7 @@ Ban đầu MAIL_ENABLED=false để kiểm tra tài khoản/dữ liệu; xác mi
 
 ## Cấu hình Vercel đã có
 
-`frontend/vercel.mjs` export cấu hình theo [Vercel programmatic configuration](https://vercel.com/docs/project-configuration/vercel-ts). Biến BACKEND_ORIGIN là địa chỉ public của backend, không chứa API key. Không tạo thêm `vercel.json` cạnh file này. Có thể kiểm tra config local mà không deploy:
-
-```powershell
-$env:BACKEND_ORIGIN='https://your-backend.onrender.com'
-node -e "import('./frontend/vercel.mjs').then(m => console.log(m.config))"
-Remove-Item Env:BACKEND_ORIGIN
-```
+`frontend/vercel.json` dùng cấu hình JSON tĩnh theo [Vercel configuration](https://vercel.com/docs/project-configuration/vercel-json). Proxy trỏ tới `https://bkevent-api.onrender.com/api/:path*`, có SPA fallback và no-store cho API. Không cần BACKEND_ORIGIN; biến cũ trên Vercel có thể xóa. Nếu đổi hostname backend, sửa destination của rewrite đầu tiên rồi commit/deploy lại. Không đặt secret trong URL này.
 
 Kiểm tra API không bị trả index.html, assets không bị rewrite nhầm, deep link `/events/6`/`/scan`/`/reports` mở được và logout xóa cookie trên đúng frontend domain. Không cache riêng các response phiên/QR/báo cáo của người dùng. Đừng copy nguyên Nginx local sang cloud: upstream `backend:8080` chỉ tồn tại trong mạng Docker Compose.
 
