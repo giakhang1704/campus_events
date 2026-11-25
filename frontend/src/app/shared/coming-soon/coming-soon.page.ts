@@ -18,8 +18,7 @@ import { PageHeaderComponent } from '../page-header/page-header.component';
     <app-page-header [title]="data().title" />
     <div class="empty">
       <app-icon name="calendar" />
-      <h3>Tính năng sắp ra mắt</h3>
-      <p>Chúng tôi đang hoàn thiện mục này. Trong lúc chờ, bạn có thể xem các sự kiện đang mở.</p>
+      <h3>Tính năng chưa khả dụng</h3>
       <a class="button" [routerLink]="session.homeUrl()">Về trang chính</a>
     </div>
   `,

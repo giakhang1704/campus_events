@@ -12,7 +12,6 @@ services:
       - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./database/schema/01_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 5s
@@ -22,8 +21,15 @@ services:
     build: ./backend
     environment:
       SERVER_ADDRESS: 0.0.0.0
+      ATTENDANCE_TOKEN_KEY: ${ATTENDANCE_TOKEN_KEY:-}
       AUTH_COOKIE_SECURE: ${AUTH_COOKIE_SECURE:-false}
+      DB_BASELINE_EXISTING: ${DB_BASELINE_EXISTING:-false}
       TZ: Asia/Ho_Chi_Minh
+      MAIL_ENABLED: ${MAIL_ENABLED:-false}
+      MAIL_IDLE_MAX_MS: ${MAIL_IDLE_MAX_MS:-600000}
+      BREVO_API_KEY: ${BREVO_API_KEY:-}
+      BREVO_SENDER_EMAIL: ${BREVO_SENDER_EMAIL:-}
+      BREVO_SENDER_NAME: ${BREVO_SENDER_NAME:-BKevent}
       DB_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-campus_events_dev}?currentSchema=campus
       DB_USER: ${POSTGRES_USER:-campus_app}
       DB_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
@@ -32,11 +38,18 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent --max-time 3 http://127.0.0.1:$${PORT:-8080}/api/health > /dev/null"]
+      interval: 5s
+      timeout: 4s
+      retries: 24
+      start_period: 20s
   frontend:
     build: ./frontend
     ports:
       - "127.0.0.1:${FRONTEND_PORT:-4200}:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
 volumes:
   postgres_data:

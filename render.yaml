@@ -1,0 +1,34 @@
+# Create a Blueprint manually; this file does not deploy itself.
+services:
+  - type: web
+    name: bkevent-api
+    runtime: docker
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: singapore
+    autoDeployTrigger: "off"
+    healthCheckPath: /api/live
+    envVars:
+      - key: SERVER_ADDRESS
+        value: 0.0.0.0
+      - key: TZ
+        value: Asia/Ho_Chi_Minh
+      - key: AUTH_COOKIE_SECURE
+        value: "true"
+      - key: DB_URL
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: ATTENDANCE_TOKEN_KEY
+        sync: false
+      - key: CAMPUS_DEV_SEED_ENABLED
+        value: "false"
+      - key: CAMPUS_BOOTSTRAP_ENABLED
+        value: "false"
+      - key: MAIL_ENABLED
+        value: "false"
+      - key: MAIL_IDLE_MAX_MS
+        value: "600000"

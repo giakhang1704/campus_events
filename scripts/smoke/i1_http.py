@@ -10,9 +10,9 @@ import urllib.request
 import uuid
 from i1_events import verify_events
 
-BASE = 'http://127.0.0.1:18080/api'
+BASE = os.environ.get('I1_API_BASE', 'http://127.0.0.1:18080/api')
 PASSWORD = os.environ['TEST_ACCOUNT_PASSWORD']
-COMPOSE = ['docker', 'compose', '-p', 'campus-events-i1-test', '-f', 'compose.i1-test.yaml']
+COMPOSE = ['docker', 'compose', '-p', os.environ.get('I1_TEST_PROJECT','campus-events-i1-test'), '-f', os.environ.get('I1_TEST_COMPOSE','compose.i1-test.yaml')]
 
 
 class Client:
@@ -46,10 +46,17 @@ class Client:
 
 
 def sql(query):
-    result = subprocess.run(COMPOSE + ['exec', '-T', 'db', 'psql', '-v', 'ON_ERROR_STOP=1',
-                                     '-U', 'campus_test', '-d', 'campus_i1_test', '-tA'],
-                            input=query, text=True, capture_output=True, check=True)
-    return result.stdout.strip()
+    native = os.environ.get('TEST_NATIVE_PSQL')
+    if native:
+        assert os.environ.get('PGHOST') == '127.0.0.1'
+        assert os.environ.get('PGDATABASE', '').startswith('campus_test_native_')
+        command = [native, '-X', '-v', 'ON_ERROR_STOP=1', '-tA']
+    else:
+        command = COMPOSE + ['exec', '-T', 'db', 'psql', '-v', 'ON_ERROR_STOP=1',
+                            '-U', 'campus_test', '-d', 'campus_i1_test', '-tA']
+    result = subprocess.run(command,
+                            input=query.encode('utf-8'), capture_output=True, check=True)
+    return result.stdout.decode('utf-8').strip()
 
 
 def ready():

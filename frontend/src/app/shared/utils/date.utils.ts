@@ -20,36 +20,38 @@ export function padTwoDigits(value: number): string {
   return String(value).padStart(2, '0');
 }
 
+// Formatters are built once: constructing an Intl.DateTimeFormat is costly, formatting with it is cheap
+// (same idea as number.utils.ts). Tables call these several times per row.
+const zone = { timeZone: VIETNAM_TIME_ZONE } as const;
+const DAY_MONTH = new Intl.DateTimeFormat('en-GB', { ...zone, day: '2-digit', month: '2-digit' });
+const TIME = new Intl.DateTimeFormat('vi-VN', { ...zone, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
+const YEAR = new Intl.DateTimeFormat('en-GB', { ...zone, year: 'numeric' });
+const LONG_DATE = new Intl.DateTimeFormat('vi-VN', { ...zone, weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
+const TILE_DAY = new Intl.DateTimeFormat('en-GB', { ...zone, day: '2-digit' });
+const TILE_MONTH = new Intl.DateTimeFormat('en-GB', { ...zone, month: 'numeric' });
+const TILE_WEEKDAY = new Intl.DateTimeFormat('vi-VN', { ...zone, weekday: 'long' });
+
 /** "11/11". Built from parts because the vi-VN locale would print day + month as "11-11". */
 export function formatDayMonth(iso: string): string {
-  const parts = new Intl.DateTimeFormat('en-GB', { timeZone: VIETNAM_TIME_ZONE, day: '2-digit', month: '2-digit' })
-    .formatToParts(new Date(iso));
+  const parts = DAY_MONTH.formatToParts(new Date(iso));
   const part = (type: string) => parts.find((p) => p.type === type)?.value ?? '';
   return `${part('day')}/${part('month')}`;
 }
 
 /** "08:00" (24-hour clock). */
 export function formatTime(iso: string): string {
-  return new Intl.DateTimeFormat('vi-VN', { timeZone: VIETNAM_TIME_ZONE, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })
-    .format(new Date(iso));
+  return TIME.format(new Date(iso));
 }
 
 /** "12/11/2026" */
 export function formatDate(iso: string): string {
-  const year = new Intl.DateTimeFormat('en-GB', { timeZone: VIETNAM_TIME_ZONE, year: 'numeric' }).format(new Date(iso));
+  const year = YEAR.format(new Date(iso));
   return `${formatDayMonth(iso)}/${year}`;
 }
 
 /** "Thứ Năm, 12/11/2026" (weekday capitalised: the locale prints "thứ Năm"). */
 export function formatLongDate(iso: string): string {
-  const text = new Intl.DateTimeFormat('vi-VN', {
-    timeZone: VIETNAM_TIME_ZONE,
-    weekday: 'long',
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  }).format(new Date(iso));
-  return capitalize(text);
+  return capitalize(LONG_DATE.format(new Date(iso)));
 }
 
 /** "Thứ Năm, 12/11/2026 · 08:00" */
@@ -75,13 +77,21 @@ export function formatTimeRange(startIso: string, endIso: string): string {
   return `${formatTime(startIso)} – ${formatDateTime(endIso)}`;
 }
 
+/** "04:59": minutes and seconds left until `untilMs` (never negative). */
+export function formatCountdown(untilMs: number, nowMs: number): string {
+  const seconds = Math.max(0, Math.ceil((untilMs - nowMs) / 1000));
+  return `${padTwoDigits(Math.floor(seconds / 60))}:${padTwoDigits(seconds % 60)}`;
+}
+
 /** The pieces of the date tile on event cards and the detail banner: "08" / "Tháng 11" / "Chủ Nhật" / "14:00". */
 export function dateTile(iso: string): { day: string; month: string; weekday: string; time: string } {
   const date = new Date(iso);
-  const day = new Intl.DateTimeFormat('en-GB', { timeZone: VIETNAM_TIME_ZONE, day: '2-digit' }).format(date);
-  const month = new Intl.DateTimeFormat('en-GB', { timeZone: VIETNAM_TIME_ZONE, month: 'numeric' }).format(date);
-  const weekday = new Intl.DateTimeFormat('vi-VN', { timeZone: VIETNAM_TIME_ZONE, weekday: 'long' }).format(date);
-  return { day, month: 'Tháng ' + month, weekday: capitalize(weekday), time: formatTime(iso) };
+  return {
+    day: TILE_DAY.format(date),
+    month: 'Tháng ' + TILE_MONTH.format(date),
+    weekday: capitalize(TILE_WEEKDAY.format(date)),
+    time: formatTime(iso),
+  };
 }
 
 function capitalize(text: string): string {

@@ -35,8 +35,30 @@ Single-instance không có high availability; cần test tải và bộ nhớ Ja
 ## Trạng thái bản chạy local
 Đã có Dockerfile frontend/backend và compose.yaml; đã có API tài khoản và nghiệp vụ Organizer tạo/sửa/công bố sự kiện. Angular nhúng mockup public/mockup để xem trước, không coi đó là Angular implementation của toàn bộ chức năng. Xem LOCAL_RUN.md và SMOKE_TEST.md trước khi chạy.
 
-## Module sự kiện Organizer
+## Backend phân tầng — cập nhật 12/11/2026
 
-`events/EventController` nhận request/validation và trả response; `EventService` điều phối quyền sở hữu, version và transaction; `EventRules` chứa quy tắc thuần để unit test; `EventRepository` chứa toàn bộ SQL và đọc eligibility theo lô. `events/model` là snapshot bất biến, không phụ thuộc DTO HTTP; `events/dto` định nghĩa payload và pagination. Module events gọi dịch vụ công khai `AuthService.requireActiveOrganizer` để recheck tài khoản/phiên khi ghi, không viết trực tiếp dữ liệu users.
+Backend hiện là **layered monolith**, tổ chức package theo tầng: `controller`, `service` + `impl`, `repository` + `jdbc`, `dto`, `model`, `mapper`, `validation`, `security`, `exception`, `config`. Các mô tả modular monolith/package theo chức năng ở phần lịch sử trước đây không còn mô tả cách nhóm package hiện hành.
 
-Frontend `features/events` tách model/thời gian, `EventApi`, `OrganizerEventsComponent` và `EventEditorComponent`; template ở file HTML riêng. Không viết SQL hoặc nghiệp vụ phân quyền trong component. Dữ liệu được tải từ API qua lớp core hiện có, không dùng localStorage cho sự kiện thật. Backend tìm/xem sự kiện PUBLISHED đã có trong module events: controller nhận q/page/size/id, service giữ snapshot read-only, repository lọc trạng thái ngay trong SQL và đọc eligibility theo lô. FE Sinh viên và tích hợp đăng ký/email là các phần tiếp theo, không đánh dấu toàn bộ A05.2/I1 đã xong.
+`Controller → IService → ServiceImpl → IRepository → JdbcRepository → PostgreSQL`. Service/Repository có interface; không lộ JdbcTemplate lên tầng nghiệp vụ. Các repository dùng chung transaction do Service mở. Interface là hợp đồng Java, không phải microservice. Toàn bộ backend vẫn deploy thành một JAR/Docker image.
+
+SQL tài khoản/phiên/audit/seed/health đã chuyển vào Repository. Controller không truy cập Repository trực tiếp. Request/response tách khỏi Controller và model nội bộ; AccountMapper chỉ đưa trường công khai vào JSON/audit, EventMapper giữ nguyên payload sự kiện. Security filter/cookie/token tách khỏi cấu hình và Controller.
+
+Công bố sự kiện: EventController → IEventService → EventServiceImpl; gọi IAuthService để recheck tài khoản/phiên và giữ khóa user trong cùng transaction, kiểm tra ownership/version bằng EventRules rồi ghi qua IEventRepository. Kiểm tra khoa/đơn vị qua ICatalogRepository. Đọc danh sách PUBLISHED tiếp tục dùng REPEATABLE_READ để fields và eligibility cùng snapshot; eligibility được đọc theo lô.
+
+Khóa tài khoản: AccountServiceImpl giữ advisory lock trước khi kiểm tra actor/target, bảo vệ Admin cuối cùng, cập nhật trạng thái/auth_version, thu hồi phiên và ghi audit nguyên tử. Preview vẫn không ghi; khi xác nhận sẽ kiểm tra lại điều kiện và version.
+
+Chi tiết cây thư mục, trách nhiệm và lệnh chạy: [backend/README.md](../../backend/README.md). Không thay endpoint, JSON, schema hoặc dữ liệu; không triển khai I2 registration/QR/cloud trong refactor này.
+
+## Backend I2 — 12/11/2026
+
+Trên nền refactor, thêm RegistrationController → IRegistrationService → RegistrationServiceImpl → IRegistrationRepository/JdbcRegistrationRepository. Service giữ event lock xuyên suốt đăng ký/hủy/FIFO, thứ tự event → actor user → registrations; cập nhật sự kiện dùng cùng thứ tự để tránh đảo khóa. RegistrationRules giữ điều kiện và biên thời gian. IWaitlistService được dùng chung bởi đăng ký, hủy và cập nhật sức chứa, không có endpoint đôn chờ tùy ý.
+
+IEmailQueueService ghi email_outbox trong transaction hiện hành. EmailDispatcher → IEmailOutboxService thực hiện claim/hoàn tất trong transaction ngắn; IEmailSender/BrevoEmailSender gọi HTTP bên ngoài transaction. Dedupe/lease/retry lưu PostgreSQL, không phụ thuộc RAM của một instance. Worker chạy cùng backend và chỉ hoạt động khi backend chạy. Chưa có worker độc lập hoặc cấu hình cloud được kiểm chứng; không coi cấu trúc này là bằng chứng đã deploy. Xem [API I2](../api/I2.md).
+
+## Backend I3 — 18/11/2026
+
+AttendanceController → IAttendanceService/AttendanceServiceImpl → IAttendanceRepository/JdbcAttendanceRepository xử lý session/check-in/thủ công/history. Tiếp tục khóa event trước actor và bản ghi liên quan, dùng cùng quy trình reset I2. AttendanceRules giữ biên starts_at−30 phút đến ends_at và trạng thái suy ra; QrTokenCipher giữ token ngẫu nhiên/hash/AES-GCM với khóa backend ổn định. QRCodeWriter tạo SVG thật; Student quét mã của Organizer, không có luồng Organizer quét mã riêng từng Student.
+
+ReportController → IReportService/ReportServiceImpl → IReportRepository/JdbcReportRepository đọc event_report và chi tiết trong snapshot REPEATABLE_READ. ReportCsvWriter tạo CSV UTF-8, bảo vệ nội dung công thức; không ghi tổng hợp trùng hoặc lưu ABSENT. Không thêm bảng/cột; audit có migration thay hàm guard QR. Chi tiết hợp đồng, giới hạn export và cấu hình key: [API I3](../api/I3.md). FE I2/I3 và cloud deployment vẫn chưa tích hợp.
+
+Audit bổ sung hai bước QR: POST preview dùng transaction read-only để trả thông tin và version hiện hành; POST check-in khóa event/actor, kiểm tra lại toàn bộ dữ liệu và các version trước ghi. Database guard kiểm tra thời gian thực tại thời điểm ghi, dùng SQLSTATE PQR01 để adapter lỗi HTTP trả 409 khi mã hết hiệu lực. Database cũ cập nhật qua migration thay hàm, không thêm bảng. Demo API riêng ở 18083 tái hiện preview/confirm/thủ công/history/report/CSV, tách DB và secret khỏi app local và autotest 18082.

@@ -16,7 +16,7 @@ import { NAV_BY_ROLE, SPACE_CAPTION } from './navigation';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <aside class="sidebar">
-      <a class="brand" [routerLink]="session.homeUrl()"><span class="brand-mark">ce</span><span>campus<em>events</em></span></a>
+      <a class="brand" [routerLink]="session.homeUrl()"><img class="brand-logo" src="/assets/hcmut.png" alt="Logo Bách khoa TP.HCM" width="60" height="48"><span>BK<em>event</em></span></a>
       <div class="school">Không gian sự kiện sinh viên</div>
       <div class="nav-caption">{{ caption() }}</div>
       <nav class="nav" aria-label="Điều hướng chính">
@@ -45,7 +45,7 @@ import { NAV_BY_ROLE, SPACE_CAPTION } from './navigation';
         </div>
       </header>
       <main><router-outlet /></main>
-      <footer><b>Campus Events</b><span>Nền tảng quản lý sự kiện dành cho sinh viên</span></footer>
+      <footer><b>BKevent</b><span>Nền tảng quản lý sự kiện dành cho sinh viên</span></footer>
     </div>
   `,
 })

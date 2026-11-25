@@ -1,0 +1,8 @@
+{
+  "name": "bkevent-browser-checks",
+  "private": true,
+  "description": "Browser checks against isolated Docker test stacks; independent of Angular dependencies.",
+  "devDependencies": {
+    "playwright": "1.65.1"
+  }
+}

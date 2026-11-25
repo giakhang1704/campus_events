@@ -210,8 +210,9 @@ CREATE INDEX account_history_target_idx ON account_history(target_user_id,change
 -- Cross-table attendance eligibility; event lock serializes cooperating workflows.
 CREATE FUNCTION guard_attendance() RETURNS trigger LANGUAGE plpgsql AS $$
 DECLARE r campus.registrations%ROWTYPE; s campus.attendance_sessions%ROWTYPE;
+ e campus.events%ROWTYPE; checked_at timestamptz;
 BEGIN
- PERFORM 1 FROM campus.events WHERE id=NEW.event_id FOR UPDATE;
+ SELECT * INTO e FROM campus.events WHERE id=NEW.event_id FOR UPDATE;
  SELECT * INTO r FROM campus.registrations WHERE id=NEW.registration_id FOR UPDATE;
  IF NOT FOUND OR r.event_id <> NEW.event_id THEN
   RAISE EXCEPTION 'Attendance requires a registration for the same event';
@@ -226,9 +227,11 @@ BEGIN
  END IF;
  IF NEW.method='QR' THEN
   SELECT * INTO s FROM campus.attendance_sessions WHERE id=NEW.session_id FOR UPDATE;
+  checked_at=clock_timestamp();
   IF NOT FOUND OR s.event_id <> NEW.event_id OR s.closed_at IS NOT NULL
-     OR clock_timestamp() < s.opened_at OR clock_timestamp() >= s.expires_at THEN
-   RAISE EXCEPTION 'QR session is not valid';
+     OR checked_at < s.opened_at OR checked_at >= s.expires_at
+     OR e.status <> 'PUBLISHED' OR checked_at < e.starts_at-interval '30 minutes' OR checked_at >= e.ends_at THEN
+   RAISE EXCEPTION 'QR session is not valid' USING ERRCODE='PQR01';
   END IF;
   IF NEW.recorded_by <> r.student_id THEN RAISE EXCEPTION 'QR actor must be the registered student'; END IF;
  END IF;

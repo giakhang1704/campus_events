@@ -6,3 +6,6 @@
 
 /* DEFERRED: category is outside current database scope. Markup retained. */
 .chips,.category{display:none!important}
+
+/* Shared BKevent branding: preserve the supplied school logo. */
+.brand-logo{display:block;width:60px;height:48px;object-fit:cover;flex:none;background:#fff;border-radius:8px}

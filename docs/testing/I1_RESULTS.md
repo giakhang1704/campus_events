@@ -1,5 +1,9 @@
 # Kết quả kiểm thử Increment 1
 
+## Regression sau backend I2 — 12/11/2026
+
+Đã chạy lại HTTP/PostgreSQL và browser I1 bằng `scripts/test-i1.ps1 -PlaywrightModule`: PASS. Bản hiện hành cho phép đổi thời gian/địa điểm khi có đăng ký và tạo outbox EVENT_CHANGED, thay phần chặn tạm được mô tả trong lịch sử bên dưới. Kết quả đầy đủ: [I2_RESULTS.md](I2_RESULTS.md). Chưa thay review độc lập hoặc đóng CP1/CP2.
+
 ## Mới nhất — Backend tìm/xem sự kiện UC-04–05 ngày 04/11/2026
 
 Đã triển khai GET /api/events (q/page/size) và GET /api/events/{id}. Chỉ đọc PUBLISHED, dùng chung cho tài khoản đã đăng nhập; không có ngoại lệ xem nháp cho Admin hoặc chủ sở hữu tại hai route này. Organizer xem nháp qua route quản lý riêng. Dữ liệu truy vấn PostgreSQL theo lớp Controller–Service–Repository, không thay schema.
@@ -109,3 +113,11 @@ Browser test dùng localhost và dữ liệu seed trong .env; tạo tài khoản
 - Lockfile optional dependency trên Linux đã đồng bộ bằng npm trong container.
 - Client lấy CSRF mới trước thao tác ghi, tránh token cũ sau thay đổi trạng thái đăng nhập.
 - Select khoa/đơn vị/vai trò có aria-label rõ để thao tác bằng công cụ hỗ trợ.
+
+## Refactor backend — 12/11/2026
+
+Đã chuyển backend sang kiến trúc phân tầng có interface. Unit test, Docker build, HTTP/PostgreSQL regression và local smoke PASS; xem [BACKEND_REFACTOR_RESULTS.md](BACKEND_REFACTOR_RESULTS.md). Không bổ sung nghiệp vụ Increment 2 hoặc thay nghiệm thu I1/CP1.
+
+## Rà soát repo và cập nhật dependency — 12/11/2026
+
+Đã cập nhật Angular framework/compiler 21.2.26 và CLI/build 21.2.29; build host/Docker và HTTP + Edge regression PASS. npm audit còn 16 moderate ở toolchain, không còn high/critical; npm audit --omit=dev trả 0. Đã sửa readiness Compose, mockup 404 và hướng dẫn local. Chi tiết và giới hạn kiểm chứng: [REPOSITORY_REVIEW.md](REPOSITORY_REVIEW.md).

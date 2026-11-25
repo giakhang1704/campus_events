@@ -245,7 +245,12 @@ export class EventEditorComponent implements OnChanges, OnDestroy {
       this.saved.emit(saved);
     } catch (error) {
       if (error instanceof ApiError) {
-        this.fields.set(error.fields);
+        // I2: edits that would break current registrations are rejected with 409; point at the field to fix.
+        const impact: Record<string, Record<string, string>> = {
+          CAPACITY_BELOW_REGISTERED: { capacity: error.message },
+          REGISTERED_ELIGIBILITY_CHANGE: { departmentIds: error.message, studyYears: error.message },
+        };
+        this.fields.set({ ...error.fields, ...(impact[error.code] ?? {}) });
         this.conflict.set(error.code === 'VERSION_CONFLICT');
       }
       this.message.set(error instanceof Error ? error.message : 'Không lưu được sự kiện. Vui lòng thử lại.');
