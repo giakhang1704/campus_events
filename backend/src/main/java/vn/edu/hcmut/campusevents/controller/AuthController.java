@@ -13,6 +13,7 @@ import vn.edu.hcmut.campusevents.dto.account.AccountResponse;
 import vn.edu.hcmut.campusevents.dto.auth.*;
 import vn.edu.hcmut.campusevents.mapper.AccountMapper;
 import vn.edu.hcmut.campusevents.security.AuthPrincipal;
+import vn.edu.hcmut.campusevents.security.AuthRateLimiter;
 import vn.edu.hcmut.campusevents.security.SessionCookieManager;
 import vn.edu.hcmut.campusevents.service.IAuthService;
 
@@ -21,10 +22,12 @@ import vn.edu.hcmut.campusevents.service.IAuthService;
 public class AuthController {
     private final IAuthService auth;
     private final SessionCookieManager cookies;
+    private final AuthRateLimiter limits;
 
-    public AuthController(IAuthService auth, SessionCookieManager cookies) {
+    public AuthController(IAuthService auth, SessionCookieManager cookies, AuthRateLimiter limits) {
         this.auth = auth;
         this.cookies = cookies;
+        this.limits = limits;
     }
 
     @GetMapping("/csrf")
@@ -33,8 +36,9 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AccountResponse> register(@Valid @RequestBody RegisterRequest request) {
-        return ResponseEntity.status(201).body(AccountMapper.toResponse(auth.register(request)));
+    public ResponseEntity<AccountResponse> register(@Valid @RequestBody RegisterRequest body, HttpServletRequest request) {
+        limits.registration(request.getRemoteAddr());
+        return ResponseEntity.status(201).body(AccountMapper.toResponse(auth.register(body)));
     }
 
     @PostMapping("/login")
@@ -42,7 +46,9 @@ public class AuthController {
             @Valid @RequestBody LoginRequest body,
             HttpServletRequest request,
             HttpServletResponse response) {
+        limits.login(request.getRemoteAddr(), body.email());
         var login = auth.login(body.email(), body.password(), SessionCookieManager.token(request));
+        limits.loginSucceeded(body.email());
         cookies.write(response, login.token(), 28800);
         return AccountMapper.toResponse(login.user());
     }

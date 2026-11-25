@@ -1,6 +1,6 @@
 # Đề xuất deploy BKevent — 25/11/2026
 
-Đề xuất cho demo nhóm: **Angular trên Vercel, Spring Boot Docker trên Render, PostgreSQL trên Neon, email qua Brevo HTTP**. Giữ backend phân tầng hiện tại; chưa cần tách microservices hoặc đổi sang JWT để deploy. Đây là hướng triển khai, chưa phải bằng chứng đã deploy.
+Đề xuất cho demo nhóm: **Angular trên Vercel, Spring Boot Docker trên Render, PostgreSQL trên Neon, email qua Brevo HTTP**. Đã có `render.yaml` và `frontend/vercel.mjs` để cấu hình dịch vụ; chưa tạo môi trường cloud hoặc nghiệm thu HTTPS. Giữ backend phân tầng hiện tại.
 
 Hệ thống vẫn theo ba tầng frontend/API/database; bên trong backend là layered monolith (Controller → Service → Repository). Việc đặt các tầng trên các dịch vụ khác nhau không biến backend thành microservices.
 
@@ -21,10 +21,10 @@ Không chuyển token sang localStorage để xử lý lỗi deploy. Cookie bả
 ## Các bước
 
 1. Chốt nhánh chứa I1/I2/I3, phần chi tiết điểm danh và sửa nội dung dài. Hoàn thành review/regression trước khi đưa candidate lên cloud.
-2. Tạo project Neon PostgreSQL, chọn vùng gần backend. Database rỗng: chạy `database/schema/01_schema.sql` một lần bằng Neon SQL Editor hoặc psql. Database đã có campus: dùng migration tương ứng, không chạy lại baseline. Nhập danh mục khoa/đơn vị dùng thật riêng với tài khoản demo.
-3. Tạo Render Web Service, source repo này, Docker runtime, **Root Directory `backend`**, Dockerfile `Dockerfile`, health check `/api/health`. App đã đọc PORT qua application.properties. Đặt SERVER_ADDRESS=0.0.0.0 để Render truy cập được. [Render: web services/port](https://render.com/docs/web-services#port-binding).
+2. Tạo project Neon PostgreSQL, chọn vùng gần backend. Database rỗng được Flyway tạo/nâng schema khi backend khởi động; không chạy baseline SQL thủ công trước. Database I3 cũ cần backup và bước nhận baseline một lần theo [OPERATIONS.md](OPERATIONS.md). 12 khoa đã đồng bộ riêng; nhập đơn vị tổ chức dùng thật, không bật dev-seed.
+3. Tạo Render Blueprint từ `render.yaml`, chọn đúng nhánh candidate. Hoặc tạo Web Service Docker thủ công: **Root Directory `backend`**, Dockerfile `Dockerfile`, health check `/api/live`. Cấu hình đã có SERVER_ADDRESS=0.0.0.0 và đọc PORT. `/api/live` không đánh thức database; kiểm tra `/api/health` riêng sau triển khai. Blueprint dùng plan Free, tự deploy tắt; kiểm tra plan trên dashboard trước khi tạo. [Render: Blueprint](https://render.com/docs/blueprint-spec), [port](https://render.com/docs/web-services#port-binding).
 4. Đặt secrets/environment dưới đây ở backend. Tạo Admin đầu tiên bằng bootstrap; sau khi kiểm tra đăng nhập, tắt bootstrap và gỡ mật khẩu bootstrap khỏi cấu hình. Giữ dev-seed tắt.
-5. Tạo Vercel project: Root Directory `frontend`, install `npm ci`, build `npm run build`, output `dist/campus-events/browser`. Thêm external rewrite `/api/:path*` trước SPA fallback. Chạy deploy preview để kiểm tra đường dẫn trực tiếp.
+5. Tạo Vercel project: Root Directory `frontend`, Node 24. Đặt biến **BACKEND_ORIGIN=https://<tên-backend>.onrender.com** cho Preview và Production tương ứng, rồi deploy. `frontend/vercel.mjs` đã khai báo install/build/output, proxy và SPA fallback; thiếu biến hoặc URL chứa path/credential thì dừng. Chạy preview để kiểm tra đường dẫn trực tiếp.
 6. Test qua HTTPS: Admin cấp Organizer → đổi mật khẩu → tạo/công bố → Student đăng ký → mail → quét QR/xác nhận → trang chi tiết → thủ công/lịch sử → báo cáo/CSV → logout và thử request trái quyền. Sau đó kiểm tra restart backend vẫn đọc phiên/QR bằng khóa ổn định, backup/restore và log lỗi.
 
 ## Environment backend
@@ -51,17 +51,14 @@ BREVO_SENDER_NAME=BKevent
 
 Ban đầu MAIL_ENABLED=false để kiểm tra tài khoản/dữ liệu; xác minh sender và dữ liệu người nhận rồi mới bật. Bootstrap chỉ tạo Admin khi chưa có Admin hoạt động, không cấp lại mật khẩu cho tài khoản có sẵn. Khóa QR phải giữ ổn định qua restart/deploy. JDBC URL dùng thông số Neon Connect và SSL; ứng dụng hiện giữ user/password ở hai biến riêng. Khởi đầu dùng direct endpoint với Hikari pool nhỏ (hiện tối đa 5) để giảm các khác biệt về transaction/session pooling. [Neon: Java/JDBC](https://neon.com/docs/guides/java).
 
-## Rewrite Vercel cần có
+## Cấu hình Vercel đã có
 
-Đây là ví dụ để tạo `frontend/vercel.json` sau khi biết hostname Render; **thay hostname trước khi dùng**:
+`frontend/vercel.mjs` export cấu hình theo [Vercel programmatic configuration](https://vercel.com/docs/project-configuration/vercel-ts). Biến BACKEND_ORIGIN là địa chỉ public của backend, không chứa API key. Không tạo thêm `vercel.json` cạnh file này. Có thể kiểm tra config local mà không deploy:
 
-```json
-{
-  "rewrites": [
-    { "source": "/api/:path*", "destination": "https://YOUR-BACKEND.onrender.com/api/:path*" },
-    { "source": "/((?!api(?:/|$)|assets(?:/|$)|.*\\.).*)", "destination": "/index.html" }
-  ]
-}
+```powershell
+$env:BACKEND_ORIGIN='https://your-backend.onrender.com'
+node -e "import('./frontend/vercel.mjs').then(m => console.log(m.config))"
+Remove-Item Env:BACKEND_ORIGIN
 ```
 
 Kiểm tra API không bị trả index.html, assets không bị rewrite nhầm, deep link `/events/6`/`/scan`/`/reports` mở được và logout xóa cookie trên đúng frontend domain. Không cache riêng các response phiên/QR/báo cáo của người dùng. Đừng copy nguyên Nginx local sang cloud: upstream `backend:8080` chỉ tồn tại trong mạng Docker Compose.
@@ -81,6 +78,6 @@ Có thể bắt đầu với free tier trong giới hạn của từng dịch v�
 
 Từ việc Render Free ngủ có thể suy ra scheduler gửi outbox trong process cũng dừng lúc ngủ; retry còn lưu trong PostgreSQL và tiếp tục khi backend chạy lại. Không cam kết mail nền hoặc thời gian phản hồi luôn tức thì trên phương án miễn phí.
 
-Cũng cần tính quota database theo polling: khi MAIL_ENABLED=true, `EmailDispatcher` mặc định hỏi outbox mỗi 5 giây, kể cả chưa có mail chờ. Từ code này có thể suy ra một backend chạy liên tục sẽ giữ Neon có hoạt động và giảm khả năng scale-to-zero. Ví dụ compute 0,25 CU chạy 24 giờ × 30 ngày dùng khoảng 180 CU-hours, vượt mức Free 100 CU-hours. Đây là phép tính minh họa, không phải mức dùng đã đo của project; điều chỉnh chu kỳ/lịch xử lý theo nhu cầu và theo dõi dashboard trước khi chọn kế hoạch chạy thường trực.
+Outbox đã giãn thăm dò khi rỗng tới 10 phút và đánh thức sau commit khi có mail mới trong cùng process. Render probe dùng `/api/live`, không query PostgreSQL. Retry/traffic và các probe khác vẫn có thể giữ database hoạt động; theo dõi dashboard trước khi chọn kế hoạch chạy thường trực. Đây là cải thiện tần suất truy vấn, chưa phải bằng chứng đo được quota hay mail nền đúng hạn. Chi tiết: [vận hành](OPERATIONS.md#rate-limit-và-email).
 
 Chưa tạo tài khoản/project, chưa đẩy secrets lên dịch vụ, chưa phát sinh chi phí. Nếu dùng phương án này thay Lightsail, ghi rõ thay đổi trong báo cáo; không đánh dấu RA02/A11 Lightsail đã hoàn thành.

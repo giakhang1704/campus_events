@@ -22,6 +22,8 @@ try {
  if (!$ready) { throw 'Angular did not become ready. Inspect frontend/.angular/student-attendance/angular.log.' }
  & node scripts/smoke/i3_student_attendance_ui.cjs $PlaywrightModule
  if ($LASTEXITCODE -ne 0) { throw 'Student attendance UI checks failed.' }
+ & node scripts/smoke/system_regressions_ui.cjs $PlaywrightModule
+ if ($LASTEXITCODE -ne 0) { throw 'System regression UI checks failed.' }
 } finally {
  if ($uiProcess) { $uiProcess.Refresh(); if (!$uiProcess.HasExited) { Stop-Process -Id $uiProcess.Id } }
  [Environment]::SetEnvironmentVariable('I3_DETAIL_UI_BASE_URL', $previousBase, 'Process')

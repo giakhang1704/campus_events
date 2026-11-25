@@ -1,8 +1,8 @@
 # PostgreSQL
 
-schema/01_schema.sql là baseline làm việc, chỉ chạy lần đầu trên database rỗng. Compose tự nạp nó khi named volume được tạo mới. Không chạy cả bản nguồn trong references.
+Backend tự quản lý schema bằng Flyway trong `backend/src/main/resources/db/migration/`: V1 tạo mới, V2 cập nhật guard QR. Compose không mount init SQL nữa. `schema/01_schema.sql` giữ làm bản SQL tham khảo/test độc lập; không chạy nó trước Flyway hoặc chạy lại trên DB hiện hữu. Không chạy cả bản nguồn trong references.
 queries/02_queries.sql là PREPARE mẫu, cần cùng phiên khi EXECUTE; không phải API.
-tests/01_inspect.sql kiểm tra cấu trúc; tests/02_registration_reset.sql kiểm thử bằng fixtures ROLLBACK. migrations hiện chưa có công cụ nâng cấp schema tự động; seeds/README.md hướng dẫn seed dữ liệu local qua backend, opt-in và không ghi đè dữ liệu cũ.
+tests/01_inspect.sql kiểm tra cấu trúc; tests/02_registration_reset.sql kiểm thử bằng fixtures ROLLBACK. `migrations/` giữ SQL đối chiếu trước Flyway. Nâng schema I3 cũ cần backup và `DB_BASELINE_EXISTING=true` một lần; xem [vận hành](../deploy/OPERATIONS.md). Không sửa migration đã release. `seeds/README.md` hướng dẫn dữ liệu local, opt-in và không ghi đè tài khoản cũ.
 
 Một dòng đăng ký/student/event, reset attendance có audit bằng method SYSTEM trong trigger đăng ký lại. Service không ghi trùng REREGISTER tự sinh. View event_report dùng has_ended (qua ends_at), không coi báo cáo bất biến khi attendance còn được sửa. Backend vẫn chịu trách nhiệm phân quyền, sức chứa, FIFO, deadline đăng ký và outbox.
 

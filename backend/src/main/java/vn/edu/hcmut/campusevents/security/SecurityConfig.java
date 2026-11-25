@@ -61,7 +61,7 @@ public class SecurityConfig {
                                                                         + " không hợp lệ.")))
                 .authorizeHttpRequests(
                         config ->
-                                config.requestMatchers("/api/health", "/api/auth/csrf")
+                        config.requestMatchers("/api/health", "/api/live", "/api/auth/csrf")
                                         .permitAll()
                                         .requestMatchers(
                                                 HttpMethod.POST,

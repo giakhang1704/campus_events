@@ -2,6 +2,8 @@
 
 Backend là một ứng dụng monolith theo kiến trúc phân tầng, package theo tầng. Tham khảo cách tổ chức Controller–Service–Repository và interface của [HAPPY_TUTORING_SYSTEM](https://github.com/ThuyHien2506/HAPPY_TUTORING_SYSTEM/tree/main/backend/src/main/java/com/project/happy); tiếp tục dùng PostgreSQL/JdbcTemplate, không chuyển sang dữ liệu in-memory hoặc SSO của repo mẫu.
 
+Đợt rà soát 25/11: schema do Flyway quản lý; database I3 cũ cần backup và nhận baseline một lần. Login/register có rate limit trả `429 RATE_LIMITED` và `Retry-After`. Render dùng `/api/live` không query database, còn `/api/health` kiểm tra PostgreSQL. Outbox giãn polling khi rỗng và đánh thức sau commit. Biến cấu hình, giới hạn nhiều instance, import đơn vị và backup/restore: [OPERATIONS.md](../deploy/OPERATIONS.md).
+
 ## Cấu trúc
 
 ```text

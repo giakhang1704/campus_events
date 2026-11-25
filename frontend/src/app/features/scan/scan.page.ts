@@ -252,10 +252,12 @@ export class ScanPage {
   private controls: IScannerControls | null = null;
   /** Incremented on every new scan or reset, so late answers of an abandoned attempt are ignored. */
   private attempt = 0;
+  private registrationLoad = 0;
 
   constructor() {
     inject(DestroyRef).onDestroy(() => {
       this.attempt++;
+      this.registrationLoad++;
       this.stopCamera();
     });
     void this.loadRegistered();
@@ -283,7 +285,7 @@ export class ScanPage {
           void this.handleScan(result.getText(), attempt);
         },
       );
-      if (attempt !== this.attempt) return controls.stop();
+      if (attempt !== this.attempt || this.view().step !== 'STARTING') return controls.stop();
       this.controls = controls;
       this.view.set({ step: 'SCANNING' });
     } catch (error) {
@@ -368,8 +370,12 @@ export class ScanPage {
     try {
       const mine = await this.attendance.mine(eventId);
       if (attempt !== this.attempt) return;
-      if (mine.attendance?.result === 'PRESENT') {
+      if (mine.registrationStatus === 'REGISTERED' && mine.attendanceState === 'PRESENT' && mine.attendance?.result === 'PRESENT') {
         this.view.set({ step: 'SUCCESS', title, attendance: mine.attendance, already: true });
+        return;
+      }
+      if (mine.registrationStatus !== 'REGISTERED') {
+        this.fail('INELIGIBLE', 'Chưa đủ điều kiện điểm danh', 'Đăng ký hiện tại không phải đăng ký chính thức. Điểm danh chưa được ghi nhận.', null);
         return;
       }
       this.fail('OTHER', 'Chưa xác định được kết quả', 'Không đọc được kết quả điểm danh hiện tại. Vui lòng quét lại.', null);
@@ -394,12 +400,16 @@ export class ScanPage {
       case 'EVENT_NOT_FOUND': {
         // A student who checked in earlier and scans an old code is still present: show that instead of an error.
         if (await this.alreadyPresent(qr.eventId, title ?? '', attempt)) return;
+        if (attempt !== this.attempt) return;
         return this.fail('QR_INVALID', 'Mã QR không còn hiệu lực', `${server} Điểm danh chưa được ghi nhận.`, null);
       }
       case 'REGISTRATION_NOT_FOUND':
         return this.fail('NOT_REGISTERED', 'Bạn chưa đăng ký sự kiện này', 'Chỉ sinh viên đã đăng ký chính thức mới được điểm danh. Điểm danh chưa được ghi nhận.', null);
-      case 'REGISTRATION_NOT_CONFIRMED':
-        return this.fail('INELIGIBLE', 'Chưa đủ điều kiện điểm danh', await this.ineligibleMessage(qr.eventId, server), null);
+      case 'REGISTRATION_NOT_CONFIRMED': {
+        const message = await this.ineligibleMessage(qr.eventId, server);
+        if (attempt !== this.attempt) return;
+        return this.fail('INELIGIBLE', 'Chưa đủ điều kiện điểm danh', message, null);
+      }
     }
 
     if (status === 0 || status >= 500 || code === 'UNEXPECTED_RESULT') {
@@ -416,7 +426,7 @@ export class ScanPage {
   private async alreadyPresent(eventId: number, title: string, attempt: number): Promise<boolean> {
     try {
       const mine = await this.attendance.mine(eventId);
-      if (attempt !== this.attempt || mine.attendance?.result !== 'PRESENT' || mine.registrationStatus !== 'REGISTERED') return false;
+      if (attempt !== this.attempt || mine.attendance?.result !== 'PRESENT' || mine.registrationStatus !== 'REGISTERED' || mine.attendanceState !== 'PRESENT') return false;
       this.view.set({ step: 'SUCCESS', title: title || this.titleOf(eventId), attendance: mine.attendance, already: true });
       return true;
     } catch {
@@ -449,10 +459,19 @@ export class ScanPage {
   // ── Registered events (context list) ──
 
   private async loadRegistered(): Promise<void> {
+    const load = ++this.registrationLoad;
     try {
       const now = Date.now();
-      const page = await this.registrations.mine('REGISTERED', 0);
-      this.registered.set(page.items.filter((r) => Date.parse(r.endsAt) > now));
+      const registrations = new Map<number, Registration>();
+      for (let index = 0; ; index++) {
+        const page = await this.registrations.mine('REGISTERED', index, 100);
+        if (load !== this.registrationLoad) return;
+        const before = registrations.size;
+        page.items.forEach((registration) => registrations.set(registration.eventId, registration));
+        if (!page.hasNext) break;
+        if (registrations.size === before) throw new Error('Không tải được trang đăng ký tiếp theo.');
+      }
+      this.registered.set([...registrations.values()].filter((r) => Date.parse(r.endsAt) > now));
     } catch {
       // Optional context only; scanning works without it.
     }

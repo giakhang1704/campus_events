@@ -37,5 +37,8 @@ __pycache__/
 .DS_Store
 Thumbs.db
 *.log
+.backups/
+*.dump
+*.dump.sha256
 
 # Keep package manager lockfiles and build wrappers tracked.

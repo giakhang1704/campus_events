@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, Injectable, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { map } from 'rxjs';
@@ -33,21 +33,32 @@ export class OwnedEventPicker {
   });
   /** Just the id: a reloaded list with the same event does not retrigger loads that depend on it. */
   readonly selectedId = computed(() => this.selected()?.id ?? null);
+  private loadId = 0;
 
   constructor() {
+    inject(DestroyRef).onDestroy(() => this.loadId++);
     void this.load();
   }
 
   async load(): Promise<void> {
+    const loadId = ++this.loadId;
     this.loading.set(true);
     this.error.set('');
     try {
-      const page = await this.eventApi.listOwned(0, PICKER_SIZE);
-      this.events.set(page.items.filter((e) => e.status === 'PUBLISHED'));
+      const events = new Map<number, CampusEvent>();
+      for (let index = 0; ; index++) {
+        const page = await this.eventApi.listOwned(index, PICKER_SIZE);
+        if (loadId !== this.loadId) return;
+        const before = events.size;
+        page.items.forEach((event) => events.set(event.id, event));
+        if (!page.hasNext) break;
+        if (events.size === before) throw new Error('Không tải được trang sự kiện tiếp theo.');
+      }
+      this.events.set([...events.values()].filter((e) => e.status === 'PUBLISHED'));
     } catch (error) {
-      this.error.set(errorMessage(error, 'Kiểm tra kết nối mạng rồi thử lại.'));
+      if (loadId === this.loadId) this.error.set(errorMessage(error, 'Kiểm tra kết nối mạng rồi thử lại.'));
     } finally {
-      this.loading.set(false);
+      if (loadId === this.loadId) this.loading.set(false);
     }
   }
 

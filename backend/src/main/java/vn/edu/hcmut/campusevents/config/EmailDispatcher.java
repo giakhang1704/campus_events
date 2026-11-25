@@ -19,11 +19,13 @@ public class EmailDispatcher {
     private final MailSettings settings;
     private final IEmailOutboxService outbox;
     private final IEmailSender sender;
+    private final OutboxPollSchedule schedule;
 
-    public EmailDispatcher(MailSettings settings, IEmailOutboxService outbox, IEmailSender sender) {
+    public EmailDispatcher(MailSettings settings, IEmailOutboxService outbox, IEmailSender sender, OutboxPollSchedule schedule) {
         this.settings = settings;
         this.outbox = outbox;
         this.sender = sender;
+        this.schedule = schedule;
     }
 
     @Scheduled(
@@ -31,10 +33,14 @@ public class EmailDispatcher {
             initialDelayString = "${campus.mail.initial-delay-ms:10000}")
     public void dispatch() {
         if (!settings.enabled()) return;
+        long generation = schedule.begin();
+        if (generation < 0) return;
+        boolean worked = false;
         try {
             for (int i = 0; i < 20; i++) {
                 var claimed = outbox.claim();
                 if (claimed.isEmpty()) break;
+                worked = true;
                 var message = claimed.get();
                 if (!outbox.current(message)) {
                     outbox.failed(message, "STALE_REGISTRATION", false);
@@ -69,6 +75,8 @@ public class EmailDispatcher {
             LOG.warn(
                     "Email dispatch interrupted; pending rows remain durable and leases recover"
                             + " automatically.");
+        } finally {
+            schedule.complete(generation, worked);
         }
     }
 }

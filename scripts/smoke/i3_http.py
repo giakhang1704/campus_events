@@ -5,13 +5,14 @@ from datetime import datetime, timedelta, timezone
 import io
 import json
 import os
+from pathlib import Path
 import subprocess
 import time
 import urllib.error
 import urllib.request
 import uuid
 
-os.environ['I1_API_BASE']='http://127.0.0.1:18082/api'
+os.environ.setdefault('I1_API_BASE', 'http://127.0.0.1:18082/api')
 os.environ['I1_TEST_PROJECT']='campus-events-i3-test'
 os.environ['I1_TEST_COMPOSE']='compose.i3-test.yaml'
 from i1_http import BASE, COMPOSE, Client, PASSWORD, ready, sql
@@ -154,7 +155,17 @@ def main():
     check(clients[0],e,session2)
     assert any(h['reason']=='Reset on re-registration' for h in history(e,regs[0]))
     # Restart preserves the encrypted token: another instance with the same key can redisplay it.
-    subprocess.run(COMPOSE+['restart','backend'],check=True,capture_output=True)
+    native_restart = os.environ.get('TEST_NATIVE_RESTART_REQUEST')
+    if native_restart:
+        # The opt-in native JUnit harness restarts its own isolated Spring context, then acknowledges.
+        request = Path(native_restart)
+        request.write_text('restart', encoding='ascii')
+        deadline = time.monotonic() + 120
+        while not request.with_suffix('.done').exists():
+            assert time.monotonic() < deadline, 'Native backend restart timed out'
+            time.sleep(.2)
+    else:
+        subprocess.run(COMPOSE+['restart','backend'],check=True,capture_output=True)
     ready()
     restored=organizer.call('GET',own(e,'/session'))
     assert restored['id']==session2['id'] and restored['expiresAt']==session2['expiresAt']

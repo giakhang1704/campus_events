@@ -17,7 +17,11 @@ public class JdbcEnvironmentRepository implements IEnvironmentRepository {
     public int countTables() {
         return jdbc.queryForObject(
                 "SELECT count(*)::integer FROM information_schema.tables WHERE"
-                        + " table_schema='campus' AND table_type='BASE TABLE'",
+                        + " table_schema='campus' AND table_type='BASE TABLE' AND table_name IN"
+                        + " ('departments','organization_units','users','student_profiles','auth_sessions',"
+                        + " 'events','event_departments','event_study_years','registrations',"
+                        + " 'registration_history','attendance_sessions','attendance','attendance_history',"
+                        + " 'email_outbox','account_history')",
                 Integer.class);
     }
 

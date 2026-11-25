@@ -4,7 +4,7 @@ Phạm vi: lịch sử nhánh đã fetch từ GitHub, source Angular/Spring Boot
 
 ## Kết luận
 
-Code chức năng chính I1–I3 đã tập trung ở `feature/i3-scan-frontend` (`26efcbb`, kế thừa `98f6024` Báo cáo/CSV). Local đã thêm kết quả điểm danh trên chi tiết sự kiện và sửa mô tả dài không có dấu cách. Chưa thể gọi là sẵn sàng vận hành: `main` còn ở I1, chưa có triển khai cloud/khôi phục được kiểm chứng và còn các điểm bên dưới.
+Code chức năng I1–I3, kết quả điểm danh trên chi tiết và sửa mô tả dài đã được commit/push ở `test/system-validation` (`bd77472`, kế thừa `26efcbb`). Đợt sửa lỗi/hạ tầng tiếp theo đang nằm trên cùng nhánh ở working tree. `main` vẫn ở I1; chưa có môi trường cloud hoặc nghiệm thu CP3/CP4. Theo xác nhận của người dùng, đợt này giữ MVP, chưa bổ sung xác minh email/SSO/quên mật khẩu.
 
 ## Nhánh và commit
 
@@ -15,6 +15,7 @@ Code chức năng chính I1–I3 đã tập trung ở `feature/i3-scan-frontend`
 | `feature/i3-backend` | `1b99579` | Backend QR, thủ công, báo cáo/CSV; không phải bản frontend I3 đầy đủ |
 | `feature/i3-frontend` | `98f6024` | Kế thừa backend I3 + frontend I2; có Organizer điểm danh và Báo cáo/CSV |
 | `feature/i3-scan-frontend` | `26efcbb` | Kế thừa nhánh trên, thêm camera/decoder QR và sửa trạng thái phiên Organizer |
+| `test/system-validation` | `bd77472` + các thay đổi working tree đợt này | Chi tiết điểm danh, sửa tràn chữ, rà soát và bộ sửa lỗi/hạ tầng dưới đây |
 | `feature/i1-frontend-subtasks` | `5d61365` | Một bản thiết kế lại UI Admin chưa được gộp vào các nhánh mới; không nên merge toàn nhánh cũ chỉ để lấy giao diện |
 
 Các nhánh I1 và refactor cũ đã nằm trong lịch sử nhánh I3 mới. Không cần merge lại từng nhánh tổ tiên. Chốt candidate trên nhánh I3 mới nhất, review qua PR rồi mới đưa vào `main`; giữ các commit chưa được review tách khỏi release.
@@ -31,35 +32,47 @@ Các nhánh I1 và refactor cũ đã nằm trong lịch sử nhánh I3 mới. Kh
 | Email | Brevo HTTP + outbox; xác nhận, đôn chờ, thay đổi quan trọng |
 | Điểm danh | QR do Organizer phát, Student quét → preview → xác nhận; thời hạn phiên; thủ công có lý do/lịch sử |
 | Báo cáo | Tổng quan, chi tiết phân trang, vắng sau ends_at, tỷ lệ REGISTERED, CSV có BOM/escape/chống công thức |
-| Chi tiết sinh viên | Local: trạng thái điểm danh, thời gian/phương thức, tải lại, liên kết QR đúng cửa sổ; hủy/đăng ký lại bỏ dữ liệu hiển thị cũ |
-| Nội dung dài | Local: chuỗi 2.500 chữ `a` xuống dòng trong khung; giữ nội dung và xuống dòng do người nhập |
+| Chi tiết sinh viên | Trạng thái điểm danh, thời gian/phương thức, tải lại, liên kết QR đúng cửa sổ; hủy/đăng ký lại bỏ dữ liệu hiển thị cũ |
+| Nội dung dài | Chuỗi 2.500 chữ `a` xuống dòng trong khung; giữ nội dung và xuống dòng do người nhập |
 
 CSV-only, một lượt điểm danh, chưa dùng loại sự kiện, không đồng bộ offline đầy đủ và không chống điểm danh hộ tuyệt đối là các giới hạn đã chốt. Email nhắc trước sự kiện không thuộc MVP trong bản phạm vi báo cáo hiện hành; không tính là thiếu chức năng bắt buộc.
 
-## Những điểm còn cần xử lý
+## Kết quả xử lý trong đợt này
 
-| Ưu tiên | Phát hiện và bằng chứng | Hướng xử lý |
-| --- | --- | --- |
-| Trước release | Candidate I3 chưa nằm trong `main`; phần bổ sung hôm nay còn local | Review/commit phần mới, PR nhánh tích hợp, chạy regression trước merge |
-| Trước public deploy | `deploy/` chủ yếu là hướng dẫn; chưa có cấu hình Vercel proxy/SPA, Render service và một môi trường cloud đã thử | Tạo cấu hình theo [đề xuất deploy](../../deploy/DEPLOYMENT_RECOMMENDATION.md), xác minh auth/CSRF/camera/CSV trên HTTPS |
-| Trước public deploy | `SeedRunner` tạo danh mục thử cùng tài khoản thử khi bật dev-seed. Tắt dev-seed trên database rỗng thì thiếu khoa/đơn vị để đăng ký/cấp Organizer | Tách seed danh mục dùng thật khỏi seed tài khoản demo; nhập danh mục đã được nhóm chốt |
-| Trước public deploy | Migration đang chạy SQL thủ công; `spring.sql.init.mode=never`, chưa có version tracking tự động | Có bước migration được kiểm soát khi release; cân nhắc Flyway. Baseline chỉ chạy một lần trên DB rỗng |
-| Trước dùng thật | Chưa có thử backup → restore của môi trường triển khai | Xuất backup, phục hồi vào database/branch riêng, kiểm tra tài khoản/sự kiện/đăng ký/điểm danh/CSV, lưu log |
-| Cần sửa/kiểm thử thêm | `/scan`, hàm `showExisting()` đang kiểm tra `attendance.result === PRESENT` mà chưa kiểm tra `registrationStatus`/`attendanceState`. Nếu hủy sau preview và trước lần đọc kết quả, bằng chứng cũ có thể được hiện như kết quả hiện hành | Thêm guard REGISTERED + attendanceState=PRESENT, kiểm thử trường hợp hủy giữa hai request. Đây là phát hiện từ đọc code; chưa tái hiện bằng HTTP/PostgreSQL trong lượt này |
-| Cần cải thiện | `OwnedEventPicker` chỉ đọc 100 sự kiện đầu rồi bỏ DRAFT. Nhiều nháp mới có thể che sự kiện công bố cũ; danh sách tham khảo trên trang scan cũng chỉ đọc trang đăng ký đầu | Thêm tìm kiếm/phân trang hoặc tải tiếp; không coi danh sách đầu là toàn bộ dữ liệu |
-| Trước mở đăng ký rộng | Repo chưa có rate limit cho login/register; chưa xác minh email/MSSV thực sự thuộc sinh viên | Giới hạn tần suất backend, theo dõi đăng nhập; bổ sung xác minh email/SSO theo mức sử dụng. Không dùng việc tự khai MSSV như xác nhận danh tính |
-| Khi vận hành | Chưa có quên mật khẩu, theo dõi mail delivered/bounce, chính sách dọn phiên/outbox và giám sát lỗi tập trung | Ưu tiên theo nhu cầu; reset mật khẩu phải có luồng xác minh, không gửi mật khẩu thô qua email |
-| Khi chọn free tier | Email outbox polling mỗi 5 giây khi mail được bật có thể giữ Neon hoạt động nếu backend chạy thường trực | Tính quota theo lịch polling thực tế; không giả định database tự ngủ chỉ vì không có người mở web |
-| Trước chốt CP3/CP4 | `.github` mới có PR template, chưa có CI chạy build/test; chưa có thử điện thoại thật qua HTTPS và biên bản nghiệm thu | Bổ sung CI, test thiết bị thật và bằng chứng demo/review độc lập |
+| Vấn đề | Thay đổi và kiểm chứng |
+| --- | --- |
+| QR hiện PRESENT cũ khi đăng ký đã hủy | Cả `showExisting` và fallback QR hết hạn đều yêu cầu REGISTERED + attendanceState=PRESENT + bản ghi PRESENT. Kiểm thử UI có preview còn PRESENT nhưng lần đọc hiện hành đã CANCELLED; không hiện thành công. Chặn phản hồi muộn ghi đè lượt quét mới và camera ghi đè bước preview. |
+| Sự kiện công bố bị 100 nháp che; scan thiếu trang đăng ký | Tải tiếp theo hasNext, chống dữ liệu trùng/vòng lặp không tiến triển, bỏ phản hồi đã hết hiệu lực. UI đã pass trường hợp 100 nháp ở trang đầu, sự kiện công bố ở trang 2; trang đăng ký đầu toàn sự kiện kết thúc, trang 2 có sự kiện sắp tới. |
+| Login/register chưa hạn chế thử liên tục | Thêm rate limit IP/email trong backend, cửa sổ thời gian, bộ nhớ hữu hạn, an toàn đồng thời; 429/Retry-After. Không khóa tài khoản. Unit test và HTTP thật đã pass. Bộ đếm theo process; nhiều replica cần giải pháp chia sẻ. |
+| Chưa có migration history | Thêm Flyway V1/V2, validate checksum, khóa clean. Schema I3 cũ cần backup và opt-in; preflight kiểm layout trước baseline. PostgreSQL 17 thật đã pass tạo mới, restart, nhận schema cũ giữ dữ liệu/id, từ chối thiếu cột và checksum sửa sai. Health chỉ đếm 15 bảng nghiệp vụ. |
+| Danh mục production | Sửa nhận xét cũ: 12 khoa đã được CatalogInitializer đồng bộ độc lập trước đợt này. Thêm `seed-catalog.py`/`production_catalog.sql` nhập đơn vị riêng, validation/transaction/chống trùng, không tạo tài khoản demo. Sửa lỗi mã hóa argv của psql trên Windows; test tên tiếng Việt có dấu nháy, nhập lặp và tên rỗng đã pass. Tên đơn vị dùng thật vẫn cần nhóm nhập. |
+| Chưa có công cụ backup/restore | Thêm `scripts/database-backup.py`: archive binary, SHA-256, chống ghi đè, restore chỉ vào database mới có prefix riêng. Diễn tập PostgreSQL 17 đã pass: giữ số liệu users/events/registrations/attendance/history/outbox/migration, sequence tiếp tục chạy, khởi động app phục hồi, đăng nhập và CSV. Không đánh dấu đã thử Neon. |
+| Polling giữ Neon hoạt động | Outbox rỗng giãn chu kỳ tới 10 phút; mail mới đánh thức sau commit; có việc thì giữ nhịp retry nhanh. Thêm `/api/live` chờ app ready nhưng không query database cho Render probe. Unit test pass; quota/scale-to-zero cần đo trên cloud. |
+| Deploy mới có hướng dẫn | Thêm `render.yaml` Free/manual deploy và `frontend/vercel.mjs` đọc BACKEND_ORIGIN, proxy API, SPA fallback, no-store. Render schema và quy tắc route local đã kiểm tra. Chưa tạo dịch vụ hoặc nghiệm thu HTTPS. |
+| Chưa có CI | Thêm `.github/workflows/validation.yml`: unit/PostgreSQL 17, frontend build/UI contracts, HTTP I1/I2/I3 và backup/restore Docker. Workflow đã qua schema validation; cần push và xem run thật trên GitHub. |
+
+Cấu hình và các lệnh có thể chạy lại: [OPERATIONS.md](../../deploy/OPERATIONS.md), [đề xuất triển khai](../../deploy/DEPLOYMENT_RECOMMENDATION.md).
+
+## Còn cần làm trước nghiệm thu/deploy thật
+
+- Review độc lập, commit bộ sửa lỗi này, PR và regression trước khi đưa candidate vào `main`. Không tự đánh dấu đã merge/review.
+- Nhập đơn vị tổ chức đã được nhóm chốt; tạo Admin bằng bootstrap và tắt bootstrap/dev-seed sau đó.
+- Tạo Neon/Render/Vercel, đặt secret backend và BACKEND_ORIGIN. Thử cookie/CSRF/logout, camera điện thoại thật qua HTTPS, CSV và restart bằng khóa QR ổn định.
+- Diễn tập backup/restore trên database/branch cloud riêng và lưu bằng chứng; test local không thay nghiệm thu môi trường triển khai.
+- Chạy CI trên GitHub và hoàn thiện biên bản demo/phản hồi CP3/CP4. RA02/A11 Lightsail chưa được thực hiện; hosting khác phải ghi nhận thay đổi trong báo cáo.
+- Backlog ngoài MVP: xác minh email/SSO, quên mật khẩu, delivered/bounce, dọn phiên/outbox và giám sát tập trung. MSSV/email tự khai hiện chưa xác minh danh tính sinh viên.
 
 ## Kiểm tra đã chạy
 
-- Nhánh `26efcbb`: 43 unit test backend PASS, không skip/failure/error.
-- Build production của nhánh mới và phần bổ sung chi tiết PASS.
-- 11 nhóm kiểm tra UI với API giả lập theo hợp đồng PASS: Có mặt QR/thủ công, giờ Việt Nam trên thiết bị UTC, tải lại, hủy/đăng ký lại, phản hồi muộn, lỗi/thử lại, chưa đăng ký/chờ, giới hạn thời gian, tự tải lại khi ends_at, Organizer preview, mobile và chuỗi dài không dấu cách.
+- Backend hiện tại: **55 test PASS**, gồm 50 unit test và 5 test migration/HTTP trên PostgreSQL 17.6 thật; không skip/failure/error. Lệnh `mvn -Ppostgres-it test` trong backend.
+- `NativeSystemCheck` PASS: chạy toàn bộ HTTP I3 trên PostgreSQL riêng, restart backend cùng khóa QR, phân quyền/CSRF, concurrent writes, reset khi đăng ký lại, rollback audit, guard đúng thời hạn, báo cáo/CSV. Sau đó nhập danh mục tiếng Việt/dấu nháy, backup/restore vào DB mới và kiểm tra app phục hồi đăng nhập/CSV, sequence, chống ghi đè. Dữ liệu fixture: 10.011 users, 11 events, 10.008 registrations, 6 attendance. Không gửi email thật.
+- Fixture 2.000 dòng: report <5 giây, CSV <10 giây; 10.001 dòng export bị chặn 413 như hợp đồng. Đây là kiểm tra local, không phải benchmark cloud.
+- Build production frontend PASS.
+- `mvn -f backend/pom.xml package` từ root PASS: 50 unit test và đóng gói executable JAR thành công. Bộ PostgreSQL native chỉ chạy khi bật profile/runner riêng; build Docker thông thường không cần khởi động PostgreSQL để chạy unit test.
+- **15 nhóm UI contract PASS**: 11 nhóm chi tiết đã có và 4 nhóm regression QR/phân trang mới. Toàn bộ API được chặn và trả fixture; không coi là bằng chứng backend/database hoặc camera phần cứng.
 - Đã xem ảnh desktop/mobile. Thêm kiểm tra chi tiết sau scan vào `scripts/smoke/i3_scan_ui.cjs` để chạy với backend thật khi môi trường sẵn sàng.
 - Dependency audit hiện tại: frontend production 0 cảnh báo; toàn bộ frontend còn 16 moderate ở toolchain, không có high/critical. Bộ Playwright riêng có 0 cảnh báo. Đây là kết quả npm, không thay quét dependency Java hoặc kiểm thử bảo mật ứng dụng.
-- Chưa chạy lại bộ HTTP/PostgreSQL và camera end-to-end trong lượt này: Docker Desktop kẹt `starting`, API engine lỗi và restart timeout. Không xem API giả lập là bằng chứng backend/database đã pass. Không sửa/xóa volume dữ liệu phát triển.
+- Docker Desktop chưa sẵn sàng trong lượt này. Các kết quả PostgreSQL hiện tại dùng server native tạm, tự dừng sau test; không sửa/xóa volume dữ liệu phát triển. Chưa chạy lại I1/I2 đầy đủ trong Docker, browser full-stack hoặc workflow trên GitHub; CI đã được cấu hình để chạy các bộ HTTP đó khi push.
 
 Lệnh kiểm tra UI độc lập Docker, từ root:
 

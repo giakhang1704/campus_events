@@ -36,7 +36,8 @@ class EmailDispatcherTest {
                         5,
                         allowTests),
                 outbox,
-                sender);
+                sender,
+                new OutboxPollSchedule(5000, 600000));
     }
 
     private void claim(boolean current) {

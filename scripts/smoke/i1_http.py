@@ -46,8 +46,15 @@ class Client:
 
 
 def sql(query):
-    result = subprocess.run(COMPOSE + ['exec', '-T', 'db', 'psql', '-v', 'ON_ERROR_STOP=1',
-                                     '-U', 'campus_test', '-d', 'campus_i1_test', '-tA'],
+    native = os.environ.get('TEST_NATIVE_PSQL')
+    if native:
+        assert os.environ.get('PGHOST') == '127.0.0.1'
+        assert os.environ.get('PGDATABASE', '').startswith('campus_test_native_')
+        command = [native, '-X', '-v', 'ON_ERROR_STOP=1', '-tA']
+    else:
+        command = COMPOSE + ['exec', '-T', 'db', 'psql', '-v', 'ON_ERROR_STOP=1',
+                            '-U', 'campus_test', '-d', 'campus_i1_test', '-tA']
+    result = subprocess.run(command,
                             input=query.encode('utf-8'), capture_output=True, check=True)
     return result.stdout.decode('utf-8').strip()
 

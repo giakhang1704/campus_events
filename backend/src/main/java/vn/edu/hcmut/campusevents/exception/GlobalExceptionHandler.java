@@ -14,7 +14,10 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
     @ExceptionHandler(ApiException.class)
     ResponseEntity<?> api(ApiException e) {
-        return ResponseEntity.status(e.status)
+        var response = ResponseEntity.status(e.status);
+        if (e instanceof RateLimitException limited)
+            response.header("Retry-After", Long.toString(limited.retryAfterSeconds));
+        return response
                 .body(Map.of("code", e.code, "message", e.getMessage(), "fields", e.fields));
     }
 

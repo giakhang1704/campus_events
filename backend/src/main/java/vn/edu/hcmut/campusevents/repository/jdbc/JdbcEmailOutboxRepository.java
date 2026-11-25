@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.context.ApplicationEventPublisher;
+import vn.edu.hcmut.campusevents.config.OutboxQueued;
 
 import vn.edu.hcmut.campusevents.model.*;
 import vn.edu.hcmut.campusevents.repository.IEmailOutboxRepository;
@@ -17,10 +19,12 @@ import java.util.Optional;
 public class JdbcEmailOutboxRepository implements IEmailOutboxRepository {
     private final JdbcTemplate jdbc;
     private final ObjectMapper json;
+    private final ApplicationEventPublisher events;
 
-    public JdbcEmailOutboxRepository(JdbcTemplate jdbc, ObjectMapper json) {
+    public JdbcEmailOutboxRepository(JdbcTemplate jdbc, ObjectMapper json, ApplicationEventPublisher events) {
         this.jdbc = jdbc;
         this.json = json;
+        this.events = events;
     }
 
     @Override
@@ -38,7 +42,7 @@ public class JdbcEmailOutboxRepository implements IEmailOutboxRepository {
                         + r.version()
                         + (kind.equals("EVENT_CHANGED") ? ":event-v" + event.version() : "");
         try {
-            jdbc.update(
+            int inserted = jdbc.update(
                     """
 INSERT INTO campus.email_outbox(event_id,registration_id,recipient_user_id,recipient_email,kind,dedupe_key,payload)
 VALUES(?,?,?,?,?,?,?::jsonb) ON CONFLICT(dedupe_key) DO NOTHING
@@ -50,6 +54,7 @@ VALUES(?,?,?,?,?,?,?::jsonb) ON CONFLICT(dedupe_key) DO NOTHING
                     kind,
                     key,
                     json.writeValueAsString(payload));
+            if (inserted > 0) events.publishEvent(new OutboxQueued());
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("Cannot serialize email payload", e);
         }

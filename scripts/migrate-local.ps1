@@ -1,4 +1,5 @@
 $ErrorActionPreference = 'Stop'
+Write-Warning 'Legacy SQL helper. Current releases use Flyway; follow deploy/OPERATIONS.md for backup and one-time baseline adoption. This helper does not create Flyway history.'
 $projectRoot = Split-Path $PSScriptRoot -Parent
 $migration = Join-Path $projectRoot 'database/migrations/001_i3_qr_write_guard.sql'
 Push-Location $projectRoot
