@@ -1,7 +1,6 @@
 <section class="manage-hero">
   <div>
     <h1>Quản lý tài khoản</h1>
-    <p>Tra cứu, cấp tài khoản và khóa/mở quyền truy cập. Mỗi tài khoản có một vai trò cố định.</p>
   </div>
   <div class="actions">
     <button type="button" [class]="creating ? 'hero-ghost' : 'hero-solid'" [disabled]="busy()" (click)="toggleCreate()">
@@ -24,10 +23,7 @@
       <p>{{ createReview.fullName }} · {{ createReview.email }}</p>
       <p>Vai trò: Người tổ chức · Đơn vị: {{ unitLabel(createReview.organizationUnitId) }}</p>
       <p>Lý do: {{ createReview.reason }}</p>
-      <p>
-        Chỉ cấp cho người đã được phân công và đối chiếu thông tin. Bàn giao mật khẩu tạm riêng cho đúng người;
-        người nhận phải đổi mật khẩu khi đăng nhập lần đầu. Không công khai mật khẩu trong danh sách tài khoản.
-      </p>
+      <p>Người nhận cần đổi mật khẩu khi đăng nhập lần đầu.</p>
       <button type="button" [disabled]="busy()" (click)="create()">Xác nhận cấp tài khoản</button>
       <button type="button" class="secondary" [disabled]="busy()" (click)="createReview = null">Quay lại</button>
       <button type="button" class="secondary" [disabled]="busy()" (click)="cancelCreate()">Hủy</button>
@@ -88,10 +84,6 @@
           }
         </label>
 
-        <p class="muted">
-          Tài khoản sinh viên được tự đăng ký. Nếu email đã tồn tại, hãy tra cứu hoặc liên hệ người phụ trách.
-          Không thể đổi vai trò của tài khoản đã tạo.
-        </p>
         <button type="submit" [disabled]="busy()">Tạo tài khoản</button>
         <button type="button" class="secondary" (click)="cancelCreate()">Hủy</button>
       </form>
@@ -107,7 +99,7 @@
     @if (preview) {
       <h3>Xác nhận thay đổi tài khoản</h3>
       <p>{{ preview.before.fullName }} · {{ preview.before.email }} {{ preview.before.studentCode || '' }}</p>
-      <p>Vai trò cố định: {{ roleLabel(preview.before.role) }}</p>
+      <p>Vai trò: {{ roleLabel(preview.before.role) }}</p>
       <p>Trạng thái: {{ statusLabel(preview.before.status) }} → {{ statusLabel(preview.status) }}</p>
       <p>Đơn vị: {{ unitLabel(preview.before.organizationUnitId) }}</p>
       <p>Lý do: {{ preview.reason }}</p>

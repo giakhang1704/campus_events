@@ -162,7 +162,7 @@ Workflow Git theo báo cáo mục 1.7.2: feature branch + Pull Request, ít nh�
 
 Backend tổ chức theo tầng Controller → Service interface/implementation → Repository interface/JDBC implementation. Xem [backend/README.md](backend/README.md) để đọc tree, cơ chế transaction, luồng xử lý và lệnh chạy. Giữ nguyên API/database; refactor chưa bổ sung chức năng đăng ký sự kiện của I2.
 
-Chưa deploy cloud. Trên nhánh I3 frontend, màn Organizer điểm danh và báo cáo/CSV đã nối API; màn sinh viên quét QR còn cần hoàn tất. Dependency frontend tại lần rà soát 12/11/2026: audit production 0 cảnh báo, audit đầy đủ còn 16 moderate trong toolchain CLI, không có high/critical.
+Chưa deploy cloud. Nhánh `feature/i3-scan-frontend` kế thừa I1/I2, backend I3, màn Organizer điểm danh/báo cáo và màn sinh viên quét QR. Local đã bổ sung kết quả điểm danh trên trang chi tiết. Trạng thái nhánh, phần còn thiếu và đề xuất triển khai: [rà soát 25/11/2026](docs/testing/SYSTEM_REVIEW_2026-11-25.md). Dependency frontend tại lần rà soát 12/11/2026: audit production 0 cảnh báo, audit đầy đủ còn 16 moderate trong toolchain CLI, không có high/critical.
 
 ## Increment 2 — backend
 
@@ -196,7 +196,8 @@ I2 test có PostgreSQL tmpfs riêng (không dùng volume local) và mail giả l
 - [x] Kiểm thử backend I3, regression I1/I2 và Docker localhost; không reset volume phát triển hoặc gửi email thật.
 - [x] Frontend I2: đăng ký/hủy, danh sách cá nhân và người tham gia đã nối API.
 - [x] Frontend I3 Organizer: phiên QR/điểm danh thủ công/lịch sử; màn báo cáo có thống kê, chi tiết phân trang và CSV theo bộ lọc.
-- [ ] Frontend I3 Student: camera/scan QR và trạng thái điểm danh ở chi tiết sự kiện; demo đầu cuối.
+- [x] Frontend I3 Student: camera/scan QR; local bổ sung trạng thái điểm danh ở chi tiết sự kiện.
+- [ ] Demo đầu cuối, kiểm thử trên điện thoại thật qua HTTPS và review độc lập.
 - [ ] A11/A12: deployment/restore, QA/review và các checkpoint CP3/CP4 theo báo cáo; chưa đánh dấu đã thử Lightsail.
 
 ```powershell

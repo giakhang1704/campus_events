@@ -60,7 +60,7 @@ import { RegistrationPanelComponent } from '../registrations/registration-panel.
           <span [class]="badge().css">{{ badge().label }}</span>
           <h1 class="gap-top">{{ e.title }}</h1>
           <h3>Giới thiệu</h3>
-          <p>{{ e.description }}</p>
+          <p class="event-description">{{ e.description }}</p>
         </section>
 
         <aside class="panel sticky">
@@ -72,16 +72,20 @@ import { RegistrationPanelComponent } from '../registrations/registration-panel.
           <div class="info-row"><span>Sức chứa</span><b>{{ capacity() }} người</b></div>
           <div class="info-row"><span>Nhận đăng ký</span><b>{{ stamp(e.registrationOpensAt) }}<br />đến {{ stamp(e.registrationClosesAt) }}</b></div>
           <div class="info-row"><span>Đối tượng</span><b>{{ audience() }}</b></div>
-          <div class="info-row"><span>Điểm danh</span><b>1 lần điểm danh đầu vào</b></div>
 
           @if (isStudent()) {
             <app-registration-panel [event]="e" />
           } @else {
-            <div class="notice">Bạn đang xem với vai trò người tổ chức; chỉ sinh viên đăng ký được.</div>
+            <p class="small-text muted gap-top">Chỉ sinh viên có thể đăng ký.</p>
           }
         </aside>
       </div>
     }
+  `,
+  styles: `
+    :host { display: block; min-width: 0; }
+    .detail-copy { min-width: 0; overflow-wrap: anywhere; }
+    .event-description { max-width: 100%; white-space: pre-wrap; overflow-wrap: anywhere; }
   `,
 })
 export class StudentEventDetailPage {

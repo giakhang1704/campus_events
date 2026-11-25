@@ -23,7 +23,7 @@ import { ParticipantPage, parseStatusFilter, STATUS_FILTERS, statusBadge, status
   providers: [OwnedEventPicker],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <app-page-header title="Danh sách người tham gia" subtitle="Theo dõi danh sách chính thức và thứ tự chờ của từng sự kiện.">
+    <app-page-header title="Danh sách người tham gia">
       <app-owned-event-select />
     </app-page-header>
 

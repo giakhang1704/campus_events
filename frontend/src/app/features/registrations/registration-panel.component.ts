@@ -6,6 +6,7 @@ import { formatDateTime } from '../../shared/utils/date.utils';
 import { errorMessage } from '../../shared/utils/error.utils';
 import { formatCount } from '../../shared/utils/number.utils';
 import { CampusEvent } from '../events/event.models';
+import { MyAttendanceComponent } from '../attendance/my-attendance.component';
 import { RegistrationApi } from './registration-api.service';
 import { RegistrationState, STATUS_BADGE, statusSince } from './registration.models';
 
@@ -15,7 +16,7 @@ import { RegistrationState, STATUS_BADGE, statusSince } from './registration.mod
  */
 @Component({
   selector: 'app-registration-panel',
-  imports: [IconComponent],
+  imports: [IconComponent, MyAttendanceComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (loading()) {
@@ -37,10 +38,10 @@ import { RegistrationState, STATUS_BADGE, statusSince } from './registration.mod
         @if (r.status === 'WAITLISTED') {
           <div class="notice warn">
             Bạn đang ở vị trí <b>#{{ r.queuePosition ?? '?' }}</b> trong danh sách chờ.
-            Khi có chỗ trước giờ bắt đầu, hệ thống tự chuyển bạn lên và gửi email thông báo.
+            Tự chuyển lên khi có chỗ trước giờ bắt đầu.
           </div>
         } @else {
-          <div class="notice success">Bạn đã có chỗ tham gia sự kiện. Email xác nhận được gửi tới hộp thư của bạn.</div>
+          <div class="notice success">Bạn đã có chỗ tham gia sự kiện.</div>
         }
 
         @if (confirming()) {
@@ -74,6 +75,7 @@ import { RegistrationState, STATUS_BADGE, statusSince } from './registration.mod
           <p class="muted small-text gap-top">{{ h }}</p>
         }
       }
+      <app-my-attendance [event]="event()" [registration]="s.registration" (refreshRequested)="reload()" />
     }
   `,
   styles: `
@@ -135,7 +137,7 @@ export class RegistrationPanelComponent {
         ? `Mở nhận đăng ký lúc ${formatDateTime(e.registrationOpensAt)}.`
         : 'Đã hết thời gian nhận đăng ký.';
     }
-    return s.availableSeats <= 0 ? 'Sự kiện đã đủ chỗ. Bạn sẽ được xếp vào danh sách chờ theo thứ tự đăng ký.' : '';
+    return s.availableSeats <= 0 ? 'Sự kiện đã đủ chỗ. Đăng ký để vào danh sách chờ.' : '';
   });
 
   constructor() {

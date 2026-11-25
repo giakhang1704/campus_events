@@ -16,7 +16,7 @@ import { parseStatusFilter, RegistrationPage, STATUS_FILTERS, statusBadge, statu
   imports: [PageHeaderComponent, IconComponent, PagerComponent, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <app-page-header title="Sự kiện của tôi" subtitle="Các sự kiện bạn đã đăng ký, đang chờ hoặc đã hủy.">
+    <app-page-header title="Sự kiện của tôi">
       <select class="role-select" aria-label="Lọc theo trạng thái" (change)="navigate({ status: $any($event.target).value || null, page: null })">
         @for (f of filters; track f.value) {
           <option [value]="f.value" [selected]="f.value === status()">{{ f.label }}</option>

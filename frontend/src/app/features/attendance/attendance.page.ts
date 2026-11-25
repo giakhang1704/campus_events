@@ -47,7 +47,7 @@ type Row = AttendanceRow & { initials: string; state: { label: string; css: stri
   providers: [OwnedEventPicker],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <app-page-header title="Quản lý điểm danh" subtitle="Mở QR cho sinh viên quét và bổ sung kết quả khi cần.">
+    <app-page-header title="Quản lý điểm danh">
       <app-owned-event-select />
     </app-page-header>
 
@@ -56,13 +56,13 @@ type Row = AttendanceRow & { initials: string; state: { label: string; css: stri
       @if (result()?.summary; as s) {
         <div class="stats">
           <div class="stat green"><div class="stat-top">Có mặt <app-icon name="check" /></div><strong>{{ count(s.presentCount) }}</strong><small>trên {{ count(s.registeredCount) }} đăng ký chính thức</small></div>
-          <div class="stat"><div class="stat-top">Tỷ lệ tham dự <app-icon name="chart" /></div><strong>{{ s.attendanceRate === null ? '—' : s.attendanceRate + '%' }}</strong><small>{{ s.hasEnded ? 'kết quả cuối' : 'số liệu tạm thời' }}</small></div>
+          <div class="stat"><div class="stat-top">Tỷ lệ tham dự <app-icon name="chart" /></div><strong>{{ s.attendanceRate === null ? '—' : s.attendanceRate + '%' }}</strong><small>{{ s.hasEnded ? 'Sau sự kiện' : 'Tạm tính' }}</small></div>
           @if (s.hasEnded) {
-            <div class="stat amber"><div class="stat-top">Vắng <app-icon name="alert" /></div><strong>{{ count(s.absentCount ?? 0) }}</strong><small>không được ghi nhận</small></div>
+            <div class="stat amber"><div class="stat-top">Vắng <app-icon name="alert" /></div><strong>{{ count(s.absentCount ?? 0) }}</strong></div>
           } @else {
-            <div class="stat amber"><div class="stat-top">Chưa ghi nhận <app-icon name="clock" /></div><strong>{{ count(s.notRecordedCount) }}</strong><small>chưa có mặt</small></div>
+            <div class="stat amber"><div class="stat-top">Chưa ghi nhận <app-icon name="clock" /></div><strong>{{ count(s.notRecordedCount) }}</strong></div>
           }
-          <div class="stat"><div class="stat-top">Danh sách chờ <app-icon name="users" /></div><strong>{{ count(s.waitingCount) }}</strong><small>không tính vào tỷ lệ</small></div>
+          <div class="stat"><div class="stat-top">Danh sách chờ <app-icon name="users" /></div><strong>{{ count(s.waitingCount) }}</strong></div>
         </div>
       }
 
@@ -79,16 +79,16 @@ type Row = AttendanceRow & { initials: string; state: { label: string; css: stri
           @if (sessionLoading()) {
             <div class="sk sk-line" aria-hidden="true"></div>
           } @else if (session()?.active) {
-            <div class="notice">Sinh viên quét mã bên cạnh rồi bấm Xác nhận trên điện thoại. Mở lại khi phiên còn hiệu lực sẽ giữ nguyên mã, không gia hạn.</div>
+            <p class="small-text muted gap-bottom">Sinh viên quét mã và xác nhận điểm danh.</p>
             <button type="button" class="block" [disabled]="sessionBusy()" (click)="closeSession()"><app-icon name="lock" /> {{ sessionBusy() ? 'Đang đóng…' : 'Đóng điểm danh' }}</button>
           } @else {
             @if (session(); as old) {
-              <p class="small-text muted">Phiên trước {{ old.closedAt ? 'đã đóng lúc ' + time(old.closedAt) : 'đã hết hạn lúc ' + time(old.expiresAt) }}. Mở phiên mới sẽ tạo mã mới.</p>
+              <p class="small-text muted">Phiên trước {{ old.closedAt ? 'đã đóng lúc ' + time(old.closedAt) : 'đã hết hạn lúc ' + time(old.expiresAt) }}.</p>
             }
             @if (qrWindow() === 'BEFORE') {
-              <div class="notice warn">Chưa đến giờ mở QR (từ 30 phút trước khi sự kiện bắt đầu).</div>
+              <div class="notice warn">Chưa đến giờ mở điểm danh.</div>
             } @else if (qrWindow() === 'ENDED') {
-              <div class="notice warn">Sự kiện đã kết thúc; không mở QR được nữa. Vẫn ghi nhận thủ công được ở danh sách bên dưới.</div>
+              <div class="notice warn">Sự kiện đã kết thúc. Có thể bổ sung điểm danh thủ công.</div>
             }
             <label class="duration">Thời hạn mã
               <select aria-label="Thời hạn mã" [disabled]="qrWindow() !== 'OPEN'" (change)="duration.set(+$any($event.target).value)">
@@ -111,7 +111,7 @@ type Row = AttendanceRow & { initials: string; state: { label: string; css: stri
             <p class="qr-caption">Hết hạn lúc {{ time(session()!.expiresAt) }} · còn <b>{{ remaining() }}</b></p>
           } @else {
             <div class="qr-empty"><app-icon name="qr" /></div>
-            <p class="qr-caption">{{ !session()?.active ? 'Mã QR hiện ở đây khi phiên được mở.' : sessionError() ? 'Chưa hiển thị được mã QR.' : 'Đang tải mã QR…' }}</p>
+            <p class="qr-caption">{{ !session()?.active ? 'Chưa mở điểm danh' : sessionError() ? 'Chưa hiển thị được mã QR.' : 'Đang tải mã QR…' }}</p>
           }
         </section>
       </div>
@@ -123,7 +123,7 @@ type Row = AttendanceRow & { initials: string; state: { label: string; css: stri
           <label>Lý do
             <textarea aria-label="Lý do" [maxLength]="reasonMax" [value]="ed.reason" (input)="setReason($any($event.target).value)"
               placeholder="Ví dụ: Bổ sung từ danh sách ký tên dự phòng"></textarea>
-            <small>Bắt buộc, tối đa {{ reasonMax }} ký tự. Được lưu vào lịch sử điểm danh.</small>
+            <small>Bắt buộc · Tối đa {{ reasonMax }} ký tự.</small>
           </label>
           @if (ed.error) { <p class="notice warn" role="alert">{{ ed.error }}</p> }
           <div class="actions">
@@ -184,7 +184,6 @@ type Row = AttendanceRow & { initials: string; state: { label: string; css: stri
           <div class="empty">
             <app-icon name="users" />
             <h3>{{ filter() === 'REGISTERED' ? 'Chưa có sinh viên đăng ký chính thức' : 'Không có lượt đăng ký phù hợp' }}</h3>
-            <p>Danh sách cập nhật khi sinh viên đăng ký hoặc quét QR.</p>
           </div>
         } @else {
           <div class="table-wrap">

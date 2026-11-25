@@ -26,7 +26,7 @@ shared/                  icon, page-header, coming-soon
   - `/my-events`: đăng ký của sinh viên, lọc trạng thái, phân trang; trạng thái nằm trên URL.
   - `/participants?event=<id>`: organizer chọn sự kiện đã công bố, xem số đã đăng ký/chờ/còn trống, bảng sinh viên, lọc trạng thái. Ô tìm chỉ lọc trong trang hiện tại vì API chưa có tham số tìm kiếm; danh sách chọn sự kiện lấy tối đa 100 sự kiện.
   - Form sửa sự kiện: lỗi 409 `CAPACITY_BELOW_REGISTERED` hiện tại ô sức chứa, `REGISTERED_ELIGIBILITY_CHANGE` tại khoa/năm.
-- I3: `/attendance` đã có phiên QR/điểm danh thủ công/lịch sử; `/reports` đã nối báo cáo + CSV; `/scan` quét QR bằng camera → xem trước → Xác nhận → check-in. Mockup tham khảo giữ trong `public/mockup/app.js`.
+- I3: `/attendance` đã có phiên QR/điểm danh thủ công/lịch sử; `/reports` đã nối báo cáo + CSV; `/scan` quét QR bằng camera → xem trước → Xác nhận → check-in. Trang `/events/:id` của sinh viên có kết quả điểm danh, thời gian/phương thức ghi nhận và liên kết quét QR trong cửa sổ điểm danh. Mockup tham khảo giữ trong `public/mockup/app.js`.
 - Giao diện dùng CSS của mockup (`src/styles.css`, phần đầu) + lớp Angular ở cuối file. Phần ngoài phạm vi (category, check-out, kết thúc thủ công) giữ trong comment `DEFERRED`, không xóa.
 
 ## I3 — phần nền dùng chung và chia việc
@@ -59,6 +59,10 @@ Chạy local cần migration I3 và khóa QR: `./scripts/setup-local.ps1` (thêm
 I2: `./scripts/test-i2.ps1 -PlaywrightModule <đường dẫn module playwright>` chạy kiểm thử HTTP I2 rồi `scripts/smoke/i2_ui.cjs` trên stack test riêng (API 18081, Angular 14201; mặc định Edge, đổi bằng biến `I2_UI_CHANNEL`). Script tự tạo sinh viên/sự kiện trong database tmpfs, không chạm dữ liệu local. Ảnh chụp lưu ở `frontend/.angular/i2-*.png`.
 
 I3 màn B: `node scripts/smoke/i3_attendance_ui.cjs <module playwright>` trên stack test I3 (`compose.i3-test.yaml`, API 18082) với Angular trỏ `/api` tới API đó; biến `TEST_ACCOUNT_PASSWORD`, `I3_UI_BASE_URL` (mặc định http://127.0.0.1:14202). Script tự tạo sự kiện bắt đầu sau 10 phút và ba sinh viên trong database tmpfs.
+
+Điểm danh trên trang chi tiết: `./scripts/test-i3-student-attendance.ps1` (từ root, sau khi chạy `npm.cmd ci --prefix frontend` và `npm.cmd ci --prefix scripts/smoke`). Chạy Angular 14206 + Edge với response API giả lập theo hợp đồng; không cần Docker, không dùng database hoặc tài khoản thật. Kiểm tra QR/thủ công, hủy/đăng ký lại, phản hồi muộn, hết giờ, lỗi/thử lại và mô tả không có dấu cách trên desktop/mobile. Log, ảnh và kết quả ở `frontend/.angular/student-attendance/`. Kiểm thử API/PostgreSQL thật vẫn dùng `./scripts/test-i3-ui.ps1`; bộ scan đã thêm kiểm tra kết quả trên chi tiết sau khi quét.
+
+`MyAttendanceComponent` lấy `attendanceState` từ backend, không suy ra Có mặt từ bằng chứng PRESENT của lượt đã hủy. Đổi version/trạng thái đăng ký xóa kết quả đang hiển thị và tải lại; nút Tải lại đồng thời cập nhật trạng thái đăng ký. Khi qua thời điểm mở QR/kết thúc, trang gọi lại API. Mô tả dài tự xuống dòng và giữ xuống dòng do người nhập, không cắt nội dung.
 
 I3 màn C, từ **root repository**:
 

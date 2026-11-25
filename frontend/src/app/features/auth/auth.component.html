@@ -5,8 +5,8 @@
       <span>BK<em>event</em></span>
     </div>
     <div>
-      <p class="auth-statement">Những trải nghiệm bắt đầu từ đây.</p>
-      <p>Khám phá hội thảo, workshop và hoạt động ngoại khóa; đăng ký và điểm danh trong cùng một nơi.</p>
+      <p class="auth-statement">Sự kiện Bách khoa.</p>
+      <p>Khám phá sự kiện, đăng ký và điểm danh.</p>
     </div>
     <small>© BKevent</small>
   </div>
@@ -14,9 +14,6 @@
   <div class="auth-content">
     <div class="auth-box">
       <h1>{{ signup ? 'Tạo tài khoản sinh viên' : 'Đăng nhập' }}</h1>
-      <p>
-        {{ signup ? 'Khai báo hồ sơ để bắt đầu tham gia sự kiện.' : 'Sử dụng tài khoản được cấp hoặc tài khoản sinh viên đã đăng ký.' }}
-      </p>
 
       <form #form="ngForm" (ngSubmit)="submit(form)">
         @if (signup) {

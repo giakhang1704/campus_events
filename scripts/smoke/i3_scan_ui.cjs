@@ -118,6 +118,14 @@ const fakeCamera = () => {
     await pa.getByText('Có mặt', { exact: true }).waitFor();
     await pa.getByText('Quét QR', { exact: true }).waitFor();
     assert.equal((await api(a, 'GET', `/events/${event.id}/attendance`)).attendance.result, 'PRESENT');
+    const detail = await a.newPage();
+    await detail.goto(`${base}/events/${event.id}`);
+    const ownAttendance = detail.getByRole('region', { name: 'Điểm danh của bạn', exact: true });
+    await ownAttendance.getByText('Có mặt', { exact: true }).waitFor();
+    await ownAttendance.getByText('Quét QR', { exact: false }).waitFor();
+    await detail.reload();
+    await ownAttendance.getByText('Có mặt', { exact: true }).waitFor();
+    await detail.close();
     await pa.screenshot({ path: path.join(shots, 'i3-scan-success.png'), fullPage: true });
 
     // A scans again: existing result, no duplicate.

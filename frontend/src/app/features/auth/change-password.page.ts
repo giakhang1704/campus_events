@@ -19,7 +19,7 @@ import { ToastService } from '../../shared/toast/toast.service';
         <div class="brand"><img class="brand-logo" src="/assets/hcmut.png" alt="Logo Bách khoa TP.HCM" width="60" height="48"><span>BK<em>event</em></span></div>
         <div>
           <p class="auth-statement">Đặt mật khẩu của riêng bạn.</p>
-          <p>Tài khoản được cấp bằng mật khẩu tạm. Hãy đổi mật khẩu trước khi bắt đầu sử dụng hệ thống.</p>
+          <p>Đổi mật khẩu tạm để tiếp tục.</p>
         </div>
         <small>© BKevent</small>
       </div>
@@ -68,7 +68,7 @@ export class ChangePasswordPage {
     this.busy.set(true);
     try {
       await this.api.request('/auth/password', 'POST', { currentPassword: this.oldPassword, newPassword: this.newPassword });
-      this.toast.success('Đã đổi mật khẩu và thu hồi các phiên cũ. Vui lòng đăng nhập lại.');
+      this.toast.success('Đã đổi mật khẩu. Vui lòng đăng nhập lại.');
       this.api.user.set(null);
       await this.router.navigateByUrl('/login');
     } catch (error) {

@@ -5,7 +5,6 @@
   <section class="manage-hero">
     <div>
       <h1>Sự kiện quản lý</h1>
-      <p>Tạo bản nháp, chỉnh sửa và công bố các sự kiện bạn phụ trách.</p>
     </div>
     <div class="actions">
       <button type="button" class="hero-ghost" [disabled]="busy()" (click)="publishing.set(null); load()">Tải lại danh sách</button>
@@ -20,7 +19,7 @@
   }
   @if (catalogsFailed()) {
     <div class="notice warn" role="alert">
-      Chưa tải được danh sách khoa và đơn vị, nên tạm thời chưa tạo hoặc sửa được sự kiện.
+        Chưa tải được danh mục khoa và đơn vị. Vui lòng thử lại.
       <button type="button" class="small" (click)="loadCatalogs()">Thử lại</button>
     </div>
   }
@@ -28,7 +27,7 @@
   @if (publishing(); as event) {
     <section class="panel publish-confirm" aria-labelledby="publish-heading">
       <h2 id="publish-heading">Xác nhận công bố sự kiện</h2>
-      <p class="muted">Sau khi công bố, sinh viên sẽ thấy sự kiện này. Lịch nhận đăng ký đã cấu hình được giữ nguyên.</p>
+      <p class="muted">Sinh viên sẽ thấy sự kiện sau khi công bố.</p>
       <h3>{{ event.title }}</h3>
       <p class="publish-desc">{{ event.description }}</p>
       <div class="info-row"><span>Thời gian</span><b>{{ displayTime(event.startsAt) }}<br />đến {{ endLabel(event) }}</b></div>
