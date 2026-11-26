@@ -14,9 +14,7 @@ import vn.edu.hcmut.campusevents.model.OutboxMessage;
 import vn.edu.hcmut.campusevents.service.IEmailSender;
 
 import java.nio.charset.StandardCharsets;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
+import vn.edu.hcmut.campusevents.mapper.EmailTemplate;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -26,8 +24,10 @@ public class BrevoEmailSender implements IEmailSender {
     private final MailSettings settings;
     private final ObjectMapper json;
     private final RestClient client;
+    private final EmailTemplate template;
 
-    public BrevoEmailSender(MailSettings settings, ObjectMapper json) {
+    public BrevoEmailSender(MailSettings settings, ObjectMapper json, EmailTemplate template) {
+        this.template = template;
         this.settings = settings;
         this.json = json;
         var factory = new SimpleClientHttpRequestFactory();
@@ -36,56 +36,11 @@ public class BrevoEmailSender implements IEmailSender {
         client = RestClient.builder().baseUrl(settings.url()).requestFactory(factory).build();
     }
 
-    private String time(String value) {
-        return OffsetDateTime.parse(value)
-                        .withOffsetSameInstant(ZoneOffset.ofHours(7))
-                        .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
-                + " (giờ Việt Nam)";
-    }
-
     @Override
     public String send(OutboxMessage m) {
         try {
             var p = json.readTree(m.payload());
-            String subject =
-                    switch (m.kind()) {
-                        case "REGISTRATION_CONFIRMED" -> "[BKevent] Xác nhận đăng ký: ";
-                        case "WAITLIST_PROMOTED" -> "[BKevent] Bạn đã được nhận chỗ: ";
-                        case "EVENT_CHANGED" -> "[BKevent] Sự kiện thay đổi: ";
-                        default ->
-                                throw new EmailDeliveryException("UNSUPPORTED_EMAIL_KIND", false);
-                    };
-            String body =
-                    "Sự kiện: "
-                            + p.path("eventTitle").asText()
-                            + "\nĐịa điểm: "
-                            + p.path("location").asText()
-                            + "\nBắt đầu: "
-                            + time(p.path("startsAt").asText())
-                            + "\nKết thúc: "
-                            + time(p.path("endsAt").asText());
-            if (m.kind().equals("EVENT_CHANGED"))
-                body +=
-                        "\n\nThông tin trước thay đổi: "
-                                + p.path("previousLocation").asText()
-                                + ", "
-                                + time(p.path("previousStartsAt").asText())
-                                + " đến "
-                                + time(p.path("previousEndsAt").asText())
-                                + "\nĐăng ký hiện tại: "
-                                + time(p.path("registrationOpensAt").asText())
-                                + " đến "
-                                + time(p.path("registrationClosesAt").asText())
-                                + "\nĐăng ký trước thay đổi: "
-                                + time(p.path("previousRegistrationOpensAt").asText())
-                                + " đến "
-                                + time(p.path("previousRegistrationClosesAt").asText());
-            else
-                body +=
-                        "\n\n"
-                            + "Bạn đã có chỗ tham gia chính thức. Có thể hủy trên BKevent trước giờ"
-                            + " bắt đầu.";
-            body += "\n\nBKevent";
+            var content = template.render(m, p);
             String key =
                     UUID.nameUUIDFromBytes(m.dedupeKey().getBytes(StandardCharsets.UTF_8))
                             .toString();
@@ -105,13 +60,11 @@ public class BrevoEmailSender implements IEmailSender {
                                             "to",
                                             List.of(Map.of("email", m.recipient())),
                                             "subject",
-                                            subject + p.path("eventTitle").asText(),
+                                            content.subject(),
                                             "textContent",
-                                            body,
+                                            content.text(),
                                             "htmlContent",
-                                            "<html><body><pre>"
-                                                    + escape(body)
-                                                    + "</pre></body></html>",
+                                            content.html(),
                                             "headers",
                                             Map.of("idempotencyKey", key),
                                             "tags",
@@ -136,10 +89,6 @@ public class BrevoEmailSender implements IEmailSender {
         } catch (Exception e) {
             throw new EmailDeliveryException("INVALID_EMAIL_PAYLOAD", false);
         }
-    }
-
-    private String escape(String text) {
-        return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
     }
 
     private boolean duplicateResponse(String response) {

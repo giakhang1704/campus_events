@@ -25,10 +25,14 @@ public class EmailQueueServiceImpl implements IEmailQueueService {
     private Map<String, Object> payload(Event event, Registration r) {
         Map<String, Object> p = new LinkedHashMap<>();
         p.put("registrationVersion", r.version());
+        p.put("eventId", event.id());
+        p.put("registrationStatus", r.status());
         p.put("eventTitle", event.title());
         p.put("location", event.location());
         p.put("startsAt", event.startsAt().toString());
         p.put("endsAt", event.endsAt().toString());
+        p.put("registrationOpensAt", event.registrationOpensAt().toString());
+        p.put("registrationClosesAt", event.registrationClosesAt().toString());
         return p;
     }
 
