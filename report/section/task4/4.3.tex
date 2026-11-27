@@ -1,0 +1,33 @@
+\subsection{Task 4.3. Đánh giá mục tiêu và chỉ số hiệu quả}
+\label{sec:t4-objectives}
+
+Task 1.4 xác định bốn mục tiêu, được đánh số theo thứ tự trình bày: \textbf{O1} giảm thao tác thủ công trong quản lý đăng ký và điểm danh; \textbf{O2} rút ngắn thời gian tổng hợp danh sách và báo cáo; \textbf{O3} hạn chế sai lệch và nâng cao tính nhất quán dữ liệu; \textbf{O4} cải thiện trải nghiệm của sinh viên. Năm chỉ số M1--M5 dùng để đo các mục tiêu này.
+
+\subsubsection{Kết quả đo các chỉ số}
+
+\begingroup\small
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}p{.11\linewidth}p{.19\linewidth}p{.33\linewidth}p{.12\linewidth}p{.15\linewidth}@{}}
+\caption{Đánh giá M1--M5}\label{tab:t4-measures}\\
+\toprule
+\textbf{Chỉ số} & \textbf{Mục tiêu đề xuất} & \textbf{Kết quả thực tế} & \textbf{Đánh giá} & \textbf{Mục tiêu}\\\midrule\endfirsthead
+\toprule
+\textbf{Chỉ số} & \textbf{Mục tiêu đề xuất} & \textbf{Kết quả thực tế} & \textbf{Đánh giá} & \textbf{Mục tiêu}\\\midrule\endhead
+\bottomrule\endfoot
+M1 Thao tác thủ công & 0 thao tác tổng hợp ngoài hệ thống & Báo cáo và CSV sinh trực tiếp từ dữ liệu đăng ký và điểm danh; demo I3: báo cáo đổi từ 0 lên 1 ngay sau khi xác nhận, không cần thao tác nào khác. & Đạt (trên dữ liệu thử) & O1, O2\\
+M2 Thời gian báo cáo & $\le$ 5 s hiển thị, $\le$ 10 s xuất tệp, 500 đăng ký & 2.000 đăng ký (gấp 4 lần yêu cầu): báo cáo 0,066 s, CSV 0,909 s, đo ở local. Trên cloud: \TBD{kết quả}. & Đạt ở local & O2\\
+M3 Tự động hóa danh sách chờ & 100\% ca hợp lệ được đôn và gửi email; tối thiểu 10 ca & Bộ test I2 đạt mọi ca đôn chờ (hủy, tăng sức chứa, bỏ qua người không hợp lệ); 6 email \texttt{WAITLIST\_PROMOTED} được gửi thành công. & Đạt tỷ lệ 100\%, nhưng mới có 6/10 ca & O1\\
+M4 Tỷ lệ sai lệch dữ liệu & 0\% trên bộ dữ liệu biết trước kết quả & Mọi bộ test tích hợp có kết quả mong đợi (đăng ký đồng thời, hủy, đôn, đăng ký lại, điểm danh, báo cáo) đều đạt; chưa chạy bộ đối chiếu riêng để tính tỷ lệ theo công thức M4. & Đạt một phần & O3\\
+M5 Tỷ lệ hoàn thành tác vụ & $\ge$ 90\% trên 20 lượt, 5 người dùng & Chưa thực hiện (hoãn theo CR-05). & Chưa đo & O4\\
+\end{longtable}
+\endgroup
+
+\subsubsection{Phân biệt hoàn thành sản phẩm và đạt mục tiêu}
+
+\textbf{Sản phẩm đã hoàn thành}: toàn bộ chức năng trong phạm vi đã thống nhất chạy được trên cloud và vượt qua kiểm thử tự động. Tuy nhiên, \textbf{mục tiêu nghiệp vụ mới chỉ được chứng minh trên dữ liệu thử}:
+\begin{itemize}
+    \item \textbf{O1, O2} có bằng chứng mạnh nhất: hệ thống loại bỏ được bước tổng hợp thủ công và nhanh hơn ngưỡng nhiều lần. Nhưng mức giảm công sức của người tổ chức trong thực tế chưa đo được vì chưa có dữ liệu so sánh với quy trình cũ (Excel, Google Form) và chưa có sự kiện thật nào dùng hệ thống.
+    \item \textbf{O3} được bảo đảm bằng thiết kế (transaction, khóa, version) và kiểm thử, nhưng chỉ số M4 chưa được đo đúng như định nghĩa.
+    \item \textbf{O4} chưa có bằng chứng từ người dùng. Giao diện được thiết kế cho sinh viên nhưng chưa có ai ngoài nhóm thử.
+\end{itemize}
+Để kết luận về mục tiêu nghiệp vụ, cần một đợt thử nghiệm với một sự kiện thật của khoa, đo M1, M5 trên người dùng thật và so sánh với quy trình hiện tại. Việc này được đề xuất trong kế hoạch đóng dự án (Mục \ref{sec:t4-closure}).

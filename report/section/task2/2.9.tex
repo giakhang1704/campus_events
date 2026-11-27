@@ -1,0 +1,365 @@
+\subsection{Revise the project plan and estimates to include risk-response activities such as prototyping/pilot work, information gathering, or other appropriate measures.}
+
+Từ danh sách rủi ro ở Mục 2.8, nhóm đưa sáu việc vào kế hoạch: thử luồng đăng ký đồng thời, triển khai thử trên Lightsail, kiểm tra dịch vụ email, thử quét QR, đo hiệu năng báo cáo và làm rõ yêu cầu với khách hàng. Các việc này được bố trí trước những hoạt động có liên quan. AR2, AR6 và AR9 được xử lý bằng các công việc đã có trong ước lượng hoặc bằng cách phân bổ nguồn lực; AR10 chưa được cộng giờ vì chưa có yêu cầu thay đổi cụ thể.
+
+\subsubsection{Các hoạt động ứng phó rủi ro}
+
+{\small
+\begin{longtable}{@{}Y{1.0cm}Y{3.9cm}Y{0.75cm}Y{0.75cm}Y{0.75cm}Y{0.75cm}Y{0.75cm}Y{1.1cm}Y{2.3cm}@{}}
+\caption{Hoạt động ứng phó rủi ro bổ sung vào kế hoạch (giờ công)}
+\label{tab:p29-ra}\\
+\toprule
+\textbf{Mã} &
+\textbf{Hoạt động (rủi ro liên quan)} &
+\textbf{PM} &
+\textbf{BA} &
+\textbf{BE} &
+\textbf{FE} &
+\textbf{QA} &
+\textbf{Tổng} &
+\textbf{Quan hệ và tuần} \\
+\midrule
+\endfirsthead
+
+\toprule
+\textbf{Mã} &
+\textbf{Hoạt động (rủi ro liên quan)} &
+\textbf{PM} &
+\textbf{BA} &
+\textbf{BE} &
+\textbf{FE} &
+\textbf{QA} &
+\textbf{Tổng} &
+\textbf{Quan hệ và tuần} \\
+\midrule
+\endhead
+
+\bottomrule
+\endfoot
+
+RA01 &
+Xây dựng thử nghiệm kỹ thuật (spike) xử lý đăng ký đồng thời và thứ tự FIFO (AR1) &
+0 & 0 & 2,0 & 0 & 0,5 & 2,5 &
+Sau A03; trước A07.2; tuần T3 \\
+
+\addlinespace
+RA02 &
+Triển khai thử (pilot) bản chạy đầu tiên lên Lightsail và chạy smoke test (AR3) &
+0 & 0 & 1,0 & 1,5 & 0 & 2,5 &
+Sau A05.1; trước A11; tuần T2 \\
+
+\addlinespace
+RA03 &
+Xác nhận hạn mức và thử gửi email thật (thu thập thông tin) (AR4) &
+1,0 & 0 & 0 & 0 & 0 & 1,0 &
+Sau A03; trước A07.3; tuần T2 \\
+
+\addlinespace
+RA04 &
+Thử nghiệm sinh và quét mã QR trên thiết bị kiểm thử (nguyên mẫu) (AR5) &
+0 & 0 & 0 & 1,5 & 0,5 & 2,0 &
+Sau A01; trước A09.1; FE ở T2, QA ở T3 \\
+
+\addlinespace
+RA05 &
+Thử nghiệm hiệu năng báo cáo và xuất tệp với bộ 500 bản ghi (pilot) (AR8) &
+0 & 0 & 0,4 & 0 & 1,5 & 1,9 &
+Sau A10.1; trước A12.2; tuần T5 \\
+
+\addlinespace
+RA06 &
+Làm rõ các điểm còn mở với đại diện khách hàng và ghi vào Client Interaction Log (thu thập thông tin) (AR7) &
+0,4 & 0,8 & 0 & 0 & 0 & 1,2 &
+Sau A05.2; trước CP1; tuần T3 \\
+
+\midrule
+\multicolumn{2}{@{}l}{\textbf{Tổng}} &
+\textbf{1,4} &
+\textbf{0,8} &
+\textbf{3,4} &
+\textbf{3,0} &
+\textbf{2,5} &
+\textbf{11,1} & \\
+
+\end{longtable}
+}
+
+Đầu ra và điều kiện hoàn thành của từng hoạt động ứng phó:
+
+\begin{itemize}
+    \item \textbf{RA01:} mã thử nghiệm và ghi chú thiết kế chứng minh rằng khi nhiều yêu cầu đăng ký cùng đến một sự kiện chỉ còn một chỗ, đúng một yêu cầu được xác nhận, các yêu cầu còn lại vào danh sách chờ theo đúng thứ tự đến.
+
+    \item \textbf{RA02:} bản chạy đầu tiên trên Lightsail đăng nhập và tạo được sự kiện; BE và FE ghi kết quả smoke test và các điều chỉnh cấu hình cần thiết. QA đối chiếu kết quả trong hoạt động kiểm thử I1 đã được phân bổ.
+
+    \item \textbf{RA03:} ghi nhận hạn mức gửi email, cấu hình đã dùng và một email thật gửi thành công kèm log; cách dùng email mô phỏng cho các lần chạy thử lặp.
+
+    \item \textbf{RA04:} kết quả thử quét mã QR trên thiết bị kiểm thử (giả định có hai thiết bị di động như Mục 2.10.4), ghi rõ số lần thành công trên số lần thử và các giới hạn cần xử lý ở A09.1.
+
+    \item \textbf{RA05:} bảng thời gian hiển thị báo cáo và tạo tệp CSV/Excel trên bộ 500 bản ghi, so với ngưỡng 5 giây và 10 giây của chỉ số M2, kèm cấu hình môi trường đo. Phần xuất tệp tại RA05 được thử trên nguyên mẫu; kết quả trên chức năng hoàn chỉnh được xác nhận tại A12.2 sau khi A10.2 hoàn tất.
+
+    \item \textbf{RA06:} danh sách điểm làm rõ về giao diện danh sách chờ, nội dung thông báo và quy tắc hủy, cùng phản hồi của đại diện khách hàng, được ghi vào Client Interaction Log trước buổi demo I1.
+\end{itemize}
+
+\subsubsection{Điều chỉnh ước lượng công sức}
+
+Nhóm cộng giờ của sáu hoạt động ứng phó vào tổng đã ước lượng ở Mục 2.6:
+
+\[
+E'_{\mathrm{base}}
+=
+E_{\mathrm{base}}
++
+\sum_{k=1}^{6} E_{RA_k}
+=
+320{,}5+11{,}1
+=
+331{,}6.
+\]
+
+Đơn vị tính là giờ công. G08 (4,0 giờ) chỉ thực hiện khi có thay đổi được duyệt nên không nằm trong tổng cơ sở.
+
+{\small
+\begin{longtable}{@{}Y{3.6cm}Y{3.0cm}Y{3.0cm}Y{3.0cm}@{}}
+\caption{Công sức theo thành viên sau khi bổ sung hoạt động ứng phó (giờ công)}
+\label{tab:p29-person}\\
+\toprule
+\textbf{Thành viên} &
+\textbf{Theo Mục 2.6} &
+\textbf{Hoạt động ứng phó} &
+\textbf{Sau điều chỉnh} \\
+\midrule
+\endfirsthead
+
+\toprule
+\textbf{Thành viên} &
+\textbf{Theo Mục 2.6} &
+\textbf{Hoạt động ứng phó} &
+\textbf{Sau điều chỉnh} \\
+\midrule
+\endhead
+
+\bottomrule
+\endfoot
+
+PM (kiêm Backend) & 65,0 & 1,4 & 66,4 \\
+
+BA (kiêm UI/Frontend) & 61,5 & 0,8 & 62,3 \\
+
+BE & 65,5 & 3,4 & 68,9 \\
+
+FE & 62,0 & 3,0 & 65,0 \\
+
+QA & 66,5 & 2,5 & 69,0 \\
+
+\midrule
+\textbf{Tổng} &
+\textbf{320,5} &
+\textbf{11,1} &
+\textbf{331,6} \\
+
+\end{longtable}
+}
+
+Nhóm kiểm tra tải công việc ở những tuần có bổ sung giờ ứng phó để bảo đảm tổng giờ của từng thành viên không vượt mức cam kết ($H_{i,w} \le C_{i,w}$). Cột ``Trước khi thêm'' thể hiện giờ công của các hoạt động ngoài RA trong cùng tuần theo lịch đã điều chỉnh; cột ``Thêm ứng phó'' thể hiện giờ RA được bố trí vào tuần đó. Tổng sau khi thêm được đối chiếu với giới hạn tham gia tại Mục 2.10.1.
+
+{\small
+\begin{longtable}{@{}Y{1.7cm}Y{1.0cm}Y{2.0cm}Y{1.9cm}Y{1.9cm}Y{2.2cm}Y{1.5cm}@{}}
+\caption{Kiểm tra giới hạn giờ tham gia sau khi thêm hoạt động ứng phó (giờ công)}
+\label{tab:p29-check}\\
+\toprule
+\textbf{Thành viên} &
+\textbf{Tuần} &
+\textbf{Trước khi thêm} &
+\textbf{Thêm ứng phó} &
+\textbf{Sau khi thêm} &
+\textbf{Giới hạn $C_{i,w}$} &
+\textbf{Còn lại} \\
+\midrule
+\endfirsthead
+
+\toprule
+\textbf{Thành viên} &
+\textbf{Tuần} &
+\textbf{Trước khi thêm} &
+\textbf{Thêm ứng phó} &
+\textbf{Sau khi thêm} &
+\textbf{Giới hạn $C_{i,w}$} &
+\textbf{Còn lại} \\
+\midrule
+\endhead
+
+\bottomrule
+\endfoot
+
+PM & T2 & 10,5 & 1,0 & 11,5 & 14,0 & 2,5 \\
+
+PM & T3 & 12,2 & 0,4 & 12,6 & 14,0 & 1,4 \\
+
+BA & T3 & 10,3 & 0,8 & 11,1 & 13,0 & 1,9 \\
+
+BE & T2 & 13,4 & 1,0 & 14,4 & 15,0 & 0,6 \\
+
+BE & T3 & 11,8 & 2,0 & 13,8 & 14,0 & 0,2 \\
+
+BE & T5 & 11,6 & 0,4 & 12,0 & 12,0 & 0,0 \\
+
+FE & T2 & 10,6 & 3,0 & 13,6 & 15,0 & 1,4 \\
+
+QA & T3 & 8,6 & 1,0 & 9,6 & 13,0 & 3,4 \\
+
+QA & T5 & 12,5 & 1,5 & 14,0 & 14,0 & 0,0 \\
+
+\end{longtable}
+}
+
+Tất cả các ô đều thỏa $O_{i,w} = 0$. Hai ô BE--T5 và QA--T5 đã sử dụng hết giới hạn giờ tham gia; nếu phát sinh công việc mới, nhóm cần kiểm tra lại khả năng bố trí theo từng người và từng phiên. Các hoạt động không găng như A18.1 hoặc A19.1 có độ trễ logic lần lượt là 36 và 27 phiên ở bảng phân tích CPM, Mục 2.11.6; việc dời các hoạt động này vẫn phải đáp ứng giới hạn nguồn lực và quan hệ tiền nhiệm. Tổng giờ theo tuần sau điều chỉnh là T1: 63,5; T2: 64,0; T3: 61,1; T4: 60,2; T5: 53,4; T6: 29,4, cộng lại bằng 331,6 giờ công.
+
+\subsubsection{Tác động đến lịch, quỹ dự phòng và chi phí}
+
+\textbf{Lịch và đường găng.} Sau khi tách/gộp hoạt động và bổ sung các hoạt động ứng phó, mạng CPM có thời lượng logic 47 phiên, thay cho 43 phiên của cấu trúc cũ. Chuỗi A07.1 $\to$ A07.2 $\to$ A07.3 có tổng thời lượng danh định 11 phiên, thay cho 8 phiên của A07 trước khi tách; nhánh A10.1 $\to$ A10.2 trở thành nhánh găng trước A11. Vì vậy, không quy toàn bộ thay đổi của đường găng cho riêng công sức ứng phó bổ sung.
+
+RA01 được thực hiện tại T3 trước A07.2; RA02, RA03 tại T2; RA04 gồm phần FE tại T2 và QA tại T3; RA06 hoàn tất trước CP1. RA05 được dời sang T5, sau A10.1 và trước A12.2. Các hoạt động RA không thuộc đường găng logic trong mạng hiện tại, nhưng nếu hoàn tất trễ thời điểm cần thiết thì vẫn có thể làm chậm hoạt động phụ thuộc.
+
+Theo lịch nguồn lực mới, CP1 được đề xuất ngày 09/11, CP2 ngày 19/11, CP3 ngày 25/11, CP4 sau nghiệm thu ngày 30/11, CP5 chốt hồ sơ ngày 02/12 và CP6 bàn giao ngày 03/12. Khoảng 04--06/12 được giữ làm dự trữ thời gian. Các ngày cần khách hàng tham gia phải được xác nhận trước khi chốt đường cơ sở.
+
+\textbf{Quỹ giờ dự phòng.} Tổng giờ cam kết của nhóm là 395,0 giờ. Sau khi bổ sung 11,1 giờ ứng phó, phần giờ chưa phân bổ giảm từ 74,5 giờ xuống còn $395{,}0 - 331{,}6 = 63{,}4$ giờ. Phần giờ này phân tán theo người và tuần; khả năng sử dụng khi phát sinh vấn đề phải được kiểm tra theo chuyên môn, thời điểm và quan hệ tiền nhiệm.
+
+\textbf{Chi phí.} Với đơn giá 78.000 đồng/giờ ở Mục 2.11, chi phí công sức bổ sung là $11{,}1 \times 78.000 = 865.800$ đồng. Chi phí hạ tầng không đổi.
+
+{\small
+\begin{longtable}{@{}Y{5.3cm}Y{2.0cm}Y{3.0cm}Y{3.4cm}@{}}
+\caption{Chi phí của hoạt động ứng phó và cost baseline điều chỉnh (đồng)}
+\label{tab:p29-cost}\\
+\toprule
+\textbf{Khoản mục} &
+\textbf{Giờ công} &
+\textbf{Thành tiền} &
+\textbf{Ghi chú} \\
+\midrule
+\endfirsthead
+
+\toprule
+\textbf{Khoản mục} &
+\textbf{Giờ công} &
+\textbf{Thành tiền} &
+\textbf{Ghi chú} \\
+\midrule
+\endhead
+
+\bottomrule
+\endfoot
+
+RA01 & 2,5 & 195.000 & Tuần T3 \\
+
+RA02 & 2,5 & 195.000 & Tuần T2 \\
+
+RA03 & 1,0 & 78.000 & Tuần T2 \\
+
+RA04 & 2,0 & 156.000 & Tuần T2 và T3 \\
+
+RA05 & 1,9 & 148.200 & Tuần T5 \\
+
+RA06 & 1,2 & 93.600 & Tuần T3 \\
+
+\midrule
+\textbf{Cộng hoạt động ứng phó} &
+\textbf{11,1} &
+\textbf{865.800} &
+T2: 390.000; T3: 327.600; T5: 148.200 \\
+
+\midrule
+Công sức nhóm theo Mục 2.6 &
+320,5 &
+24.999.000 & \\
+
+Công sức nhóm sau điều chỉnh &
+331,6 &
+25.864.800 & \\
+
+Hạ tầng (AWS Lightsail và sao lưu, hai kỳ) &
+--- &
+728.000 &
+Không đổi \\
+
+\midrule
+\textbf{Tổng chi phí cơ sở điều chỉnh} &
+\textbf{331,6} &
+\textbf{26.592.800} &
+Trước điều chỉnh: 25.727.000 \\
+
+\end{longtable}
+}
+
+Tổng chi phí cơ sở 26.592.800 đồng đã bao gồm chi phí RA01--RA06, không cộng thêm 865.800 đồng lần nữa. Phân kỳ chi phí toàn dự án tại Mục 2.11 được tính theo lịch nguồn lực mới, bao gồm cả sự dịch chuyển thời điểm thực hiện các công việc gốc.
+
+\subsubsection{Rủi ro còn lại sau khi ứng phó}
+
+Sau khi có các hoạt động ứng phó, nhóm đánh giá lại khả năng và thiệt hại của những rủi ro được xử lý và tính risk reduction leverage, $RRL = (RE_{\mathrm{pre}} - RE_{\mathrm{post}}) / C_{\mathrm{RA}}$, trong đó chi phí là giờ công của hoạt động RA tương ứng. Biện pháp có $RRL > 1$ được xem là đáng thực hiện xét theo mức giảm risk exposure so với công sức ứng phó. Các rủi ro không có hoạt động ứng phó mới giữ nguyên giá trị.
+
+{\small
+\begin{longtable}{@{}Y{1.0cm}Y{1.9cm}Y{1.3cm}Y{1.5cm}Y{1.9cm}Y{1.3cm}Y{1.3cm}Y{1.3cm}@{}}
+\caption{Risk exposure trước và sau khi ứng phó, và risk reduction leverage (giờ công)}
+\label{tab:p29-residual}\\
+\toprule
+\textbf{ID} &
+\textbf{Trước ($p$; $h$)} &
+\textbf{$RE$ trước} &
+\textbf{Ứng phó} &
+\textbf{Sau ($p$; $h$)} &
+\textbf{$RE$ sau} &
+\textbf{Giảm} &
+\textbf{RRL} \\
+\midrule
+\endfirsthead
+
+\toprule
+\textbf{ID} &
+\textbf{Trước ($p$; $h$)} &
+\textbf{$RE$ trước} &
+\textbf{Ứng phó} &
+\textbf{Sau ($p$; $h$)} &
+\textbf{$RE$ sau} &
+\textbf{Giảm} &
+\textbf{RRL} \\
+\midrule
+\endhead
+
+\bottomrule
+\endfoot
+
+AR1 & 40\%; 12 & 4,80 & RA01 & 25\%; 8 & 2,00 & 2,80 & 1,12 \\
+
+AR2 & 30\%; 8 & 2,40 & --- & 30\%; 8 & 2,40 & 0,00 & --- \\
+
+AR3 & 35\%; 10 & 3,50 & RA02 & 20\%; 5 & 1,00 & 2,50 & 1,00 \\
+
+AR4 & 30\%; 5 & 1,50 & RA03 & 15\%; 3 & 0,45 & 1,05 & 1,05 \\
+
+AR5 & 30\%; 8 & 2,40 & RA04 & 15\%; 4 & 0,60 & 1,80 & 0,90 \\
+
+AR6 & 40\%; 10 & 4,00 & --- & 40\%; 10 & 4,00 & 0,00 & --- \\
+
+AR7 & 40\%; 8 & 3,20 & RA06 & 25\%; 6 & 1,50 & 1,70 & 1,42 \\
+
+AR8 & 25\%; 8 & 2,00 & RA05 & 10\%; 4 & 0,40 & 1,60 & 0,84 \\
+
+AR9 & 35\%; 8 & 2,80 & --- & 35\%; 8 & 2,80 & 0,00 & --- \\
+
+AR10 & 60\%; 12 & 7,20 & --- & 60\%; 12 & 7,20 & 0,00 & --- \\
+
+\midrule
+\textbf{Tổng} &
+&
+\textbf{33,80} &
+&
+&
+\textbf{22,35} &
+\textbf{11,45} &
+\textbf{1,03} \\
+
+\end{longtable}
+}
+
+Sáu hoạt động ứng phó sử dụng 11,1 giờ công; mức giảm risk exposure ước tính là 11,45 giờ, tương ứng $RRL \approx 1{,}03$. RRL của RA04 ($RRL = 0{,}90$) và RA05 ($RRL = 0{,}84$) thấp hơn 1 nếu chỉ so sánh giờ công, nhưng nhóm vẫn đưa hai việc này vào kế hoạch vì QR và chỉ số M2 là nội dung nghiệm thu. Các hoạt động thử nghiệm được bố trí từ T2 đến T5, trước các công việc hoặc mốc kiểm tra phụ thuộc; nghiệm thu kết thúc ngày 30/11 theo lịch nguồn lực mới. Nhóm sẽ rà soát lại các ước lượng này trong G06.
+
+Risk exposure còn lại 22,35 giờ (tương đương 1.743.300 đồng theo đơn giá 78.000 đồng/giờ) là giá trị kỳ vọng để theo dõi rủi ro, không cộng trực tiếp vào cost baseline. Khi xảy ra điều kiện kích hoạt ở Bảng~\ref{tab:p28-response}, PM kiểm tra khả năng bố trí công việc xử lý trong 63,4 giờ chưa phân bổ theo từng người và tuần, đồng thời ghi lại giờ, lý do cùng kết quả xử lý trong Weekly Project Log và risk register. Kết quả của RA01--RA06 sẽ được dùng để cập nhật đánh giá rủi ro trong các kỳ G06 tiếp theo.

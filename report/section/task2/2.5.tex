@@ -1,0 +1,44 @@
+\clearpage
+\subsection{Add appropriate checkpoints}
+Các checkpoint được gắn vào AON ở mục 2.4 và dùng chung mã hoạt động. Vị trí kiểm tra được xác định theo hoạt động đầu vào và hoạt động phụ thuộc. Mốc CP có thời lượng bằng 0; công sức chuẩn bị, review, sửa và kiểm tra lại nằm trong các hoạt động tương ứng. Thời gian chờ phê duyệt có thể làm tăng elapsed time.
+\subsubsection{Checkpoint lập kế hoạch và các increment đầu}
+\begin{table}[H]
+\centering
+\caption{Checkpoint từ baseline đến Increment 2}
+\footnotesize
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\linewidth}{|p{0.9cm}|p{2.5cm}|>{\raggedright\arraybackslash}X|}
+\hline
+\textbf{Mã} & \textbf{Vị trí trong AON} & \textbf{Checkpoint: điều kiện đạt, review và cách xử lý} \\ \hline
+CP0 & Sau G04, trước A03 & \textbf{Điều kiện đạt:} Bộ kế hoạch Task 2 hoàn chỉnh, PBS/PD/PFD/AON khớp; effort khác duration; có rủi ro, nguồn lực, lịch và chất lượng để chốt V1.0 sau Task 2.12. \par \textbf{Review/phê duyệt:} PM tổ chức; nhóm review; đại diện khách hàng phê duyệt theo thẩm quyền ở Task 1.5. \par \textbf{Nếu chưa đạt:} Sửa mâu thuẫn, hoàn thiện mục thiếu và trình lại. Chưa ghi approved hoặc mở A03; các nhánh thiết kế/test độc lập vẫn tiếp tục. \\ \hline
+CPD & Sau A01, trước A03/A04 & \textbf{Điều kiện đạt:} ERD/DDL, API và UI thống nhất với MVP; đủ trường, vai trò và quy tắc dữ liệu cần thiết; có nhận xét review thiết kế. \par \textbf{Review/phê duyệt:} BA, FE và QA review chéo theo phần phụ trách; người tạo giải trình và sửa. Thay đổi scope/acceptance trình khách hàng. \par \textbf{Nếu chưa đạt:} Sửa thiết kế và review lại trước công việc phụ thuộc. Bộ test được review trong A02 trước khi dùng ở A04/A06. \\ \hline
+CP1 & Sau A06, trước A07 & \textbf{Điều kiện đạt:} I1 chạy được tài khoản/phân quyền và tạo/tìm/xem sự kiện; TC I1 đạt, không còn lỗi nghiêm trọng chặn luồng chính. Có test log/build, biên bản demo và ghi nhận phản hồi khách hàng. \par \textbf{Review/phê duyệt:} QA kiểm chứng, BA đối chiếu nghiệp vụ; PM demo I1 cho giảng viên/đại diện khách hàng và tổng hợp phản hồi. PM điều phối chuyển increment. \par \textbf{Nếu chưa đạt:} Ghi lỗi, sửa và kiểm thử lại trong A06. Đánh giá tác động phản hồi trước khi điều chỉnh; thay đổi phạm vi hoặc tiêu chí nghiệm thu phải trình duyệt theo Task 1.5. \\ \hline
+CP2 & Sau A08, trước A09/A10 & \textbf{Điều kiện đạt:} I2 đạt đăng ký/hủy, sức chứa, FIFO waitlist và email đã thống nhất; test trùng/đồng thời và regression I1 đạt; có evidence. \par \textbf{Review/phê duyệt:} QA và BA xác minh nghiệp vụ; BE review đăng ký/email của PM. PM điều phối chuyển increment dựa trên kết quả kiểm tra; quy tắc chưa rõ trình khách hàng. \par \textbf{Nếu chưa đạt:} Sửa và kiểm thử lại ở A08; phân tích ảnh hưởng tiến độ. Không tự bỏ chức năng core hoặc đổi tiêu chí để cho qua. \\ \hline
+\end{tabularx}
+\end{table}
+
+\noindent CP0 chỉ được thông qua sau khi hoàn tất các bước liên quan đến Task 2.12. Người tạo không tự phê duyệt phần mình viết: BE review Backend của PM; FE review UI của BA; QA review seed và kiểm thử độc lập. PM điều phối checkpoint dựa trên evidence; khách hàng giữ thẩm quyền nghiệm thu theo Task 1.5.
+
+\medskip
+\noindent Nhóm dự kiến demo I1 tại CP1 trong một buổi họp G05. PM và BA lưu phản hồi vào Client Interaction Log; lỗi thuộc phạm vi đã thống nhất được xử lý trong hoạt động kiểm thử tương ứng. Phản hồi làm thay đổi phạm vi, tiêu chí nghiệm thu hoặc baseline được phân tích và trình duyệt trước khi thực hiện. Lịch demo và thời điểm phản hồi được thống nhất với đại diện khách hàng.
+\newpage
+\subsubsection{Checkpoint nghiệm thu, hồ sơ và bàn giao}
+\begin{table}[H]
+\centering
+\caption{Checkpoint từ tích hợp đến đóng dự án}
+\footnotesize
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\linewidth}{|p{0.9cm}|p{2.5cm}|>{\raggedright\arraybackslash}X|}
+\hline
+\textbf{Mã} & \textbf{Vị trí trong AON} & \textbf{Checkpoint: điều kiện đạt, review và cách xử lý} \\ \hline
+CP3 & Sau A11, trước A12 & \textbf{Điều kiện đạt:} Candidate I3 đã tích hợp QR/thủ công, báo cáo và CSV/Excel; chạy được trên Lightsail; smoke test và thử khôi phục có bằng chứng. \par \textbf{Review/phê duyệt:} BE/FE trình candidate; QA kiểm tra triển khai/khôi phục; PM theo dõi readiness. \par \textbf{Nếu chưa đạt:} Sửa lỗi tích hợp/cấu hình ở A11 và chạy lại kiểm tra. Chưa đưa candidate lỗi sang nghiệm thu chính thức. \\ \hline
+CP4 & Sau A12, trước A13/A15/A19 & \textbf{Điều kiện đạt:} Đạt toàn bộ TC nghiệm thu core, không còn lỗi nghiêm trọng làm gián đoạn; Quality Evidence xác định build và kết quả đo mục tiêu theo scope/PDs. \par \textbf{Review/phê duyệt:} QA báo cáo, BA xác minh, PM điều phối; đại diện khách hàng xác nhận nghiệm thu theo Task 1.5. \par \textbf{Nếu chưa đạt:} Ghi điều kiện chưa đạt, sửa và retest ở A12. Chưa đánh dấu accepted; kết quả mục tiêu chưa đạt phải báo cáo trung thực, không tự đổi target. \\ \hline
+CP5 & Sau A18, trước A17 & \textbf{Điều kiện đạt:} Đã chốt repo/tag; người khác chạy được Instructions; có Closure Plan, Lessons Learned, đối chiếu planned/actual và statement cá nhân; hồ sơ đúng release. \par \textbf{Review/phê duyệt:} QA xác minh chạy độc lập; PM kiểm tra hồ sơ; nhóm review chéo. Khách hàng quyết định các điều kiện bàn giao thuộc thẩm quyền. \par \textbf{Nếu chưa đạt:} Hoàn thiện mục thiếu. Nếu còn tồn đọng, ghi phạm vi, người xử lý và cách giải quyết được chấp thuận; không ghi chưa hoàn thành thành done. \\ \hline
+CP6 & Sau A17 & \textbf{Điều kiện đạt:} Demo end-to-end và bàn giao đủ hồ sơ; phân biệt completed/partial/deferred/removed scope; có biên bản và minh chứng đóng góp/viva. \par \textbf{Review/phê duyệt:} Giảng viên/đại diện nghiệm thu đánh giá theo thẩm quyền; PM ghi nhận kết quả; cả nhóm giải trình. \par \textbf{Nếu chưa đạt:} Ghi nhận điểm chưa đạt và quyết định xử lý được phép. Chỉ đóng khi điều kiện nghiệm thu/bàn giao được xác nhận; không tự kéo deadline. \\ \hline
+\end{tabularx}
+\end{table}
+
+\noindent Mỗi lần review ghi ngày, sản phẩm/build, người review, kết quả, vấn đề và liên kết evidence. Khi chưa đạt, chỉ giữ lại nhánh phụ thuộc bị ảnh hưởng; sửa và retest nằm trong hoạt động hiện tại, không vẽ vòng lặp trên AON. Phần sửa vượt ước lượng phải được đánh giá lại.
+
+\medskip
+\noindent Với thay đổi: G07 phân tích và ghi quyết định; PM trình người có thẩm quyền theo Task 1.5. G08 nằm ngoài mạng cơ sở, chỉ mở khi được duyệt sửa baseline; khi đó cập nhật AON, ước lượng và lịch bị ảnh hưởng, lưu V1.0 để đối chiếu V2.0. Nếu phải sửa phần mềm, bổ sung hoạt động/effort tương ứng; 4h G08 chỉ dành cho cập nhật hồ sơ.

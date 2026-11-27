@@ -1,0 +1,136 @@
+\clearpage
+\newgeometry{margin=2cm,includefoot}
+\subsection{Carry out bottom-up effort estimates}
+\subsubsection{Phạm vi, giả định và phương pháp}
+Nhóm ước lượng phần việc còn lại từ hoàn thiện kế hoạch đến bàn giao trong 5 tuần. G01/Task 1 được kế thừa; G02 chỉ tính phần rà soát còn lại. Các số liệu là giờ công kế hoạch, được đối chiếu với số liệu thực tế trong giai đoạn thực hiện.
+\begin{itemize}[leftmargin=*,nosep]
+\item Nhóm có 5 thành viên với vai trò chính PM, BA, BE, FE, QA. PM hỗ trợ Backend 28h; BA hỗ trợ UI/Frontend 15h. Mỗi phần việc được tính một lần vào tải của người thực hiện.
+\item Phạm vi gồm MVP với ba increment; sử dụng Angular, Spring Boot, PostgreSQL, Lightsail và dữ liệu giả lập; không tích hợp MyBK.
+\item Giả định PM có nền tảng Spring Boot và BA có thể lập trình UI/Angular. Giờ lập trình gồm unit test/review; kiểm thử gồm một vòng sửa lỗi và kiểm thử lại. Thời gian học thêm đáng kể hoặc làm lại cần được ước lượng bổ sung.
+\item G05/G06 bao quát 5 chu kỳ cập nhật tuần; G07 tính một change/event của giảng viên. G08 là công việc có điều kiện, chỉ cập nhật baseline.
+\end{itemize}
+
+Nhóm sử dụng \textbf{bottom-up kết hợp nhận định kỹ thuật}: tách hoạt động thành phần việc có đầu ra và người thực hiện, ước lượng từng phần rồi cộng lên. Các phần việc kỹ thuật thường từ 0,5 đến 8h/người; G05/G06 cộng nhiều lần thực hiện. Người thực hiện rà soát giả định trước khi chốt baseline.
+\[
+E_{a}=\sum_{j=1}^{n_a}h_{aj},\qquad
+E_{\mathrm{base}}=\sum_{a\in\mathcal B}E_a.
+\]
+Trong đó $h_{aj}$ là giờ công của phần việc nhỏ $j$ thuộc hoạt động $a$; $\mathcal B$ gồm G02--G07 và A01--A19. G01 và G08 không thuộc tổng cơ sở.
+
+Ví dụ A07: PM $(6+4)$h + BA 3h + BE $(8+2)$h + FE $(8+6+2)$h + QA 3h = \textbf{42 giờ công}.
+
+\subsubsection{Phân biệt effort và elapsed time}
+\begin{table}[H]
+\centering
+\caption{So sánh effort và elapsed time}
+\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{|p{1.55cm}|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|}
+\hline
+\textbf{Nội dung} & \textbf{Effort (công sức)} & \textbf{Elapsed time (thời gian lịch)} \\ \hline
+Khái niệm & Tổng công sức của các thành viên để hoàn thành hoạt động. & Khoảng thời gian từ lúc bắt đầu đến khi kết thúc hoạt động. \\ \hline
+Đơn vị & Giờ công (person-hours). & Giờ, ngày hoặc tuần theo lịch đã xác định. \\ \hline
+Cách xác định & Cộng giờ của từng phần việc và người thực hiện. & Xét thời gian tham gia, phụ thuộc, khả năng làm song song và thời gian chờ. \\ \hline
+Ví dụ A17 & 5 người cùng demo 1h: tổng 5 giờ công. & Nếu cùng tham gia trong một buổi, thời lượng là 1h. \\ \hline
+Ví dụ A07 & Tổng 42 giờ công; riêng FE có 16h. & FE dành 4h/ngày thì phần FE cần ít nhất 4 ngày làm việc; toàn A07 còn phụ thuộc tích hợp/review. \\ \hline
+\end{tabularx}
+\end{table}
+
+\clearpage
+\subsubsection{Ước lượng các hoạt động kỹ thuật và bàn giao}
+\begin{table}[H]
+\centering
+\caption{Bottom-up từ thiết kế đến phát triển Increment 3}
+\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\linewidth}{|p{0.8cm}|p{2.8cm}|>{\raggedright\arraybackslash}X|p{0.9cm}|}
+\hline
+\textbf{Mã} & \textbf{Hoạt động} & \textbf{Phần việc nhỏ và giờ công ước lượng} & \textbf{Tổng (h)} \\ \hline
+A01 & Thiết kế CSDL, giao diện và API & \textbf{BA}: chốt quy tắc dữ liệu và phân quyền 2h + thiết kế mockups ba vai trò 5h;\newline \textbf{BE}: thiết kế ERD/DDL 3h + đặc tả API 3h;\newline \textbf{FE}: review mockups và tính khả thi UI 1h;\newline \textbf{QA}: review tính kiểm thử của thiết kế 2h. & 16 \\ \hline
+A02 & Xây dựng test case và tiêu chí chấp nhận & \textbf{BA}: viết acceptance criteria và expected 4h;\newline \textbf{QA}: viết test cases ba increment 6h + review độ phủ và phép đo mục tiêu 2h. & 12 \\ \hline
+A03 & Thiết lập môi trường triển khai & \textbf{PM}: cấu hình dịch vụ email và biến môi trường liên quan 2h;\newline \textbf{BE}: cấu hình DB, triển khai và đối chiếu cấu hình 3h;\newline \textbf{FE}: cấu hình build/kết nối API 1h;\newline \textbf{QA}: chạy smoke test môi trường 2h. & 8 \\ \hline
+A04 & Tạo dữ liệu kiểm thử giả lập & \textbf{PM}: viết và tự kiểm tra seed dữ liệu giả lập 2h;\newline \textbf{BA}: xác định dữ liệu và expected 2h;\newline \textbf{QA}: review seed, kiểm tra dữ liệu và ca biên 3h. & 7 \\ \hline
+A05 & Lập trình tài khoản và quản lý sự kiện & \textbf{PM}: lập trình quản lý sự kiện và unit test phần phụ trách 6h;\newline \textbf{BA}: làm rõ luồng I1 2h + lập trình UI tài khoản/phân quyền và unit test 6h;\newline \textbf{BE}: lập trình tài khoản/RBAC 8h + unit test và code review 2h;\newline \textbf{FE}: lập trình UI sự kiện, tìm/xem 8h + unit test, tích hợp và code review UI 2h;\newline \textbf{QA}: rà soát luồng và bộ test I1 2h. & 36 \\ \hline
+A06 & Kiểm thử và sửa lỗi đợt 1 & \textbf{BA}: review nghiệp vụ I1 1h;\newline \textbf{BE}: sửa lỗi và retest Backend I1 2h;\newline \textbf{FE}: sửa lỗi và retest Frontend I1 2h;\newline \textbf{QA}: chạy test I1 và lưu evidence 5h. & 10 \\ \hline
+A07 & Lập trình đăng ký/hủy, waitlist và email & \textbf{PM}: lập trình đăng ký/hủy và unit test phần phụ trách 6h + tích hợp email và unit test phần phụ trách 4h;\newline \textbf{BA}: chốt quy tắc đăng ký, FIFO và email 3h;\newline \textbf{BE}: xử lý sức chứa, waitlist và đồng thời 8h + unit test và code review 2h;\newline \textbf{FE}: lập trình UI đăng ký/hủy 8h + hiển thị trạng thái, waitlist và lỗi 6h + unit test và code review 2h;\newline \textbf{QA}: chuẩn bị ca đồng thời và email 3h. & 42 \\ \hline
+A08 & Kiểm thử và sửa lỗi đợt 2 & \textbf{BA}: review quy tắc I2 1h;\newline \textbf{BE}: sửa lỗi và retest Backend I2 3h;\newline \textbf{FE}: sửa lỗi và retest Frontend I2 3h;\newline \textbf{QA}: test I2, regression I1 và lưu evidence 6h. & 13 \\ \hline
+A09 & Lập trình chức năng điểm danh & \textbf{PM}: lập trình điểm danh thủ công và unit test phần phụ trách 4h;\newline \textbf{BA}: làm rõ QR và dự phòng thủ công 2h;\newline \textbf{BE}: lập trình xác thực và ghi nhận QR 4h + unit test và code review 2h;\newline \textbf{FE}: lập trình UI điểm danh 6h + unit test và code review 2h;\newline \textbf{QA}: kiểm tra ca QR lỗi và phân quyền 2h. & 22 \\ \hline
+A10 & Lập trình báo cáo và xuất CSV/Excel & \textbf{PM}: lập trình xuất CSV/Excel và unit test phần phụ trách 4h;\newline \textbf{BA}: xác định công thức và expected báo cáo 2h + lập trình UI báo cáo/tải tệp và unit test 4h;\newline \textbf{BE}: lập trình truy vấn báo cáo 2h + unit test và code review 2h;\newline \textbf{FE}: tích hợp, unit test và code review UI báo cáo 2h;\newline \textbf{QA}: đối chiếu báo cáo và tệp xuất 2h. & 18 \\ \hline
+\multicolumn{3}{|r|}{\textbf{Cộng các dòng trên}} & \textbf{184} \\ \hline
+\end{tabularx}
+\end{table}
+
+\noindent Đơn vị: giờ công (person-hours). Nhãn thành viên dùng vai trò chính. BE review Backend của PM; FE review UI của BA trong giờ review đã dự toán. QA kiểm thử độc lập. A06/A08 bổ sung kiểm thử tích hợp/nghiệp vụ, không tính lại unit test ở A05/A07.
+\newpage
+\begin{table}[H]
+\centering
+\caption{Bottom-up từ tích hợp đến nghiệm thu và bàn giao}
+\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\linewidth}{|p{0.8cm}|p{2.8cm}|>{\raggedright\arraybackslash}X|p{0.9cm}|}
+\hline
+\textbf{Mã} & \textbf{Hoạt động} & \textbf{Phần việc nhỏ và giờ công ước lượng} & \textbf{Tổng (h)} \\ \hline
+A11 & Tích hợp và triển khai bản nghiệm thu & \textbf{BE}: tích hợp, migration và triển khai 3h;\newline \textbf{FE}: build và cấu hình Frontend 2h;\newline \textbf{QA}: smoke test và thử khôi phục 2h. & 7 \\ \hline
+A12 & Kiểm thử nghiệm thu và sửa lỗi & \textbf{PM}: điều phối nghiệm thu 1h;\newline \textbf{BA}: xác minh tiêu chí và đo mục tiêu 4h;\newline \textbf{BE}: sửa lỗi tích hợp và retest Backend 4h;\newline \textbf{FE}: sửa lỗi tích hợp và retest Frontend 3h;\newline \textbf{QA}: chạy end-to-end/regression 6h + đo mục tiêu, review và chốt evidence 4h. & 22 \\ \hline
+A13 & Chốt phiên bản mã nguồn bàn giao & \textbf{BE}: chốt commit/release tag 1h;\newline \textbf{FE}: đối chiếu build Frontend 0,5h;\newline \textbf{QA}: đối chiếu tag và evidence 0,5h. & 2 \\ \hline
+A14 & Hoàn thiện và xác minh hướng dẫn chạy & \textbf{BA}: rà soát hướng dẫn nghiệp vụ/demo 1h;\newline \textbf{BE}: hoàn thiện hướng dẫn Backend/seed 1h;\newline \textbf{FE}: hoàn thiện hướng dẫn Frontend 1h;\newline \textbf{QA}: xác minh cài/chạy độc lập 2h. & 5 \\ \hline
+A15 & Phân tích hiệu suất dự án và rút bài học & \textbf{PM}: phân tích kế hoạch so với thực tế 3h;\newline \textbf{BA}: đánh giá mục tiêu và bài học 2h;\newline \textbf{BE}: đóng góp bài học Backend 0,5h;\newline \textbf{FE}: đóng góp bài học Frontend 0,5h;\newline \textbf{QA}: kiểm tra số liệu và bài học chất lượng 2h. & 8 \\ \hline
+A16 & Hoàn thiện kế hoạch đóng và bàn giao & \textbf{PM}: lập closure/handover checklist 2h;\newline \textbf{BA}: kiểm tra phạm vi bàn giao 1h;\newline \textbf{BE}: ghi nhận tồn đọng Backend 0,5h;\newline \textbf{FE}: ghi nhận tồn đọng Frontend 0,5h;\newline \textbf{QA}: review điều kiện bàn giao 1h. & 5 \\ \hline
+A19 & Hoàn thiện đóng góp cá nhân và diễn tập demo & \textbf{PM}: hoàn thiện reflection và diễn tập phần cá nhân 1h;\newline \textbf{BA}: hoàn thiện reflection và diễn tập phần cá nhân 1h;\newline \textbf{BE}: hoàn thiện reflection và diễn tập phần cá nhân 1h;\newline \textbf{FE}: hoàn thiện reflection và diễn tập phần cá nhân 1h;\newline \textbf{QA}: hoàn thiện reflection và diễn tập phần cá nhân 1h. & 5 \\ \hline
+A18 & Chốt báo cáo quản lý dự án cuối kỳ & \textbf{PM}: tổng hợp và chốt báo cáo 3h;\newline \textbf{BA}: đối chiếu mục tiêu và phụ lục 2h;\newline \textbf{BE}: review nội dung kỹ thuật Backend 0,5h;\newline \textbf{FE}: review nội dung kỹ thuật Frontend 0,5h;\newline \textbf{QA}: kiểm tra số liệu và liên kết evidence 1h. & 7 \\ \hline
+A17 & Bàn giao và trình diễn sản phẩm & \textbf{PM}: tham gia demo và bàn giao 1h;\newline \textbf{BA}: tham gia demo và bàn giao 1h;\newline \textbf{BE}: tham gia demo và bàn giao 1h;\newline \textbf{FE}: tham gia demo và bàn giao 1h;\newline \textbf{QA}: tham gia demo và bàn giao 1h. & 5 \\ \hline
+\multicolumn{3}{|r|}{\textbf{Cộng các dòng trên}} & \textbf{66} \\ \hline
+\end{tabularx}
+\end{table}
+
+\noindent Các giờ review checkpoint đã nằm trong hoạt động: CPD ở A01; CP1/CP2 ở A06/A08; CP3 ở A11; CP4 ở A12; CP5 ở A14/A18; CP6 ở A17. PM theo dõi các checkpoint trong G05 hoặc hoạt động điều phối tương ứng, không cộng thêm một khoản họp trùng lặp.
+\newpage
+\subsubsection{Ước lượng quản lý, công việc lặp và điều kiện}
+\begin{table}[H]
+\centering
+\caption{Bottom-up cho công việc lập kế hoạch và kiểm soát}
+\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\linewidth}{|p{0.8cm}|p{2.8cm}|>{\raggedright\arraybackslash}X|p{0.9cm}|}
+\hline
+\textbf{Mã} & \textbf{Hoạt động} & \textbf{Phần việc nhỏ và giờ công ước lượng} & \textbf{Tổng (h)} \\ \hline
+G02 & Xác định và mô tả sản phẩm, phụ thuộc & \textbf{PM}: rà soát cấu trúc và liên kết sản phẩm 3h;\newline \textbf{BA}: đối chiếu scope và PDs 3h;\newline \textbf{BE}: review sản phẩm kỹ thuật 1h;\newline \textbf{FE}: review UI và bàn giao 1h;\newline \textbf{QA}: review tiêu chí chất lượng, truy vết 2h. & 10 \\ \hline
+G03 & Ước lượng và lập kế hoạch nguồn lực, rủi ro & \textbf{PM}: tổng hợp estimate, rủi ro, nguồn lực và lịch 5h;\newline \textbf{BA}: rà soát giả định phạm vi 2h;\newline \textbf{BE}: ước lượng và kiểm tra tải Backend 1h;\newline \textbf{FE}: ước lượng và kiểm tra tải Frontend 1h;\newline \textbf{QA}: rà soát kiểm thử và đáp ứng rủi ro 2h. & 11 \\ \hline
+G04 & Tổng hợp và trình duyệt kế hoạch gốc & \textbf{PM}: chuẩn bị hồ sơ và trình duyệt 2h;\newline \textbf{BA}: review/phê duyệt nội bộ 0,5h;\newline \textbf{BE}: review/phê duyệt nội bộ 0,5h;\newline \textbf{FE}: review/phê duyệt nội bộ 0,5h;\newline \textbf{QA}: review/phê duyệt nội bộ 0,5h. & 4 \\ \hline
+G05 & Theo dõi và ghi log tiến độ tuần k & \textbf{PM}: 10 buổi họp và hoàn thiện 5 log 10h;\newline \textbf{BA}: tham gia 10 buổi họp và cập nhật tiến độ 5h;\newline \textbf{BE}: tham gia 10 buổi họp và cập nhật tiến độ 5h;\newline \textbf{FE}: tham gia 10 buổi họp và cập nhật tiến độ 5h;\newline \textbf{QA}: tham gia 10 buổi họp và cập nhật tiến độ 5h. & 30 \\ \hline
+G06 & Rà soát rủi ro và cập nhật trao đổi tuần k & \textbf{PM}: tổng hợp rủi ro/trao đổi trong 5 tuần 3h;\newline \textbf{BA}: theo dõi phản hồi và tác động scope 3h;\newline \textbf{BE}: cập nhật rủi ro Backend 0,5h;\newline \textbf{FE}: cập nhật rủi ro Frontend 0,5h;\newline \textbf{QA}: cập nhật rủi ro chất lượng 0,5h. & 7,5 \\ \hline
+G07 & Phân tích tác động thay đổi và ghi quyết định & \textbf{PM}: so sánh phương án và ghi quyết định 3h;\newline \textbf{BA}: phân tích tác động scope 2h;\newline \textbf{BE}: phân tích tác động Backend 1h;\newline \textbf{FE}: phân tích tác động Frontend 1h;\newline \textbf{QA}: phân tích tác động kiểm thử 1h. & 8 \\ \hline
+\multicolumn{3}{|r|}{\textbf{Cộng các dòng trên}} & \textbf{70,5} \\ \hline
+\end{tabularx}
+\end{table}
+
+\noindent G05 = 5 chu kỳ $\times$ (5 người $\times$ 2 buổi $\times$ 0,5h họp + PM 1h hoàn thiện log) = 30h, theo tần suất ở Task 1.7.3. Một trong 10 buổi được dùng để demo I1 và ghi nhận phản hồi tại CP1; giả định buổi này nằm trong 30 phút đã dự toán. Người ghi biên bản luân phiên; PM tổng hợp log. G06 = 3h PM + 3h BA + 0,5h BE + 0,5h FE + 0,5h QA = 7,5h, gồm cập nhật risk/client log ngoài buổi họp. Nếu trao đổi vượt giả định hoặc phát sinh sửa đổi lớn, nhóm đánh giá lại effort. G07 chưa gồm triển khai thay đổi mới.
+
+\medskip
+\noindent \textbf{G01:} kế thừa, không tính lại effort đã thực hiện. \textbf{G08:} 2h PM cập nhật/lưu baseline + 2h FE hỗ trợ sơ đồ/lịch/tài liệu = \textbf{4h có điều kiện}, tách khỏi tổng cơ sở.
+\newpage
+\subsubsection{Tổng hợp công sức theo thành viên}
+Tổng kỹ thuật/bàn giao A01--A19 = \textbf{250h}; tổng quản lý G02--G07 = \textbf{70,5h}. Do đó $E_{\mathrm{base}}=320{,}5$ giờ công; nếu kích hoạt G08, tổng là $324{,}5$ giờ công. Ước lượng đáp ứng rủi ro được bổ sung ở 2.8--2.9. Bảng dưới tổng hợp công việc chính và kiêm nhiệm của cùng một thành viên.
+
+PM hỗ trợ Backend ở A03 2h, A04 2h, A05 6h, A07 10h, A09 4h và A10 4h, tổng \textbf{28h}. BA hỗ trợ UI/Frontend ở A01 5h, A05 6h và A10 4h, tổng \textbf{15h}. BE/FE giữ đầu mối kỹ thuật và kiểm duyệt phần mã được hỗ trợ; QA kiểm thử độc lập.
+
+Dự toán 480h ở Task 1.3 bao quát sơ bộ toàn dự án; 320,5h ở đây là ước lượng chi tiết phần việc còn lại. Chênh lệch giữa hai phạm vi không được xem là giờ công thực tế đã thực hiện. Việc đối chiếu sử dụng các bản kế hoạch đã lưu và dữ liệu thực tế khi có.
+
+\begin{table}[H]
+\centering
+\caption{Tổng hợp giờ công theo thành viên}
+\small
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\linewidth}{|p{3cm}|X|X|X|}
+\hline
+\textbf{Thành viên (vai trò chính)} & \textbf{Cơ sở (giờ công)} & \textbf{G08 nếu có (giờ công)} & \textbf{Tổng khi có G08 (giờ công)} \\ \hline
+PM (kiêm Backend) & 65 & 2 & 67 \\ \hline
+BA (kiêm UI/Frontend) & 61,5 & 0 & 61,5 \\ \hline
+BE & 65,5 & 0 & 65,5 \\ \hline
+FE & 62 & 2 & 64 \\ \hline
+QA & 66,5 & 0 & 66,5 \\ \hline
+
+\textbf{Tổng} & \textbf{320,5} & \textbf{4} & \textbf{324,5} \\ \hline
+\end{tabularx}
+\end{table}
+\noindent Effort cơ sở mỗi người từ 61,5h đến 66,5h. Ở 2.10--2.11, phân lịch theo từng người, cộng cả vai trò chính và kiêm nhiệm; không phân hai việc trùng thời điểm cho cùng người. A09/A10 song song về logic, còn lịch khả thi phải xét availability, năng lực và thời gian chờ review/phê duyệt.

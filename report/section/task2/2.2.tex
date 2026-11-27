@@ -1,0 +1,208 @@
+\subsection{Prepare Product Descriptions (PDs)}
+
+
+Dựa trên cấu trúc PBS đã xác định, nhóm tiến hành lập Bảng mô tả sản phẩm (Product Descriptions - PDs) cho 5 sản phẩm cốt lõi nhất đại diện cho 3 nhóm: Quản lý dự án, Kỹ thuật và Chất lượng. Các mô tả này tuân thủ phương pháp hoạch định định hướng sản phẩm của Step Wise, đảm bảo tính chặt chẽ trong việc kiểm soát chất lượng, nguồn lực và theo dõi tiến độ của dự án.
+
+% ==========================================
+% PD 1: PROJECT BASELINE V1.0
+% ==========================================
+\clearpage
+\begin{table}[H]
+    \centering
+    \caption{Product Description: Project Baseline V1.0}
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabularx}{\textwidth}{|>{\hsize=0.5\hsize\linewidth=\hsize\bfseries}X|>{\hsize=1.5\hsize\linewidth=\hsize}X|}
+        \hline
+        Product Identity & \textbf{Project Baseline V1.0} (Đường cơ sở dự án phiên bản 1.0) \\
+        \hline
+        Description & Đây là tài liệu kế hoạch nền tảng đã được nhóm và khách hàng thống nhất, dùng làm mốc đối chiếu để giám sát tiến độ, công sức, chi phí và phạm vi trong suốt quá trình thực thi dự án. \\
+        \hline
+        Derivation & Được tổng hợp từ Project brief, Client Interaction Log, phạm vi đã thống nhất và các sản phẩm lập kế hoạch Task 2. \\
+        \hline
+        Composition & 
+        \vspace{-0.8em}
+        \begin{itemize}[leftmargin=*, nosep]
+            \item PBS, PFD và các bảng mô tả sản phẩm (PDs).
+            \item Mạng lưới hoạt động và các điểm kiểm tra (Checkpoints).
+            \item Danh sách rủi ro cấp hoạt động và biện pháp ứng phó.
+            \item Kế hoạch phân bổ nguồn lực và đảm bảo chất lượng.
+            \item Lịch biểu và dự toán chi phí/công sức (Schedule and cost baseline).
+        \end{itemize}
+        \vspace{-1em} \\
+        \hline
+        Format & Báo cáo dạng văn bản PDF (kết hợp bảng biểu, sơ đồ) và được lưu trữ trên không gian làm việc Confluence của dự án. \\
+        \hline
+        Relevant Standards & Tuân thủ phương pháp lập kế hoạch Step Wise, nguyên tắc truy vết (Traceability) trong quản lý dự án phần mềm, và chuẩn quản lý tài liệu nội bộ. \\
+        \hline
+        Quality Criteria & 
+        \vspace{-0.8em}
+        \begin{itemize}[leftmargin=*, nosep]
+            \item Được nhóm rà soát và Đại diện khách hàng xem xét, phê duyệt theo thẩm quyền; chỉ ghi đã duyệt khi có xác nhận.
+            \item Các ước lượng phải phân biệt rõ công sức (effort) và thời gian trôi qua (elapsed time).
+            \item Có tính khả thi về mặt phân bổ nguồn lực (phù hợp với quy mô nhóm triển khai).
+            \item Cung cấp đầy đủ biện pháp giảm thiểu và dự phòng cho các rủi ro quan trọng.
+        \end{itemize}
+        \vspace{-1em} \\
+        \hline
+    \end{tabularx}
+\end{table}
+
+% ==========================================
+% PD 2: DATABASE SCHEMA
+% ==========================================
+\clearpage
+\begin{table}[H]
+    \centering
+    \caption{Product Description: Database Schema}
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabularx}{\textwidth}{|>{\hsize=0.5\hsize\linewidth=\hsize\bfseries}X|>{\hsize=1.5\hsize\linewidth=\hsize}X|}
+        \hline
+        Product Identity & \textbf{Database Schema} (Lược đồ Cơ sở dữ liệu) \\
+        \hline
+        Description & Bản thiết kế cấu trúc lưu trữ dữ liệu tập trung, định nghĩa cách hệ thống quản lý thông tin sự kiện, người dùng, trạng thái đăng ký, danh sách chờ và kết quả điểm danh. \\
+        \hline
+        Derivation & Bắt nguồn từ các quy tắc nghiệp vụ (Business rules) do bộ phận Phân tích nghiệp vụ thu thập, ma trận phân quyền người dùng, và yêu cầu dữ liệu của luồng đăng ký/waitlist. \\
+        \hline
+        Composition & 
+        \vspace{-0.8em}
+        \begin{itemize}[leftmargin=*, nosep]
+            \item Các thực thể chính (Event, User, Registration, Attendance).
+            \item Thuộc tính, Kiểu dữ liệu, Khóa chính (PK) / Khóa ngoại (FK).
+            \item Ràng buộc toàn vẹn (ví dụ: ngăn đăng ký trùng cùng một sự kiện).
+        \end{itemize}
+        \vspace{-1em} \\
+        \hline
+        Format & Sơ đồ thực thể kết hợp (ERD) và mã lệnh SQL (DDL) khởi tạo bảng. \\
+        \hline
+        Relevant Standards & Chuẩn hóa cơ sở dữ liệu quan hệ (ít nhất đạt chuẩn 3NF), quy tắc đặt tên (Coding Conventions) thống nhất, và cú pháp chuẩn của PostgreSQL. \\
+        \hline
+        Quality Criteria & 
+        \vspace{-0.8em}
+        \begin{itemize}[leftmargin=*, nosep]
+            \item Bao quát các trường bắt buộc đã thống nhất; có PK/FK và ràng buộc duy nhất cho cặp sinh viên--sự kiện để chống đăng ký trùng.
+            \item Script DDL thực thi thành công trên PostgreSQL với cơ sở dữ liệu sạch.
+            \item Có dữ liệu xác định thứ tự FIFO. Quy tắc sức chứa và chuyển waitlist được kiểm chứng cùng xử lý giao dịch của Backend.
+        \end{itemize}
+        \vspace{-1em} \\
+        \hline
+    \end{tabularx}
+\end{table}
+
+% ==========================================
+% PD 3: TEST CASES & ACCEPTANCE CRITERIA
+% ==========================================
+\clearpage
+\begin{table}[H]
+    \centering
+    \caption{Product Description: Test Cases \& Acceptance Criteria}
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabularx}{\textwidth}{|>{\hsize=0.5\hsize\linewidth=\hsize\bfseries}X|>{\hsize=1.5\hsize\linewidth=\hsize}X|}
+        \hline
+        Product Identity & \textbf{Test Cases \& Acceptance Criteria} (Kịch bản kiểm thử \& Tiêu chí chấp nhận) \\
+        \hline
+        Description & Tập hợp các điều kiện và thao tác giả lập để kiểm chứng hệ thống phần mềm có đáp ứng đúng các yêu cầu chức năng, yêu cầu bảo mật và quy trình vận hành đã cam kết hay không. \\
+        \hline
+        Derivation & Dựa trên Phạm vi dự án (Project Scope), Ma trận phân quyền, và bộ các thước đo hiệu quả (Measures of Effectiveness). \\
+        \hline
+        Composition & Mỗi TC có mã TC, mã yêu cầu, tên tính năng, tiền điều kiện, dữ liệu, các bước và kết quả mong đợi. Khi thực thi, ghi kết quả thực tế, Pass/Fail và liên kết bằng chứng. Bao gồm Happy path và ngoại lệ: hết chỗ, đăng ký trùng, chuyển waitlist và lỗi kết nối mạng. \\
+        \hline
+        Format & Lưu trữ dưới dạng tài liệu trên nền tảng Confluence và được quản lý thành các task kiểm thử trên hệ thống Jira Software. \\
+        \hline
+        Relevant Standards & Tuân thủ Định nghĩa hoàn thành (Definition of Done - DoD) của quy trình phát triển dự án. \\
+        \hline
+        Quality Criteria & 
+        \vspace{-0.8em}
+        \begin{itemize}[leftmargin=*, nosep]
+            \item Mỗi yêu cầu cốt lõi của MVP có TC tương ứng, gồm luồng chính và các tình huống ngoại lệ phù hợp.
+            \item Mô tả rõ ràng, đơn nghĩa, cho phép thực hiện kiểm tra chéo (Cross-testing) bởi bất kỳ thành viên nào trong nhóm.
+            \item Chứa các test case giả định sai lệch để xác minh khả năng chặn lỗi (validation) của hệ thống.
+        \end{itemize}
+        \vspace{-1em} \\
+        \hline
+    \end{tabularx}
+\end{table}
+% ==========================================
+% PD 4: FINAL WORKING SOFTWARE PRODUCT
+% ==========================================
+\clearpage
+\begin{table}[H]
+    \centering
+    \caption{Product Description: Final Working Software Product}
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabularx}{\textwidth}{|>{\hsize=0.5\hsize\linewidth=\hsize\bfseries}X|>{\hsize=1.5\hsize\linewidth=\hsize}X|}
+        \hline
+        Product Identity & \textbf{Final Working Software Product} (Phần mềm hệ thống đăng ký và quản lý sự kiện) \\
+        \hline
+        Description & Phần mềm MVP hỗ trợ quy trình khép kín (end-to-end): tạo sự kiện, đăng ký/hủy và waitlist, điểm danh QR hoặc thủ công, báo cáo và xuất CSV/Excel. Sử dụng dữ liệu sinh viên giả lập theo phạm vi đã thống nhất. \\
+        \hline
+        Derivation & Được phát triển dựa trên Đường cơ sở dự án (Project Baseline), thiết kế giao diện (UI/UX Mockups), Đặc tả API (API Specifications) và các đoạn mã nguồn cấu thành. \\
+        \hline
+        Composition & 
+        \vspace{-0.8em}
+        \begin{itemize}[leftmargin=*, nosep]
+            \item Hệ thống Frontend (Angular) cho giao diện của 3 nhóm người dùng.
+            \item Backend API (Java Spring Boot) xử lý logic nghiệp vụ.
+            \item Cơ sở dữ liệu lưu trữ tập trung PostgreSQL.
+            \item Email xác nhận đăng ký, thay đổi quan trọng của sự kiện và chuyển từ waitlist sang danh sách chính thức.
+        \end{itemize}
+        \vspace{-1em} \\
+        \hline
+        Format & Ứng dụng được triển khai trên máy chủ đám mây (AWS Lightsail) và có thể truy cập, thao tác trực tiếp qua trình duyệt web. \\
+        \hline
+        Relevant Standards & Tiêu chuẩn Clean Code, quy định nộp và tích hợp mã nguồn (Pull Request) trên hệ thống GitHub, và các ràng buộc bảo vệ quyền riêng tư của dữ liệu người dùng. \\
+        \hline
+        Quality Criteria & 
+        \vspace{-0.8em}
+        \begin{itemize}[leftmargin=*, nosep]
+            \item Ứng dụng biên dịch thành công; các luồng nghiệm thu đã thống nhất chạy được trên môi trường kiểm thử được ghi nhận.
+            \item Thể hiện luồng công việc mạch lạc (coherent end-to-end workflows), các tính năng liên kết chặt chẽ thay vì chỉ là các màn hình rời rạc.
+            \item Mã nguồn phải qua quy trình kiểm duyệt (Peer Code Review) và được chấp thuận (Approve) từ ít nhất một thành viên khác.
+            \item Đạt toàn bộ TC nghiệm thu cốt lõi đã chốt; không còn lỗi nghiêm trọng làm gián đoạn các luồng này.
+        \end{itemize}
+        \vspace{-1em} \\
+        \hline
+    \end{tabularx}
+\end{table}
+
+% ==========================================
+% PD 5: FINAL PROJECT MANAGEMENT REPORT
+% ==========================================
+\clearpage
+\begin{table}[H]
+    \centering
+    \caption{Product Description: Final Project Management Report}
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabularx}{\textwidth}{|>{\hsize=0.5\hsize\linewidth=\hsize\bfseries}X|>{\hsize=1.5\hsize\linewidth=\hsize}X|}
+        \hline
+        Product Identity & \textbf{Final Project Management Report} (Báo cáo Quản lý dự án cuối kỳ) \\
+        \hline
+        Description & Báo cáo phân tích và tổng kết hiệu suất thực tế của toàn bộ vòng đời dự án, đối chiếu kế hoạch gốc với kết quả triển khai thực tế, đồng thời rút ra bài học kinh nghiệm (Lessons Learned) cho các dự án tương lai. \\
+        \hline
+        Derivation & Tổng hợp dữ liệu thực tế từ hồ sơ giám sát hàng tuần (Weekly Logs), Project Baseline V1.0 (và V2.0 nếu có), Nhật ký rủi ro (Risk Register), và dữ liệu từ các quy trình quản lý thay đổi. \\
+        \hline
+        Composition & 
+        \vspace{-0.8em}
+        \begin{itemize}[leftmargin=*, nosep]
+            \item Bảng đối chiếu Kế hoạch so với Thực tế (công sức, lịch biểu, chi phí, phạm vi, chất lượng).
+            \item Phân tích sai số ước lượng và các quyết định quản lý đã đưa ra.
+            \item Đánh giá mức độ đạt các mục tiêu nghiệp vụ (Effectiveness measures).
+            \item Closure/Handover Plan và Lessons Learned; phụ lục hoặc liên kết đóng góp và reflection cá nhân.
+        \end{itemize}
+        \vspace{-1em} \\
+        \hline
+        Format & Báo cáo định dạng văn bản PDF, kết hợp các biểu đồ so sánh trực quan, được lưu trữ trên hệ thống quản lý tài liệu tập trung của dự án. \\
+        \hline
+        Relevant Standards & Định dạng chuẩn của báo cáo tổng kết dự án chuyên nghiệp, tuân thủ nguyên tắc trung thực và tính khả truy (Traceability) xuyên suốt các tài liệu dự án. \\
+        \hline
+        Quality Criteria & 
+        \vspace{-0.8em}
+        \begin{itemize}[leftmargin=*, nosep]
+            \item Có lập luận chặt chẽ (justification) và bằng chứng cụ thể cho mọi độ lệch về tiến độ và công sức.
+            \item Dữ liệu báo cáo nhất quán tuyệt đối với các bản ghi nhận tiến độ (logs) hàng tuần.
+            \item Tách biệt rõ ràng phần đánh giá mức độ hoàn thành chức năng phần mềm với phần đánh giá mục tiêu kinh doanh/nghiệp vụ tổng thể.
+            \item Bài học kinh nghiệm thực tế, mang tính ứng dụng cao.
+        \end{itemize}
+        \vspace{-1em} \\
+        \hline
+    \end{tabularx}
+\end{table}

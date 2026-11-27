@@ -1,0 +1,24 @@
+\subsection{Task 4.4. Kế hoạch đóng dự án}
+\label{sec:t4-closure}
+
+\begingroup\small
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}p{.17\linewidth}p{.50\linewidth}p{.11\linewidth}p{.12\linewidth}@{}}
+\caption{Kế hoạch đóng dự án}\label{tab:t4-closure}\\
+\toprule
+\textbf{Hạng mục} & \textbf{Công việc} & \textbf{Phụ trách} & \textbf{Thời hạn}\\\midrule\endfirsthead
+\toprule
+\textbf{Hạng mục} & \textbf{Công việc} & \textbf{Phụ trách} & \textbf{Thời hạn}\\\midrule\endhead
+\bottomrule\endfoot
+Nghiệm thu & Demo luồng end-to-end; trình bày change log CR-01..05 để khách hàng quyết định từng CR; ghi kết quả vào Client Interaction Log và biên bản CP6. & PM, BA & Buổi demo\\
+ & Nếu khách hàng không chấp nhận một CR (ví dụ yêu cầu Excel), ghi thành hạng mục tồn đọng kèm ước lượng công sức, không sửa âm thầm sau nghiệm thu. & PM & Buổi demo\\
+Bàn giao & Gắn tag phát hành trên \texttt{main}; bàn giao URL hệ thống, repository, README, tài liệu \texttt{docs/} và \texttt{deploy/}. & BE & 29/11\\
+ & Bàn giao tài khoản Quản trị viên qua kênh riêng (không ghi trong tài liệu); hướng dẫn đổi mật khẩu ngay lần đầu. & BE, PM & Sau demo\\
+ & Kiểm tra lại: bootstrap Admin đã tắt, dữ liệu seed không bật, không có bí mật trong Git. & QA & 29/11\\
+Tồn đọng & Thử nghiệm người dùng M5; đo M2 trên cloud; bộ đối chiếu M4; lọc sự kiện theo thời gian; xuất Excel; xác minh email sinh viên. Mỗi mục ghi trong backlog với ước lượng và mức ưu tiên. & PM, BA & 29/11\\
+Giải phóng tài nguyên & Giữ dịch vụ Render/Neon/Vercel đến khi có điểm để giảng viên kiểm tra; sau đó xóa dịch vụ, xóa database Neon và thu hồi API key Brevo, khóa mã hóa QR. & BE & Sau khi có điểm\\
+ & Kết thúc phân công dự án của các thành viên; chuyển quyền repository cho \TBD{người giữ}. & PM & Sau khi có điểm\\
+Lưu trữ & Lưu báo cáo PDF, mã nguồn LaTeX, Baseline V1.0 và V2.0, weekly log, sổ rủi ro trong repository; xuất log test (đang bị git ignore) vào hồ sơ (NR6). & PM, QA & 29/11\\
+Post-project review & Họp 30 phút sau viva: đối chiếu bài học ở Mục \ref{sec:t4-lessons} với phản hồi của giảng viên; cập nhật thành bài học cho dự án sau. & Cả nhóm & Sau viva\\
+\end{longtable}
+\endgroup

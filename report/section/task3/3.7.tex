@@ -1,0 +1,56 @@
+\subsection{Task 3.7. Project Baseline V2.0}
+\label{sec:t3-baseline-v2}
+
+Project Baseline V1.0 (Mục 2.12) được \textbf{giữ nguyên} để so sánh; các bảng ở Task 2 không bị sửa. Baseline V2.0 chỉ ghi nhận các thay đổi đã được phê duyệt qua nhật ký thay đổi dưới đây. Các phần không được nêu trong mục này giữ giá trị của V1.0.
+
+\subsubsection{Nhật ký yêu cầu thay đổi}
+
+\begingroup\footnotesize
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}p{.07\linewidth}p{.09\linewidth}p{.27\linewidth}p{.33\linewidth}p{.16\linewidth}@{}}
+\caption{Change log}\label{tab:t3-cr-log}\\
+\toprule
+\textbf{Mã} & \textbf{Ngày} & \textbf{Thay đổi} & \textbf{Tác động} & \textbf{Phê duyệt}\\\midrule\endfirsthead
+\toprule
+\textbf{Mã} & \textbf{Ngày} & \textbf{Thay đổi} & \textbf{Tác động} & \textbf{Phê duyệt}\\\midrule\endhead
+\bottomrule\endfoot
+CR-01 & 04/11 & Bỏ UC-24 (đổi vai trò); mỗi tài khoản có vai trò cố định. & Giảm phạm vi A05.1; bớt một nhóm test phân quyền; giảm rủi ro AR2. Không đổi lịch. & Nhóm thống nhất; chưa gửi client review$^{\dagger}$\\
+CR-02 & 03/11 & Chỉ xuất CSV, hoãn Excel. & Giảm phạm vi A10.2 (5,0 giờ); không cần thư viện Excel. Excel chuyển vào danh sách deferred. & Nhóm thống nhất; chưa gửi client review$^{\dagger}$\\
+CR-03 & 03/11 & Sức chứa bắt buộc nguyên dương; bỏ ``Không giới hạn''. & Đơn giản hóa A07.1/A07.2; TC-CAP-API-03 được loại khỏi bộ nghiệm thu. & Nhóm thống nhất; chưa gửi client review$^{\dagger}$\\
+CR-04 & 25/11 & Triển khai trên Vercel + Render + Neon (gói miễn phí) thay AWS Lightsail. & RA02 không thực hiện; chi phí hạ tầng 728.000 $\to$ 0 VNĐ; thêm rủi ro NR1, NR3; phải thêm cấu hình proxy. & Nhóm thống nhất; chưa gửi client review$^{\dagger}$\\
+CR-05 & \TBD{ngày} & Giảng viên rút ngắn thời hạn dự án 1 tuần (Mục \ref{sec:t3-change}). & Mất buffer lịch; fast-tracking; thu gọn nghiệm thu, bỏ 11,5 giờ hoạt động; hoãn M5. & Project Authority công bố trên lớp; phương án PA3 do nhóm quyết định\\
+\end{longtable}
+\endgroup
+
+\noindent{\footnotesize $^{\dagger}$ Xem mục Hạn chế bên dưới.}
+
+\subsubsection{Hạn chế: chưa có xác nhận của khách hàng}
+\label{sec:t3-limitation-review}
+
+Thời hạn của dự án bị rút ngắn 1 tuần theo CR-05 (Mục \ref{sec:t3-change}). Để giữ thời gian cho kiểm thử tích hợp và hồ sơ bàn giao, nhóm \textbf{chưa gửi khách hàng review} các nội dung sau:
+\begin{itemize}
+    \item Các yêu cầu thay đổi CR-01 đến CR-04: hiện chỉ có sự thống nhất trong nhóm, chưa có phê duyệt của Project Authority theo quy trình ở Task 1.5.
+    \item Bản đặc tả use case đã chỉnh sửa theo mã nguồn (Bảng \ref{tab:t3-uc-diff}).
+    \item Project Baseline V2.0 trong mục này.
+\end{itemize}
+Hệ quả: các thay đổi trên là \textbf{đề xuất của nhóm}, chưa phải phạm vi đã được khách hàng chấp thuận. Rủi ro là khách hàng không đồng ý với một số điểm (ví dụ chỉ xuất CSV, bỏ sức chứa không giới hạn) khi nghiệm thu. Nhóm xử lý bằng cách trình bày nhật ký thay đổi và lý do ngay trong buổi demo (CP6) để khách hàng quyết định trực tiếp, và ghi nhận phản hồi vào Client Interaction Log.
+
+Ngoài các CR trên, đặc tả use case được chi tiết hóa theo các quyết định ngày 12/11 và 18/11 (Bảng \ref{tab:t3-uc-diff}). Đây là làm rõ yêu cầu trong phạm vi đã duyệt, không phải CR.
+
+\subsubsection{So sánh Baseline V1.0 và V2.0}
+
+\begin{table}[H]
+\centering\small
+\caption{Thành phần baseline trước và sau thay đổi}\label{tab:t3-v1-v2}
+\begin{tabularx}{\linewidth}{@{}p{.18\linewidth}XX@{}}
+\toprule
+\textbf{Thành phần} & \textbf{V1.0 (29/10/2026)} & \textbf{V2.0 (đề xuất, chưa duyệt)}\\\midrule
+Phạm vi & 24 UC; xuất CSV/Excel; sức chứa có thể không giới hạn. & 23 UC đã triển khai + UC-25; chỉ CSV; sức chứa nguyên dương (CR-01..03).\\
+Hạ tầng & AWS Lightsail. & Vercel + Render + Neon + Brevo (CR-04).\\
+Công sức & 331,6 giờ công (320,5 + 11,1 RA). & 320,1 giờ công (331,6 $-$ 11,5 giờ cắt giảm theo CR-05). Các CR-01..04 làm giảm khối lượng nhưng nhóm giữ nguyên số giờ để bù công việc phát sinh (Bảng \ref{tab:t3-unplanned}).\\
+Chi phí & 26.592.800 VNĐ (nhân sự 25.864.800 + hạ tầng 728.000). & 24.967.800 VNĐ (nhân sự 320,1 $\times$ 78.000; hạ tầng 0 VNĐ).\\
+Lịch trình & Khởi động 26/10; bàn giao 03/12; nộp báo cáo 06/12. & Nộp báo cáo 29/11 (CR-05); demo \TBD{ngày}; không còn schedule buffer.\\
+Quỹ dự phòng & 63,4 giờ; buffer lịch 04--06/12. & 63,4 giờ; đến 27/11 đã dùng $\approx$ 4,0 giờ (306,2 giờ thực tế ước tính so với 302,2 giờ kế hoạch T1--T5).\\
+\bottomrule
+\end{tabularx}
+\end{table}

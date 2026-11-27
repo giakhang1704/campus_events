@@ -1,0 +1,93 @@
+\subsection{Task 3.3. Theo dõi tiến độ so với Project Baseline V1.0}
+\label{sec:t3-actual}
+
+\subsubsection{Phương pháp xác định số liệu thực tế}
+\label{sec:t3-effort-method}
+
+\textbf{Ngày thực tế} được lấy từ bằng chứng kiểm chứng được: commit đầu tiên chứa đầy đủ chức năng, ngày merge, hoặc ngày của biên bản kiểm thử trong repository.
+
+\textbf{Giờ công thực tế.} Nhóm không duy trì timesheet đều đặn từ đầu dự án (một bài học được ghi ở Task 4.5). Vì vậy giờ công thực tế được \textbf{ước tính hồi cứu} theo ba bước và cần được hiểu là ước tính có căn cứ, không phải số đo trực tiếp:
+\begin{enumerate}
+    \item \textbf{Điểm xuất phát} là giờ kế hoạch của hoạt động trong Baseline V1.0.
+    \item \textbf{Điều chỉnh theo khối lượng}: so sánh số dòng mã và test thay đổi của hoạt động (đã loại lockfile, tài liệu, hình ảnh) trên mỗi giờ kế hoạch với mức trung vị của các hoạt động lập trình ($\approx$ 154 dòng/giờ). Hệ số điều chỉnh bị giới hạn trong khoảng $\pm$30\% vì số dòng không phản ánh đầy đủ thời gian tìm lỗi hay thiết kế.
+    \item \textbf{Điều chỉnh theo sự kiện} có bằng chứng: thời gian xử lý sự cố (A03), phần làm lại (giao diện I1), phần bổ sung sau audit (QR).
+\end{enumerate}
+Các hoạt động không để lại dấu vết trên repository (thiết kế, viết test case, họp, quản lý, kiểm thử độc lập ở repository riêng của QA) được \textbf{giữ bằng giờ kế hoạch} và đánh dấu ``chưa xác minh''. Các thành viên đã rà soát số ước tính liên quan đến phần việc của mình: \TBD{xác nhận của từng thành viên}.
+
+\subsubsection{Ngày thực tế và công sức của các hoạt động chính}
+
+Độ lệch tính bằng ngày lịch, dương là trễ, âm là sớm.
+
+\begingroup\footnotesize
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}p{.07\linewidth}p{.11\linewidth}p{.20\linewidth}p{.06\linewidth}p{.06\linewidth}p{.06\linewidth}p{.34\linewidth}@{}}
+\caption{Kế hoạch V1.0 so với thực tế (đến 27/11/2026)}\label{tab:t3-actual}\\
+\toprule
+\textbf{Mã} & \textbf{Lịch KH} & \textbf{Hoàn thành TT (bằng chứng)} & \textbf{Lệch ngày} & \textbf{Giờ KH} & \textbf{Giờ TT$^{*}$} & \textbf{Giải thích}\\\midrule\endfirsthead
+\toprule
+\textbf{Mã} & \textbf{Lịch KH} & \textbf{Hoàn thành TT (bằng chứng)} & \textbf{Lệch ngày} & \textbf{Giờ KH} & \textbf{Giờ TT$^{*}$} & \textbf{Giải thích}\\\midrule\endhead
+\midrule\multicolumn{7}{r}{\textit{Còn tiếp}}\\\endfoot
+\bottomrule\endlastfoot
+A03 & 29--30/10 & 03/11 (\texttt{b57b1aa}, smoke test) & +4 & 8,0 & 10,0 & Khối lượng mã nhỏ ($\times$0,7 = 5,6h) nhưng thêm $\approx$ 4,4h xử lý Docker, socket Java, múi giờ JDBC (AR3).\\
+A05.1 & 02--04/11 & 03/11 (\texttt{2ed54e3}) & $-$1 & 18,0 & 14,0 & Khối lượng thấp hơn ước lượng; bỏ UC-24 (CR-01). Merge vào \texttt{main} 12/11 do chờ review.\\
+A05.2 & 30/10--03/11 & 06/11 (\texttt{aa2494d}) & +3 & 18,0 & 31,0 & Khối lượng lớn hơn ($\times$1,3 = 23,4h) và giao diện làm lại theo chủ đề HCMUT, chỉnh sửa, refactor ($\approx$ 1.300 dòng, +7,6h).\\
+A06 & 05--09/11 & 07/11 (regression) & $-$2 & 10,0 & 10,0 & Chưa xác minh (QA chạy ở repository riêng). 208/209 ca đạt.\\
+A07.1 & 09--11/11 & 12/11 (\texttt{43f8c4c}) & +1 & 22,0 & 15,0 & Hệ số 0,7: dùng lại kiến trúc phân tầng; làm cùng A07.2, A07.3.\\
+A07.2 & 12--16/11 & 12/11 (\texttt{43f8c4c}) & $-$4 & 14,0 & 9,0 & Logic đôn chờ dùng chung transaction với A07.1.\\
+A07.3 & 17/11 & 12/11 (\texttt{43f8c4c}) & $-$5 & 6,0 & 5,5 & Outbox làm cùng đăng ký để rollback đồng bộ.\\
+A08 & 18--19/11 & 18/11 (PR \#3) & $-$1 & 13,0 & 12,0 & Frontend I2 và kiểm thử I2.\\
+A09.1 & 21--24/11 & 23/11 (\texttt{26efcbb}) & $-$1 & 12,0 & 16,0 & Thêm $\approx$ 4h sau audit: tách preview/xác nhận, guard database, trang camera.\\
+A09.2 & 20--23/11 & 19/11 (\texttt{e8f23a2}) & $-$4 & 10,0 & 10,0 & Đúng ước lượng; dùng chung API với A09.1.\\
+A10.1 & 20--21/11 & 22/11 (\texttt{98f6024}) & +1 & 13,0 & 13,0 & Đúng ước lượng.\\
+A10.2 & 23/11 & 22/11 (\texttt{98f6024}) & $-$1 & 5,0 & 5,0 & Chỉ CSV (CR-02); phần tiết kiệm được dùng cho chống CSV injection, giới hạn 10.000 dòng.\\
+A11 & 24--25/11 & 25/11 (\texttt{727f379}, deploy) & 0 & 7,0 & 8,0 & +1h sửa build (Maven 429) và proxy Vercel (CR-04).\\
+A12.1 & 26--27/11 & Đang thực hiện & -- & 14,0 & 3,5 & Đến 27/11 mới có kiểm tra chi tiết điểm danh (\texttt{bd77472}) và kiểm tra cloud.\\
+RA01 & 09/11 & 12/11 (I2\_RESULTS) & +3 & 2,5 & 2,5 & Thử 6 sinh viên tranh 1 chỗ trong bộ test I2.\\
+RA02 & 05/11 & Không thực hiện & -- & 2,5 & 0,0 & Thay bằng triển khai Render/Vercel/Neon (CR-04).\\
+RA05 & 23/11 & 18/11 (I3\_RESULTS) & $-$5 & 1,9 & 1,0 & Đo trên 2.000 đăng ký khi audit I3: báo cáo 0,066 s, CSV 0,909 s.\\
+RA06 & 09/11 & 12/11 & +3 & 1,2 & 1,2 & Quy tắc FIFO, email được chốt cùng ngày làm I2.\\
+\end{longtable}
+\endgroup
+\noindent{\footnotesize $^{*}$ Ước tính hồi cứu theo Mục \ref{sec:t3-effort-method}.}
+
+\subsubsection{Công việc phát sinh ngoài baseline}
+
+\begin{table}[H]
+\centering\small
+\caption{Công việc không có trong Project Baseline V1.0}\label{tab:t3-unplanned}
+\begin{tabularx}{\linewidth}{@{}p{.10\linewidth}p{.30\linewidth}X p{.09\linewidth}@{}}
+\toprule
+\textbf{Ngày} & \textbf{Công việc} & \textbf{Lý do thực hiện} & \textbf{Giờ TT$^{*}$}\\\midrule
+12/11 & Tái cấu trúc backend phân tầng (\texttt{4d56706}) & Tránh viết lại tầng dữ liệu khi thêm I2/I3. Phần lớn là di chuyển mã nên chỉ tính một nửa số dòng thay đổi. & 12,0\\
+25/11 & Rà soát hệ thống: rate limit, Flyway, backup/restore, CI (\texttt{275bfb9}) & Điều kiện cần để đưa lên cloud an toàn; không có hoạt động tương ứng trong A11. & 10,0\\
+26/11 & Chỉnh mẫu email (\texttt{13c81af}) & Cải thiện nội dung thư sau khi xem thư thật. & 2,0\\
+\midrule
+\multicolumn{3}{@{}r}{\textbf{Tổng công việc phát sinh}} & \textbf{24,0}\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsubsection{Giải thích các sai lệch chính}
+
+\begin{enumerate}
+    \item \textbf{Giai đoạn đầu trễ và tốn công hơn.} A03 trễ 4 ngày kéo A05.2 trễ 3 ngày. A05.2 vượt 13 giờ (+72\%), là sai lệch lớn nhất, vì ước lượng chỉ tính một lượt giao diện, không tính phần thiết kế lại theo nhận diện HCMUT.
+    \item \textbf{I2 hoàn thành sớm và ít công hơn.} A07.1--A07.3 dùng 29,5 giờ so với 42 giờ kế hoạch ($-$30\%). Nguyên nhân: kiến trúc phân tầng vừa tái cấu trúc giúp thêm tính năng nhanh; ba hoạt động được làm chung vì cùng một transaction. Việc dùng công cụ AI hỗ trợ lập trình (nếu có) được khai báo ở Mục \ref{sec:ai-declaration}. Tuy nhiên phần tiết kiệm này gần như bị bù lại bởi 12 giờ tái cấu trúc ngoài kế hoạch.
+    \item \textbf{I3 sát ước lượng.} A09--A10 dùng 44 giờ so với 40 giờ (+10\%), phần vượt đến từ audit bảo mật QR.
+    \item \textbf{Tích hợp dồn về cuối.} Mỗi increment được merge vào nhánh kế tiếp thay vì \texttt{main}, nên đến 25/11 mới tích hợp toàn bộ, phát sinh 10 giờ rà soát ngoài kế hoạch.
+    \item \textbf{Tổng thể.} Đến 27/11, công sức thực tế ước tính là 306,2 giờ so với 302,2 giờ kế hoạch cho T1--T5 (+1,3\%). Công việc phát sinh (24 giờ) được bù bởi phần tiết kiệm ở I2 và các hoạt động chưa bắt đầu (A12.2, A14.1).
+\end{enumerate}
+
+\subsubsection{Chỉ số giá trị thu được (EVM) tại ngày 27/11/2026}
+
+Giá trị tính bằng giờ công kế hoạch (đơn giá 78.000 VNĐ/giờ):
+\begin{itemize}
+    \item $PV$ = 293,6 giờ (22.900.800 VNĐ): tổng giờ kế hoạch của các hoạt động lẽ ra đã xong trước 27/11, cộng phần quản lý G05/G06 theo thời gian.
+    \item $EV$ = 280,6 giờ (21.886.800 VNĐ): tổng giờ kế hoạch của các hoạt động đã xong; A12.1 được tính 25\% vì mới thực hiện một phần; RA02 không tính vì không thực hiện.
+    \item $AC$ = 306,2 giờ (23.883.600 VNĐ): công sức thực tế ước tính.
+\end{itemize}
+
+\begin{center}
+$SPI = EV/PV = 280{,}6 / 293{,}6 = 0{,}96$ \qquad $CPI = EV/AC = 280{,}6 / 306{,}2 = 0{,}92$
+\end{center}
+
+$SPI = 0{,}96$ cho thấy dự án chậm nhẹ, chủ yếu do A12 (integration test) chưa xong; các chức năng đều đã hoàn thành. $CPI = 0{,}92$ cho thấy mỗi giờ công tạo ra khoảng 0,92 giờ giá trị kế hoạch, do 24 giờ công việc phát sinh. Nếu hiệu suất này giữ nguyên, ước tính tổng công sức khi hoàn thành là $EAC = BAC / CPI = 331{,}6 / 0{,}92 \approx 360$ giờ, vẫn nằm trong quỹ dự phòng 63,4 giờ (tổng năng lực 395 giờ). Vì CPI dựa trên giờ ước tính hồi cứu, chỉ số này chỉ nên dùng để nhận biết xu hướng.

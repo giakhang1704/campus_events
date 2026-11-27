@@ -1,0 +1,146 @@
+
+\subsection{Identify and quantify meaningful activity-level risks. For important risks, estimate likelihood and impact, identify a risk owner, and specify both risk-reduction and contingency measures.}
+
+Nhóm liên kết các rủi ro R1--R7 ở Mục 1.8.3 với những hoạt động có thể bị ảnh hưởng trong kế hoạch tại Mục 2.7. Ví dụ, lỗi ở luồng đăng ký có thể buộc nhóm sửa và kiểm thử lại A07.1, A07.2 và A08; lỗi cấu hình tại A11 có thể làm chậm nghiệm thu. Với từng tình huống, nhóm ước lượng khả năng xảy ra, số giờ có thể phải làm lại và phân công người theo dõi.
+
+\subsubsection{Phương pháp định lượng}
+
+Với mỗi rủi ro, nhóm ước lượng xác suất xảy ra $p$ và thiệt hại $h$ nếu rủi ro xảy ra. Thiệt hại được tính bằng số giờ cần để sửa lỗi, làm lại hoặc kiểm thử lại, kể cả giờ công của các thành viên bị ảnh hưởng. Mức phơi nhiễm rủi ro (risk exposure, $RE$) được tính như sau:
+\[
+RE_r = p_r \times h_r , \qquad RE_{\Sigma} = \sum_r RE_r .
+\]
+Nhóm phân loại xác suất thành bốn mức: cao ($>50\%$), đáng kể (30--50\%), trung bình (10--29\%) và thấp ($<10\%$). Mỗi rủi ro có một người phụ trách (risk owner). Nhóm ưu tiên lập biện pháp giảm thiểu (risk reduction) và dự phòng (contingency) cho rủi ro có $RE_r \ge 3{,}0$ giờ công hoặc ảnh hưởng đến đường găng; các rủi ro còn lại được theo dõi trong G06.
+
+Do dự án chưa có số liệu lịch sử, $p_r$ và $h_r$ hiện là ước lượng của nhóm dựa trên khối lượng công việc và các giả định ở Mục 2.6. Nhóm sẽ rà soát lại các giá trị này trong G06 khi có thêm thông tin thực tế.
+
+\subsubsection{Activity-level risk register}
+
+{\small
+\begin{longtable}{@{}Y{1.0cm}Y{1.8cm}Y{4.6cm}Y{1.0cm}Y{0.9cm}Y{0.8cm}Y{0.9cm}Y{1.3cm}@{}}
+\caption{Activity-level risk register trước khi có biện pháp ứng phó ($h$ và $RE$ tính bằng giờ công)}\label{tab:p28-register}\\
+\toprule
+\textbf{ID} & \textbf{Hoạt động} & \textbf{Rủi ro} & \textbf{Gốc} & \textbf{$p$} & \textbf{$h$} & \textbf{$RE$} & \textbf{Owner} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{ID} & \textbf{Hoạt động} & \textbf{Rủi ro} & \textbf{Gốc} & \textbf{$p$} & \textbf{$h$} & \textbf{$RE$} & \textbf{Owner} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+AR1 & A07.1, A07.2, A08 &
+Nhiều yêu cầu đăng ký hoặc hủy xảy ra cùng lúc làm vượt sức chứa hoặc chuyển người từ danh sách chờ sai thứ tự; lỗi bị phát hiện muộn ở A08 hoặc A12 nên phải sửa Backend, Frontend và kiểm thử lại. &
+R4, R2 & 40\% & 12 & 4,8 & BE \\
+\addlinespace
+AR2 & A05.1, A06 &
+Phân quyền cho ba vai trò thiếu sót, ca truy cập trái quyền chưa được bao phủ nên việc sửa lan sang nhiều màn hình và API. &
+R5 & 30\% & 8 & 2,4 & BE \\
+\addlinespace
+AR3 & A03, A11, A12.1 &
+Cấu hình PostgreSQL, biến môi trường hoặc triển khai trên Lightsail lỗi khi tích hợp. Vì chỉ chạy lần đầu ở A11, lỗi bị phát hiện sát giai đoạn nghiệm thu và làm trễ đường găng. &
+R6 & 35\% & 10 & 3,5 & BE \\
+\addlinespace
+AR4 & A07.3, A08 &
+Dịch vụ email vượt hạn mức, cấu hình sai hoặc xác thực lỗi làm email xác nhận, thay đổi quan trọng hoặc chuyển từ danh sách chờ không gửi được. &
+R6 & 30\% & 5 & 1,5 & PM \\
+\addlinespace
+AR5 & A09.1, A12.1 &
+Mã QR không sinh hoặc quét ổn định trên thiết bị kiểm thử, buộc phải sửa giao diện quét và xác thực ở Backend. &
+R6 & 30\% & 8 & 2,4 & FE \\
+\addlinespace
+AR6 & A05, A07, A10 &
+Thành viên kiêm nhiệm (PM làm Backend, BA làm giao diện) mất nhiều thời gian hơn dự kiến hoặc phải sửa nhiều sau review do giả định về năng lực ở Mục 2.6.1 chưa chắc đúng. &
+R7, R2 & 40\% & 10 & 4,0 & PM \\
+\addlinespace
+AR7 & A05.2, A07, CP1 &
+Giao diện hoặc quy tắc đăng ký, danh sách chờ chưa khớp kỳ vọng của khách hàng sau buổi demo I1 nên phải làm lại giao diện và luồng. &
+R3 & 40\% & 8 & 3,2 & BA \\
+\addlinespace
+AR8 & A10.1, A12.2 &
+Báo cáo hoặc xuất tệp trên bộ 500 bản ghi không đạt ngưỡng 5 giây và 10 giây của chỉ số M2, phải tối ưu truy vấn muộn. &
+R2 & 25\% & 8 & 2,0 & BE \\
+\addlinespace
+AR9 & Các hoạt động từ T3 đến T5 &
+Thành viên vắng ngoài kế hoạch do lịch học, thi hoặc việc cá nhân trong giai đoạn cao điểm, khiến giờ cam kết thực tế thấp hơn giới hạn $C_{i,w}$ ở Mục 2.10.1. &
+R7 & 35\% & 8 & 2,8 & PM \\
+\addlinespace
+AR10 & G07, A15.2 và các nhánh bị tác động &
+Thay đổi hoặc sự kiện do giảng viên công bố làm tăng khối lượng hoặc đổi yêu cầu, buộc phải phân tích, triển khai thay đổi và cập nhật baseline. &
+R1 & 60\% & 12 & 7,2 & PM \\
+\midrule
+\multicolumn{6}{@{}r}{\textbf{Tổng thiệt hại kỳ vọng}} & \textbf{33,8} & \\
+\end{longtable}
+}
+
+Năm rủi ro có $RE_r \ge 3{,}0$ giờ là AR10 (7,2 giờ), AR1 (4,8 giờ), AR6 (4,0 giờ), AR3 (3,5 giờ) và AR7 (3,2 giờ). AR5 cũng cần được lưu ý vì A09.1 ảnh hưởng đến chuỗi nghiệm thu. Theo lịch hiện tại, AR1 và AR3 có thể tác động đến đường găng và mốc nghiệm thu ngày 28/11. Tổng risk exposure là 33,8 giờ, tương đương khoảng 53\% quỹ dự phòng 63,4 giờ sau khi cộng các hoạt động ứng phó ở Mục 2.9. Đây là ước lượng để xếp thứ tự ưu tiên, không phải dự báo chắc chắn về số giờ phát sinh.
+
+\subsubsection{Biện pháp giảm thiểu và dự phòng}
+
+Biện pháp giảm thiểu là hoạt động nhằm ngăn rủi ro xảy ra hoặc phát hiện sớm hơn; biện pháp dự phòng là hành động thực hiện khi rủi ro đã xảy ra. Điều kiện kích hoạt (trigger) cho biết khi nào PM cần chuyển sang biện pháp dự phòng. Các hoạt động ứng phó mang mã RA được lập kế hoạch và ước lượng ở Mục 2.9.
+
+{\small
+\begin{longtable}{@{}Y{1.0cm}Y{4.1cm}Y{4.2cm}Y{3.1cm}Y{1.3cm}@{}}
+\caption{Biện pháp giảm thiểu và dự phòng cho từng rủi ro}\label{tab:p28-response}\\
+\toprule
+\textbf{ID} & \textbf{Giảm thiểu (risk reduction)} & \textbf{Dự phòng (contingency)} & \textbf{Điều kiện kích hoạt} & \textbf{Owner} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{ID} & \textbf{Giảm thiểu (risk reduction)} & \textbf{Dự phòng (contingency)} & \textbf{Điều kiện kích hoạt} & \textbf{Owner} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+AR1 &
+RA01: xây dựng thử nghiệm kỹ thuật (spike) cho xử lý đồng thời và thứ tự FIFO trước A07.2; dùng ràng buộc duy nhất và giao dịch ở tầng dữ liệu thay vì chỉ kiểm tra ở tầng ứng dụng; test đồng thời nằm trong bộ test I2. &
+Sửa tại A08 theo cơ chế đã thử nghiệm; huy động giờ từ quỹ dự phòng cho BE và QA; không bỏ quy tắc sức chứa hoặc FIFO đã thống nhất. &
+Bất kỳ test đồng thời nào ở A08 cho kết quả vượt sức chứa hoặc sai thứ tự. & BE \\
+\addlinespace
+AR2 &
+Chốt ma trận quyền ở A01 và viết test case truy cập trái quyền ở A02 (đã nằm trong ước lượng); QA thử các ca trái quyền ở A06. &
+Sửa tập trung ở lớp kiểm tra quyền thay vì từng màn hình; kiểm thử lại toàn bộ ca phân quyền. &
+Một ca trái quyền ở A06 truy cập được dữ liệu ngoài vai trò. & BE \\
+\addlinespace
+AR3 &
+RA02: triển khai thử bản chạy đầu tiên lên Lightsail và chạy smoke test ngay sau A05.1 (tuần T2), thay vì chờ A11. &
+Ghi nhận lỗi cấu hình, khắc phục và triển khai lại; nếu môi trường chưa sẵn sàng, tiếp tục kiểm tra trên môi trường cục bộ và thông báo sớm nếu mốc nghiệm thu cần điều chỉnh. &
+Pilot hoặc smoke test ở A11 không chạy được sau hai lần cấu hình lại. & BE \\
+\addlinespace
+AR4 &
+RA03: kiểm tra hạn mức dịch vụ email và thử gửi thật trước A07.3; dùng email mô phỏng (mock) khi kiểm thử lặp. &
+Ghi log lỗi gửi và hiển thị trạng thái; chuyển sang email mô phỏng cho các lần chạy thử, giữ cấu hình thật cho kiểm tra tích hợp ở A08. &
+Hạn mức không đủ cho kịch bản kiểm thử hoặc gửi thử thất bại. & PM \\
+\addlinespace
+AR5 &
+RA04: thử nghiệm sinh và quét QR trên thiết bị kiểm thử trước A09.1. &
+Chuyển sang điểm danh thủ công (A09.2) làm phương án chính cho sự kiện bị ảnh hưởng, đúng với yêu cầu của khách hàng; sửa lỗi QR trong quỹ dự phòng. &
+QR không quét được trong hơn hai trong năm lần thử trên thiết bị kiểm thử. & FE \\
+\addlinespace
+AR6 &
+BE và FE giữ vai trò review phần mã của PM và BA (đã tính trong giờ review); mỗi pull request nhỏ để phát hiện sớm; theo dõi tiến độ hai buổi họp mỗi tuần. &
+BE hoặc FE nhận lại một phần công việc theo phân công mới; điều chỉnh qua quỹ giờ nhàn rỗi của tuần liền sau. &
+Gói công việc của PM hoặc BA vượt ước lượng hơn 30\% hoặc chưa qua review vào cuối tuần. & PM \\
+\addlinespace
+AR7 &
+RA06: làm rõ các điểm còn mở với đại diện khách hàng và ghi vào Client Interaction Log trước demo I1; dùng mockups đã duyệt ở CPD làm chuẩn. &
+Phân tích tác động theo quy trình thay đổi; sửa giao diện trong A08 nếu nhỏ; thay đổi phạm vi trình đại diện khách hàng theo Mục 1.5. &
+Phản hồi tại CP1 yêu cầu đổi luồng hoặc quy tắc đã chốt. & BA \\
+\addlinespace
+AR8 &
+RA05: tạo bộ 500 bản ghi và đo thử thời gian báo cáo và xuất tệp ngay sau A10.1, trước A12.2. &
+Thêm chỉ mục hoặc tối ưu truy vấn; nếu kết quả vẫn vượt ngưỡng, giữ nguyên chỉ số M2 đã thống nhất và báo cáo kết quả đo. &
+Thời gian đo thử vượt 5 giây (báo cáo) hoặc 10 giây (xuất tệp). & BE \\
+\addlinespace
+AR9 &
+Lập kế hoạch theo giờ cam kết $C_{i,w}$ đã trừ lịch học và thi; mỗi gói có người dự phòng được review chéo; tài liệu và mã nguồn chia sẻ chung. &
+Phân bổ lại giờ giữa các thành viên bằng quỹ giờ dự phòng; ưu tiên hoạt động trên đường găng; đưa nhánh không găng sang tuần sau. &
+Thành viên báo không đủ giờ trong tuần hoặc gói công việc trễ hơn hai ngày. & PM \\
+\addlinespace
+AR10 &
+G07 phân tích tác động trước khi nhận thay đổi; giữ nguyên Baseline V1.0 và bảo vệ các luồng cốt lõi; đánh giá phương án thay thế trước khi cam kết. &
+Cập nhật baseline lên V2.0 qua G08 sau khi được người có thẩm quyền duyệt; dùng quỹ giờ dự phòng cho công sức triển khai và điều chỉnh phạm vi. &
+Giảng viên công bố thay đổi hoặc sự kiện. & PM \\
+\end{longtable}
+}
+
+AR2, AR6 và AR9 không phát sinh hoạt động mới: kiểm thử phân quyền, review chéo và phân bổ theo giờ cam kết đã được tính trong kế hoạch. Với AR10, nếu có yêu cầu thay đổi, nhóm sẽ đánh giá tác động trước; phần việc được duyệt sẽ được cập nhật vào Baseline V2.0 và sử dụng quỹ dự phòng khi cần.

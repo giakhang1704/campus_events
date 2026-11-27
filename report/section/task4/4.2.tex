@@ -1,0 +1,72 @@
+\subsection{Task 4.2. So sánh kế hoạch và thực tế}
+\label{sec:t4-compare}
+
+Số liệu thực tế đến 27/11 lấy từ Mục \ref{sec:t3-actual}; phần còn lại đến khi kết thúc lấy theo kế hoạch sau CR-05 (Bảng \ref{tab:t3-cr05-plan}). Giờ công thực tế là ước tính hồi cứu theo phương pháp ở Mục \ref{sec:t3-effort-method}.
+
+\subsubsection{Tổng quan}
+
+\begin{table}[H]
+\centering\small
+\caption{Kế hoạch so với thực tế theo từng khía cạnh}\label{tab:t4-compare}
+\begin{tabularx}{\linewidth}{@{}p{.15\linewidth}p{.21\linewidth}p{.25\linewidth}X@{}}
+\toprule
+\textbf{Khía cạnh} & \textbf{Baseline V1.0} & \textbf{Thực tế / dự báo} & \textbf{Nhận xét}\\\midrule
+Công sức & 331,6 giờ & 306,2 giờ đến 27/11 + 37,0 giờ còn lại = \textbf{343,2 giờ} & +3,5\% so với V1.0, +7,2\% so với V2.0 (320,1 giờ); nằm trong quỹ dự phòng 63,4 giờ.\\
+Thời gian trôi & 26/10--06/12 (41 ngày) & 26/10--29/11 (34 ngày) & Ngắn hơn 7 ngày do CR-05.\\
+Chi phí nhân sự & 25.864.800 VNĐ & 343,2 $\times$ 78.000 = 26.769.600 VNĐ & +3,5\%, theo công sức.\\
+Chi phí hạ tầng & 728.000 VNĐ & 0 VNĐ & Gói miễn phí (CR-04).\\
+Tổng chi phí & 26.592.800 VNĐ & 26.769.600 VNĐ & +0,7\%: phần vượt về nhân sự gần như được bù bởi hạ tầng.\\
+Phạm vi & 24 UC, CSV/Excel & 23 UC triển khai + UC-25; chỉ CSV & 2 UC/tính năng bị loại, 1 hoãn (Bảng \ref{tab:t4-scope}).\\
+Chất lượng & Đạt toàn bộ TC nghiệm thu core & Mọi bộ test tự động đạt; A12 thu gọn; M5 hoãn & Xem Mục \ref{sec:t3-quality}.\\
+Rủi ro & Tổng $RE$ = 33,8 giờ & 4 rủi ro xảy ra (AR3, AR6, AR7, AR10) + 4 rủi ro mới đã xảy ra & Xem Mục \ref{sec:t3-risk}.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsubsection{Các mốc kiểm soát}
+
+\begin{table}[H]
+\centering\small
+\caption{Checkpoint kế hoạch và thực tế}\label{tab:t4-checkpoints}
+\begin{tabularx}{\linewidth}{@{}p{.08\linewidth}p{.13\linewidth}p{.20\linewidth}X@{}}
+\toprule
+\textbf{CP} & \textbf{Kế hoạch} & \textbf{Thực tế} & \textbf{Bằng chứng / ghi chú}\\\midrule
+CP0 & 29/10 & 29/10 & Baseline V1.0 được thông qua (Mục 2.12).\\
+CP1 & 09/11 & 12/11 (+3) & I1 merge vào \texttt{main} (PR \#2); regression 208/209 ngày 07/11.\\
+CP2 & 19/11 & 18/11 ($-$1) & I2 merge (PR \#3); test I2 đạt ngày 12/11.\\
+CP3 & 25/11 & 25/11 (0) & Hệ thống tích hợp và triển khai cloud; kiểm tra 27/11.\\
+CP4 & 30/11 & \TBD{} & Sau A12; thu gọn theo CR-05.\\
+CP5 & 02/12 & \TBD{} & Hồ sơ hoàn thiện cùng báo cáo nộp 29/11.\\
+CP6 & 03/12 & \TBD{} & Demo và viva.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Các checkpoint được đánh giá dựa trên bằng chứng kỹ thuật (merge, kết quả test). Nhóm \textbf{chưa có biên bản họp và chữ ký phê duyệt} của khách hàng cho CP1--CP3; đây là thiếu sót trong quản lý tài liệu, được ghi vào bài học ở Mục \ref{sec:t4-lessons}.
+
+\subsubsection{Phân tích các sai số ước lượng chính}
+
+\begin{enumerate}
+    \item \textbf{Giao diện I1 bị ước lượng thấp (A05.2: 18 $\to$ 31 giờ, +72\%).} Ước lượng bottom-up ở Task 2.6 chỉ tính một lượt xây dựng giao diện. Thực tế nhóm thiết kế lại theo nhận diện HCMUT và chỉnh sửa nhiều vòng. Nguyên nhân gốc: chưa có tiêu chí ``đủ tốt'' cho giao diện trong Product Description.
+    \item \textbf{I2 bị ước lượng cao (A07.1--A07.3: 42 $\to$ 29,5 giờ, $-$30\%).} Ước lượng coi ba hoạt động độc lập, trong khi chúng dùng chung một transaction nên được làm trong một đợt. Kiến trúc phân tầng và bộ test từ I1 cũng được dùng lại.
+    \item \textbf{Môi trường bị ước lượng thấp (A03: 8 $\to$ 10 giờ, trễ 4 ngày).} Không tính thời gian xử lý khác biệt giữa Windows và Docker. Đây là rủi ro AR3 đã dự báo nhưng biện pháp RA chưa đủ sớm.
+    \item \textbf{Bỏ sót công việc tích hợp và vận hành (24 giờ phát sinh).} Baseline không có hoạt động cho tái cấu trúc, rate limit, migration, backup, CI. Đây là các việc cần thiết khi đưa hệ thống lên môi trường thật mà nhóm chưa có kinh nghiệm để dự đoán.
+    \item \textbf{Bù trừ giữa các sai số.} Các sai số cùng chiều và ngược chiều bù nhau, nên tổng công sức chỉ lệch +3,5\%. Độ chính xác ở mức tổng thể không có nghĩa là ước lượng từng hoạt động chính xác.
+\end{enumerate}
+
+\subsubsection{Các quyết định quản lý quan trọng}
+
+\begin{table}[H]
+\centering\small
+\caption{Quyết định quản lý và kết quả}\label{tab:t4-decisions}
+\begin{tabularx}{\linewidth}{@{}p{.10\linewidth}XX@{}}
+\toprule
+\textbf{Ngày} & \textbf{Quyết định} & \textbf{Kết quả}\\\midrule
+03--04/11 & Thu hẹp phạm vi: bỏ UC-24, sức chứa Unlimited, Excel (CR-01..03). & Giảm khối lượng và rủi ro; chưa có phê duyệt của khách hàng.\\
+12/11 & Tái cấu trúc backend trước khi làm I2; gộp A07.1--A07.3. & I2 xong sớm 4--5 ngày; tốn 12 giờ ngoài kế hoạch.\\
+12/11--I3 & Chuyển phần backend của PM (đăng ký/hủy, email, điểm danh thủ công, CSV) sang BE (AR6). & Một đầu mối cho transaction nên I2, I3 xong sớm; khối lượng và hiểu biết backend dồn vào BE.\\
+25/11 & Rà soát toàn hệ thống trước deploy; dùng Vercel/Render/Neon (CR-04). & Deploy đúng hạn, chi phí hạ tầng bằng 0; thêm rủi ro NR1.\\
+CR-05 & Chọn fast-tracking và thu gọn nghiệm thu (PA3). & Giữ toàn bộ chức năng; cắt 11,5 giờ bằng chứng nghiệm thu.\\
+\bottomrule
+\end{tabularx}
+\end{table}

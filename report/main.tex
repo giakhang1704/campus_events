@@ -1,0 +1,628 @@
+\documentclass[a4paper]{article}
+
+\usepackage[utf8]{vntex}
+%\usepackage[english,vietnam]{babel}
+
+\usepackage{mathptmx}[ptm]
+
+
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{float}
+
+
+
+
+\usepackage{
+    a4wide,
+    amssymb,
+    epsfig,
+    latexsym,
+    array,
+    hhline,
+    fancyhdr
+}
+
+% Công thức
+\usepackage{amsmath,amssymb}
+
+% Bảng
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{ragged2e}
+\newcolumntype{Y}[1]{>{\RaggedRight\arraybackslash}p{#1}}
+
+% Hình và vị trí đặt
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{float}
+
+% Biểu đồ
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+% Họa tiết tô nền
+\usetikzlibrary{patterns}
+
+\usepackage[normalem]{ulem}
+\usepackage{pdfpages}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{pdflscape}
+\usepackage{adjustbox}
+\usepackage{ragged2e}
+\usepackage{colortbl}
+\definecolor{headerblue}{RGB}{31,78,121}
+\definecolor{lightgray}{RGB}{242,242,242}
+\usepackage{tikz}
+\usetikzlibrary{positioning,fit,backgrounds,arrows.meta}
+\usetikzlibrary{shapes.geometric}
+\tikzset{
+ flowshaft/.style={draw=black!85,line width=0.8pt,line cap=round,line join=round,preaction={draw=white,line width=2.8pt,-}},
+ flow/.style={flowshaft,-{Stealth[length=2.5mm,width=1.6mm]},shorten <=1pt,shorten >=1pt},
+ deliverable/.style={draw=green!45!black,fill=green!7,line width=0.55pt,rounded corners=1pt,align=center,inner sep=2pt},
+ intermediate/.style={draw=orange!65!black,fill=yellow!13,dashed,line width=0.55pt,rounded corners=1pt,align=center,inner sep=2pt},
+ external/.style={draw=black!55,fill=black!4,dashed,line width=0.55pt,align=center,inner sep=2pt},
+ activity/.style={draw=black!60,fill=black!5,line width=0.55pt,align=center,inner sep=2pt},
+ checkpoint/.style={draw=black!75,fill=white,line width=0.65pt,align=center,inner sep=2pt}
+}
+\usepackage{float}
+
+\usepackage[makeroom]{cancel}
+\usepackage{amsmath}
+\usepackage{indentfirst}
+
+\setlength{\parindent}{0.5cm}
+
+\usepackage{amsthm}
+\usepackage{multicol,longtable,amscd}
+\usepackage{diagbox}
+\usepackage{booktabs}
+\usepackage{alltt}
+
+\usepackage[framemethod=tikz]{mdframed}
+
+\usepackage{caption,subcaption}
+\usepackage{lastpage}
+\usepackage{etoolbox}
+
+\makeatletter
+\patchcmd{\LT@output}{\copy\LT@foot\vss}{\copy\LT@foot\vskip\z@ plus 1fil minus \maxdimen}{}{\PackageError{main}{Unable to patch longtable footer glue}{}}
+\patchcmd{\LT@output}{\copy\LT@foot\vss}{\copy\LT@foot\vskip\z@ plus 1fil minus \maxdimen}{}{\PackageError{main}{Unable to patch longtable footer glue}{}}
+\makeatother
+
+\usepackage[lined,boxed,commentsnumbered]{algorithm2e}
+
+% \usepackage{enumerate}  % xung đột với enumitem (lỗi ở mọi \end{enumerate})
+\usepackage{color}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{rotating}
+\usepackage{graphics}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{tikz}
+
+\usepackage[unicode]{hyperref}
+
+\hypersetup{
+    colorlinks=true,
+    urlcolor=blue,
+    linkcolor=black,
+    citecolor=black
+}
+
+\usetikzlibrary{
+    arrows,
+    backgrounds,
+    calc
+}
+
+\usepackage{listings}
+\usepackage{fancyvrb}
+\usepackage{titlesec}
+
+% =========================
+% ĐỊNH DẠNG TIÊU ĐỀ
+% =========================
+
+\titleformat{\section}
+  {\bfseries\fontsize{12pt}{15pt}\selectfont}
+  {\thesection}{1em}{}
+
+\titleformat{\subsection}
+  {\bfseries\fontsize{12pt}{15pt}\selectfont}
+  {\thesubsection}{1em}{}
+
+\titleformat{\subsubsection}
+  {\bfseries\fontsize{12pt}{15pt}\selectfont}
+  {\thesubsubsection}{1em}{}
+
+\titleformat{\paragraph}[runin]
+  {\normalfont\bfseries\fontsize{12pt}{15pt}\selectfont}
+  {\theparagraph}{1em}{}
+
+
+% =========================
+% THEOREM
+% =========================
+
+\newtheorem{theorem}{{\bf Định lý}}
+\newtheorem{property}{{\bf Tính chất}}
+\newtheorem{proposition}{{\bf Mệnh đề}}
+\newtheorem{corollary}[proposition]{{\bf Hệ quả}}
+\newtheorem{lemma}[proposition]{{\bf Bổ đề}}
+
+\theoremstyle{definition}
+\newtheorem{exer}{Bài toán}
+
+
+% =========================
+% PAGE LAYOUT
+% =========================
+
+\def\thesislayout{
+    \geometry{
+        a4paper,
+        total={160mm,240mm},
+        left=30mm,
+        top=30mm,
+    }
+}
+
+\def\thesisheadlayout{
+    \geometry{
+        a4paper,
+        total={160mm,240mm},
+        left=30mm,
+        top=10mm,
+    }
+}
+
+\thesislayout
+
+
+% =========================
+% LISTING
+% =========================
+
+\lstset{
+    language=R,
+    basicstyle=\footnotesize\sffamily,
+    commentstyle=\ttfamily\color{black},
+    numbers=left,
+    numberstyle=\ttfamily\color{black}\footnotesize,
+    stepnumber=1,
+    numbersep=5pt,
+    backgroundcolor=\color{white},
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    frame=single,
+    tabsize=2,
+    captionpos=b,
+    breaklines=true,
+    breakatwhitespace=false,
+    title=\lstname,
+    escapeinside={},
+    keywordstyle={},
+    morekeywords={}
+}
+
+
+% =========================
+% HEADER & FOOTER
+% =========================
+
+\setlength{\headheight}{40pt}
+
+\pagestyle{fancy}
+
+% Xóa header/footer mặc định
+\fancyhead{}
+\fancyfoot{}
+
+% ----- HEADER LEFT -----
+\fancyhead[L]{
+{\fontsize{9pt}{11pt}\selectfont
+\begin{tabular}{rl}
+
+    \begin{picture}(25,15)(0,0)
+        \put(0,-8){
+            \includegraphics[
+                width=10mm,
+                height=10mm
+            ]{Images/hcmut.png}
+        }
+    \end{picture}
+
+    &
+
+    \begin{tabular}{l}
+        \textbf{Trường Đại Học Bách Khoa - Đại học Quốc gia TP.HCM}\\
+        \textbf{Khoa Khoa Học \& Kỹ Thuật Máy Tính}
+    \end{tabular}
+
+\end{tabular}
+}
+}
+
+% Không sử dụng header bên phải
+\fancyhead[R]{}
+
+
+% ----- FOOTER LEFT -----
+\fancyfoot[L]{
+    \fontsize{9pt}{11pt}\selectfont
+    Báo cáo Quản lý Dự án Phần mềm (CO3011) - HK261 2026 - 2027
+}
+
+
+% ----- LANDSCAPE HEADER -----
+% Header rieng cho cac trang ngang: dat noi dung trong luong trang de chu
+% van nam ngang khi PDF duoc xoay hien thi.
+\newcommand{\landscapeheader}{%
+    \thispagestyle{empty}%
+    \noindent
+    \begin{minipage}[c]{0.62\linewidth}
+        \begin{tabular}{@{}c@{\hspace{2mm}}l@{}}
+            \includegraphics[height=9mm]{Images/hcmut.png} &
+            \begin{tabular}{@{}l@{}}
+                {\fontsize{9pt}{11pt}\selectfont\textbf{Trường Đại Học Bách Khoa - Đại học Quốc gia TP.HCM}}\\
+                {\fontsize{9pt}{11pt}\selectfont\textbf{Khoa Khoa Học \& Kỹ Thuật Máy Tính}}
+            \end{tabular}
+        \end{tabular}
+    \end{minipage}%
+    \hfill
+    \begin{minipage}[c]{0.36\linewidth}
+        \raggedleft\fontsize{9pt}{11pt}\selectfont
+        Báo cáo Quản lý Dự án Phần mềm (CO3011) - HK261 2026--2027\\
+        Trang {\thepage}/\pageref{LastPage}
+    \end{minipage}\par
+    \vspace{1mm}\hrule\vspace{3mm}%
+}
+
+% ----- FOOTER RIGHT -----
+\fancyfoot[R]{
+    \fontsize{9pt}{11pt}\selectfont
+    Trang {\thepage}/\pageref{LastPage}
+}
+
+
+% Đường kẻ header/footer
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\footrulewidth}{0.3pt}
+
+
+% =========================
+% SECTION LEVEL 4
+% =========================
+
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{3}
+
+\makeatletter
+
+\newcounter{subsubsubsection}[subsubsection]
+
+\renewcommand\thesubsubsubsection{
+    \thesubsubsection.\@alph\c@subsubsubsection
+}
+
+\newcommand\subsubsubsection{
+    \@startsection{subsubsubsection}{4}{\z@}%
+    {-3.25ex\@plus -1ex \@minus -.2ex}%
+    {1.5ex\@plus .2ex}%
+    {\normalfont\bfseries\fontsize{12pt}{15pt}\selectfont}
+}
+
+\newcommand*\l@subsubsubsection{
+    \@dottedtocline{3}{10.0em}{4.1em}
+}
+
+\newcommand*{\subsubsubsectionmark}[1]{}
+
+\makeatother
+
+% Tiêu đề phụ in đậm, không đánh số
+\newcommand{\tasksubheading}[1]{%
+    \par\addvspace{1.5ex}%
+    \noindent{\bfseries\fontsize{12pt}{15pt}\selectfont #1\par}%
+    \nobreak\vspace{0.8ex}%
+}
+
+
+% =========================
+% OTHER SETTINGS
+% =========================
+
+\everymath{\color{black}}
+
+\sloppy
+\hbadness=10000
+
+\DeclareCaptionFont{contentfont}{\fontsize{12pt}{15pt}\selectfont}
+
+\captionsetup[figure]{
+    labelfont={contentfont,bf},
+    textfont={contentfont,it},
+    belowskip=-1pt,
+    aboveskip=-9pt
+}
+
+\captionsetup[table]{
+    labelfont={contentfont,bf},
+    textfont={contentfont,it},
+    belowskip=-1pt,
+    aboveskip=7pt
+}
+
+\setlength{\floatsep}{5pt plus 2pt minus 2pt}
+\setlength{\textfloatsep}{5pt plus 2pt minus 2pt}
+\setlength{\intextsep}{10pt plus 2pt minus 2pt}
+
+\thesislayout
+
+% Đánh dấu số liệu thực tế nhóm phải tự điền (hiện màu đỏ).
+% Trước khi nộp: tìm "\TBD{" và thay bằng dữ liệu thật; không để sót.
+\newcommand{\TBD}[1]{\textcolor{red}{\textbf{[CẦN ĐIỀN: #1]}}}
+
+% ==========================================================
+% DOCUMENT
+% ==========================================================
+
+\begin{document}
+
+
+% ==========================================================
+% TITLE PAGE
+% ==========================================================
+
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+
+\begin{tikzpicture}[remember picture, overlay]
+
+    \draw[line width = 4pt]
+        ($(current page.north west) + (0.4in,-0.5in)$)
+        rectangle
+        ($(current page.south east) + (-0.4in,0.5in)$);
+
+    \draw[line width=1.5pt]
+        ($(current page.north west) + (0.45in,-0.55in)$)
+        rectangle
+        ($(current page.south east) + (-0.45in,0.55in)$);
+
+\end{tikzpicture}
+
+
+% =========================
+% UNIVERSITY
+% =========================
+
+\begin{center}
+
+\Large
+\textbf{ĐẠI HỌC QUỐC GIA THÀNH PHỐ HỒ CHÍ MINH}
+
+\vspace{0.2cm}
+
+\Large
+\textbf{TRƯỜNG ĐẠI HỌC BÁCH KHOA}
+
+\vspace{0.2cm}
+
+\Large
+\textbf{KHOA KHOA HỌC VÀ KỸ THUẬT MÁY TÍNH}
+
+\end{center}
+
+
+\vspace{0.3cm}
+
+
+% =========================
+% LOGO
+% =========================
+
+\begin{figure}[h!]
+
+\begin{center}
+
+\includegraphics[
+    width=4cm
+]{Images/hcmut.png}
+
+\end{center}
+
+\end{figure}
+
+
+% =========================
+% REPORT TITLE
+% =========================
+
+\begin{center}
+
+\begin{tabular}{c}
+
+\multicolumn{1}{c}{
+    \textbf{{\LARGE BÁO CÁO BÀI TẬP LỚN}}
+}
+\\
+\\
+{\textbf{
+    {\LARGE QUẢN LÝ DỰ ÁN PHẦN MỀM (CO3011)}
+}}
+\\
+\\
+\textbf{\LARGE ĐỀ TÀI: HỆ THỐNG ĐĂNG KÝ VÀ QUẢN LÝ SỰ KIỆN}
+\\
+\\
+\textbf{\Large (University Event Registration System)}
+\\
+
+\\
+
+\end{tabular}
+
+\end{center}
+
+
+% =========================
+% PROJECT INFORMATION
+% =========================
+
+\begin{itemize}
+
+\renewcommand\labelitemi{--}
+
+    \item
+    \Large
+    \textbf{HỌC KỲ:} 261 \textbf{-- LỚP:} L01 \textbf{-- NHÓM:} 10
+
+    \item
+    \Large
+    \textbf{GIẢNG VIÊN HƯỚNG DẪN:} Nguyễn Minh Tâm
+
+    \item
+    \Large
+    \textbf{SINH VIÊN THỰC HIỆN:}
+
+\end{itemize}
+
+\vspace{0.2cm}
+
+\begin{center}
+    \Large
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabularx}{0.6\textwidth}{|>{\centering\arraybackslash}X|c|}
+        \hline
+        \textbf{Họ và Tên} & \textbf{MSSV} \\
+        \hline
+        Hồ Minh Nhiên & 2312517 \\
+        \hline
+        Nguyễn Đăng Khoa & 2311614 \\
+        \hline
+        Vũ Huy Gia Khang & 2311486 \\
+        \hline
+        Hoàng Thị Tuyết Trinh & 2313574 \\
+        \hline
+        Lê Ngọc Tâm & 2213018 \\
+        \hline
+    \end{tabularx}
+\end{center}
+
+\vspace{0.6cm}
+
+
+% =========================
+% LOCATION / DATE
+% =========================
+
+\begin{center}
+
+{\Large \textbf{
+Thành phố Hồ Chí Minh, Tháng 10/2026
+}}
+
+\end{center}
+
+
+\end{titlepage}
+\hypersetup{pageanchor=true}
+
+
+
+% ==========================================================
+% MAIN CONTENT
+% ==========================================================
+
+% Nội dung chính: 12pt
+% Khoảng cách dòng: 15pt
+\fontsize{12pt}{15pt}\selectfont
+
+
+\newpage
+
+
+
+
+\newpage
+
+\tableofcontents
+
+
+\newpage
+
+\input{section/description}
+
+
+\section{Task 1: Project Initiation, Evaluation \& Definition}
+
+\input{section/task1/1.1}
+\input{section/task1/1.2}
+\input{section/task1/1.3}
+\input{section/task1/1.4}
+\input{section/task1/1.5}
+\input{section/task1/1.6}
+\input{section/task1/1.7}
+\input{section/task1/1.8}
+
+\section{Task 2: Product-Based Planning}
+
+\input{section/task2/2.1}
+\input{section/task2/2.2}
+\input{section/task2/2.3}
+\input{section/task2/2.4}
+\input{section/task2/2.5}
+\input{section/task2/2.6}
+\input{section/task2/2.7.tex}
+\input{section/task2/2.8.tex}
+\input{section/task2/2.9.tex}
+\input{section/task2/2.10.tex}
+\input{section/task2/2.11.tex}
+\input{section/task2/2.12.tex}
+
+
+
+\section{Task 3: Software Development, Monitoring \& Control}
+\label{sec:execution-i1}
+
+\input{section/task3/3.0-requirements.tex}
+\input{section/task3/3.0-usecases.tex}
+\input{section/task3/3.tex}
+\input{section/task3/3.1.tex}
+\input{section/task3/3.2.tex}
+\input{section/task3/3.3.tex}
+\input{section/task3/3.4.tex}
+\input{section/task3/3.5.tex}
+\input{section/task3/3.6.tex}
+\input{section/task3/3.7.tex}
+\input{section/task3/3.8.tex}
+
+\section{Task 4: Final Delivery, Review \& Closure}
+
+\input{section/task4/4.1.tex}
+\input{section/task4/4.2.tex}
+\input{section/task4/4.3.tex}
+\input{section/task4/4.4.tex}
+\input{section/task4/4.5.tex}
+\input{section/task4/4.6.tex}
+
+\input{section/traceability.tex}
+\input{section/ai-declaration.tex}
+
+\end{document}

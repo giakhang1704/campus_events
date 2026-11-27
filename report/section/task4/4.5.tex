@@ -1,0 +1,31 @@
+\subsection{Task 4.5. Bài học kinh nghiệm}
+\label{sec:t4-lessons}
+
+\subsubsection{Những điều sẽ lặp lại}
+
+\begin{itemize}
+    \item \textbf{Phát triển theo increment có checkpoint.} Mỗi increment kết thúc bằng một bộ test chạy lại được, nên I2, I3 không làm hỏng I1. Lỗi phát hiện ở increment nào được sửa ngay trong increment đó.
+    \item \textbf{Đầu tư sớm vào kiểm thử tranh chấp và transaction.} Rủi ro lớn nhất về dữ liệu (AR1) không xảy ra vì nhóm viết test đồng thời ngay khi làm I2, không đợi đến A12.
+    \item \textbf{Ghi lại quyết định phạm vi bằng văn bản.} File \texttt{SCOPE.md} giúp truy lại lý do của từng thay đổi khi viết báo cáo.
+    \item \textbf{Bảo toàn baseline.} Baseline V1.0 được giữ nguyên, thay đổi đi qua change log, nên có thể so sánh kế hoạch và thực tế một cách trung thực.
+\end{itemize}
+
+\subsubsection{Những điều sẽ thay đổi}
+
+\begin{itemize}
+    \item \textbf{Ghi timesheet từ tuần đầu.} Giờ công thực tế phải ước tính hồi cứu từ git, nên chỉ số CPI kém tin cậy. Lần sau: mỗi người ghi giờ theo mã hoạt động hằng ngày, PM tổng hợp mỗi tuần.
+    \item \textbf{Đưa mọi quyết định nghiệp vụ qua khách hàng.} Các quyết định 12/11, 18/11 và CR-01..04 chỉ được nhóm thống nhất. Khi bị rút ngắn thời hạn, nhóm không còn thời gian xin phê duyệt. Lần sau: gửi khách hàng ngay khi chốt, ghi vào Client Interaction Log.
+    \item \textbf{Merge vào nhánh chính sau mỗi increment.} I2, I3 nằm trên nhánh tính năng đến 25/11, khiến tích hợp dồn về cuối (NR5).
+    \item \textbf{Lập biên bản checkpoint.} CP1--CP3 chỉ có bằng chứng kỹ thuật, thiếu biên bản phê duyệt.
+    \item \textbf{Tránh dồn việc vào một người.} Sau khi chuyển phần backend của PM sang BE (AR6), gần như toàn bộ backend I2--I3 nằm ở BE. Nếu BE vắng, dự án bị chặn; quy tắc ``BE review backend của PM cũng không còn đối tượng. Lần sau: khi PM kiêm lập trình bị chậm, chia nhỏ phần việc và giữ review chéo thay vì chuyển hẳn cho một người.
+\end{itemize}
+
+\subsubsection{Cải tiến cách lập kế hoạch}
+
+\begin{itemize}
+    \item \textbf{Ước lượng theo nhóm hoạt động dùng chung transaction}, không tách thành các hoạt động độc lập (sai số I2 $-$30\%).
+    \item \textbf{Thêm hoạt động ``sẵn sàng vận hành''} (migration, backup, giới hạn tần suất, CI) vào WBS; dự án này phát sinh 24 giờ cho các việc đó.
+    \item \textbf{Đặt tiêu chí hoàn thành cho giao diện} trong Product Description để tránh làm lại không giới hạn (A05.2 +72\%).
+    \item \textbf{Giữ buffer lịch ở giữa dự án, không chỉ ở cuối.} Toàn bộ buffer đặt ở 04--06/12 nên mất hết khi bị rút ngắn 1 tuần (CR-05).
+    \item \textbf{Chọn nền tảng triển khai sớm bằng thử nghiệm thực} (RA02 lẽ ra phải làm ngày 05/11), thay vì chọn theo giả định.
+\end{itemize}

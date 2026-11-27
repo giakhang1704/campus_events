@@ -1,0 +1,91 @@
+\subsection{Task 1.4. Define the project scope, exclusions, major project objectives, expected outcomes, and measurable measures of effectiveness. Objectives should express intended project/organizational outcomes rather than merely restating deliverables.}
+
+\subsubsection{Project Scope}
+
+Scope của dự án tập trung vào việc xây dựng MVP của Hệ thống đăng ký và quản lý sự kiện trong nhà trường. Hệ thống quản lý tập trung thông tin sự kiện, đăng ký, waitlist, attendance và báo cáo cơ bản, nhằm giảm thao tác đối soát thủ công giữa nhiều công cụ riêng lẻ. Các chức năng thuộc scope MVP gồm:
+
+\begin{itemize}
+\item \textbf{Quản lý thông tin sự kiện:} Người tổ chức có thể tạo, cập nhật và công bố sự kiện. Thông tin tối thiểu gồm tên, mô tả, thời gian, địa điểm, đơn vị/người tổ chức, thời gian đăng ký và sức chứa nếu có giới hạn. Sinh viên có thể tìm kiếm và xem chi tiết sự kiện. Người tổ chức được chỉnh sửa thông tin sau khi công bố; khi thay đổi quan trọng như thời gian hoặc địa điểm, hệ thống gửi thông báo cho sinh viên đã đăng ký.
+
+\item \textbf{Quản lý đăng ký và waitlist:} Sinh viên có thể đăng ký, hủy đăng ký trước khi sự kiện bắt đầu và theo dõi trạng thái tham gia của mình. Hệ thống ngăn đăng ký trùng và kiểm soát số người đăng ký chính thức theo sức chứa. Khi sự kiện đã đủ chỗ, sinh viên đăng ký tiếp theo được đưa vào waitlist. Khi có người hủy và waitlist còn người, hệ thống tự động chuyển sinh viên đầu danh sách sang trạng thái đăng ký chính thức và gửi email thông báo. Người tổ chức có thể giới hạn đối tượng tham gia theo các tiêu chí cơ bản như khoa hoặc năm học.
+
+\item \textbf{Gửi thông báo qua email:} Hệ thống gửi email xác nhận đăng ký, thông báo thay đổi quan trọng của sự kiện và thông báo khi sinh viên được chuyển từ waitlist sang danh sách đăng ký chính thức.
+
+\item \textbf{Ghi nhận attendance:} Hệ thống sử dụng QR Code làm phương thức điểm danh chính. Người tổ chức có thể ghi nhận hoặc chỉnh sửa attendance thủ công khi cần, chẳng hạn khi QR gặp lỗi. Khi mất kết nối mạng, người tổ chức ghi nhận tạm bằng phương thức thủ công và cập nhật vào hệ thống sau khi kết nối được khôi phục. Kết quả attendance gắn với sinh viên và sự kiện tương ứng. Hệ thống phân biệt trạng thái đăng ký với trạng thái tham dự, vì đăng ký thành công không đồng nghĩa với đã có mặt.
+
+\item \textbf{Tổng hợp báo cáo cơ bản và xuất dữ liệu:} Người tổ chức có thể xem số người đăng ký, số người tham dự, số người vắng mặt, danh sách người tham gia và tỷ lệ attendance theo từng sự kiện. Báo cáo được tổng hợp từ dữ liệu trong hệ thống và có thể xuất sang Excel/CSV. Người sử dụng thực hiện các thao tác chọn sự kiện, xem báo cáo hoặc tải file, nhưng không cần tự sao chép, ghép nối và tính toán dữ liệu từ nhiều nguồn.
+
+\item \textbf{Quản lý tài khoản và phân quyền:} Hệ thống hỗ trợ ba vai trò: sinh viên, người tổ chức sự kiện và quản trị viên. Sinh viên xem sự kiện và quản lý đăng ký của mình; người tổ chức quản lý sự kiện, danh sách đăng ký, attendance và báo cáo; quản trị viên quản lý tài khoản, quyền truy cập và hỗ trợ vận hành. Hệ thống kiểm soát truy cập theo vai trò để bảo vệ thông tin cá nhân.
+
+\item \textbf{Lưu trữ dữ liệu tập trung:} Thông tin sự kiện, đăng ký và attendance được lưu trữ tập trung để phục vụ theo dõi, tra cứu và báo cáo. Trong phạm vi BTL, nhóm sử dụng dữ liệu sinh viên giả lập.
+\end{itemize}
+
+\subsubsection{Exclusions}
+
+Dựa trên Client Interaction Log và mức độ ưu tiên của các yêu cầu, nhóm không đưa các nội dung sau vào scope MVP hiện tại:
+
+\begin{itemize}
+\item \textbf{Tích hợp trực tiếp với MyBK hoặc cơ sở dữ liệu thật của trường:} MVP sử dụng dữ liệu sinh viên giả lập, không triển khai kết nối hoặc đồng bộ trực tiếp với các hệ thống này.
+
+\item \textbf{Tích hợp công nhận hoạt động ngoại khóa hoặc tính điểm rèn luyện:} Hệ thống lưu dữ liệu đăng ký và attendance nhưng không tự động quy đổi thành điểm rèn luyện, chứng nhận hoặc quyết định công nhận hoạt động. Các tích hợp này được xem xét trong giai đoạn phát triển sau.
+
+\item \textbf{Recommendation và phân tích nâng cao:} MVP không triển khai đề xuất sự kiện theo sở thích hoặc các chức năng phân tích nâng cao. Báo cáo được giới hạn ở số liệu cơ bản phục vụ quản lý từng sự kiện.
+
+\item \textbf{Thống kê tổng hợp theo học kỳ:} Client xác định chức năng này có ưu tiên thấp hơn các chức năng vận hành một sự kiện. Nhóm không đưa vào scope MVP hiện tại và chỉ xem xét bổ sung khi có đủ nguồn lực và được đại diện client xác nhận.
+
+\item \textbf{SMS và xuất báo cáo PDF:} MVP sử dụng email để gửi thông báo và Excel/CSV để xuất dữ liệu. Nhóm không triển khai gửi SMS hoặc xuất báo cáo PDF trong phiên bản hiện tại.
+
+\item \textbf{Email nhắc trước sự kiện:} Đây là chức năng client mong muốn nhưng không bắt buộc. Nhóm không đưa vào scope MVP hiện tại; chỉ xem xét bổ sung khi có đủ thời gian, nguồn lực và được đại diện client xác nhận.
+
+\item \textbf{Cơ chế ưu tiên đăng ký phức tạp:} MVP hỗ trợ giới hạn đối tượng theo khoa hoặc năm học nhưng không triển khai cơ chế cho một nhóm đăng ký sớm hơn hoặc các quy tắc ưu tiên phức tạp khác.
+
+\item \textbf{Đồng bộ offline đầy đủ:} MVP không triển khai cơ chế vận hành offline và tự động đồng bộ dữ liệu khi có mạng trở lại. Phương án dự phòng là người tổ chức ghi nhận thủ công và cập nhật dữ liệu sau.
+
+\item \textbf{Chống điểm danh hộ tuyệt đối:} MVP không triển khai các biện pháp bảo đảm ngăn chặn mọi trường hợp điểm danh hộ. Hệ thống hỗ trợ ghi nhận attendance bằng QR và xử lý thủ công bởi người tổ chức khi cần.
+\end{itemize}
+
+Ngoài các exclusions về chức năng trên, tăng tỷ lệ tham gia sự kiện thực tế không phải KPI bắt buộc của MVP. Hệ thống hỗ trợ tiếp cận thông tin và đăng ký thuận tiện, nhưng việc tham dự còn phụ thuộc vào nội dung sự kiện, lịch học và nhu cầu cá nhân.
+
+\subsubsection{Major Project Objectives}
+
+Các objectives của dự án tập trung vào việc cải thiện quy trình quản lý sự kiện và trải nghiệm của người sử dụng. Chúng thể hiện kết quả nghiệp vụ cần đạt, thay vì chỉ liệt kê các chức năng phần mềm phải bàn giao.
+
+\begin{itemize}
+\item \textbf{Giảm thao tác thủ công trong quản lý đăng ký và attendance:} Dự án hướng đến giảm các công việc lặp lại của người tổ chức, đặc biệt là đối soát danh sách giữa nhiều công cụ, lựa chọn người từ waitlist khi có chỗ trống và gửi thông báo chuyển trạng thái. Việc quản lý dữ liệu tập trung và tự động hóa các bước đã thống nhất giúp giảm nhu cầu xử lý thủ công, đồng thời hỗ trợ người tổ chức theo dõi thông tin thuận tiện hơn.
+
+\item \textbf{Rút ngắn thời gian tổng hợp danh sách và báo cáo:} Dự án hướng đến việc cung cấp báo cáo từ dữ liệu có sẵn trong hệ thống, giúp người tổ chức giảm thời gian thu thập, ghép nối và tính toán thông tin sau sự kiện. Người sử dụng có thể xem báo cáo và xuất Excel/CSV mà không phải tổng hợp lại dữ liệu từ các nguồn riêng lẻ. Mức cải thiện được đánh giá bằng thời gian xử lý và số thao tác tổng hợp thủ công theo các measures of effectiveness ở mục 1.4.5.
+
+\item \textbf{Hạn chế sai lệch và nâng cao tính nhất quán của dữ liệu:} Dự án hướng đến duy trì thông tin sự kiện, đăng ký, waitlist và attendance trên một nguồn dữ liệu chung. Các trạng thái và số liệu cần phản ánh đúng quy tắc nghiệp vụ, hạn chế bản ghi trùng, chuyển waitlist sai hoặc báo cáo không khớp dữ liệu. Nhóm phân biệt rõ lỗi dữ liệu với trường hợp sinh viên đã đăng ký nhưng không tham dự; trường hợp này được ghi nhận là vắng mặt hợp lệ.
+
+\item \textbf{Cải thiện trải nghiệm sử dụng của sinh viên:} Dự án giúp sinh viên dễ tìm thông tin sự kiện, thực hiện đăng ký/hủy đăng ký và theo dõi trạng thái tham gia. Thông tin rõ ràng cùng các email xác nhận, thông báo thay đổi quan trọng và chuyển waitlist giúp sinh viên chủ động theo dõi việc đăng ký. Objective này được đánh giá thông qua khả năng hoàn thành các tác vụ chính, không đặt việc tăng tỷ lệ tham gia thực tế thành KPI bắt buộc của MVP.
+\end{itemize}
+
+\subsubsection{Expected Outcomes}
+
+\begin{itemize}
+\item \textbf{Đối với người tổ chức sự kiện:} Kết quả mong đợi là có một quy trình quản lý tập trung từ tạo và công bố sự kiện đến quản lý đăng ký, attendance và báo cáo. Người tổ chức có thể theo dõi danh sách đăng ký và waitlist mà không phải đối soát thường xuyên giữa form, Excel và email. Khi có chỗ trống, người đầu waitlist được chuyển tự động sang danh sách đăng ký chính thức và nhận thông báo. Báo cáo cơ bản được tổng hợp trực tiếp từ dữ liệu trong hệ thống, hỗ trợ xem và xuất Excel/CSV, qua đó giảm công việc tổng hợp thủ công. Khi QR hoặc kết nối mạng gặp sự cố, người tổ chức có thể ghi nhận attendance thủ công; dữ liệu ghi nhận tạm được cập nhật vào hệ thống khi kết nối được khôi phục.
+
+\item \textbf{Đối với sinh viên:} Kết quả mong đợi là sinh viên có một nơi tập trung để tìm thông tin sự kiện, đăng ký, hủy đăng ký trước khi sự kiện bắt đầu và theo dõi trạng thái registered/waitlisted. Sinh viên nhận email xác nhận đăng ký, thông báo thay đổi quan trọng và thông báo khi được chuyển từ waitlist. Quy tắc sức chứa, điều kiện tham gia và trạng thái đăng ký rõ ràng giúp sinh viên biết tình trạng của mình. Kết quả này hỗ trợ trải nghiệm sử dụng, không đồng nghĩa với việc mọi sinh viên đã đăng ký đều tham dự.
+
+\item \textbf{Đối với quản trị viên hệ thống:} Kết quả mong đợi là có các chức năng quản lý tài khoản và quyền truy cập cho ba vai trò: sinh viên, người tổ chức và quản trị viên. Việc phân quyền giúp mỗi người thực hiện các thao tác phù hợp với trách nhiệm, đồng thời hỗ trợ quản trị viên xử lý những vấn đề truy cập và vận hành cơ bản.
+
+\item \textbf{Đối với nhà trường:} Kết quả mong đợi là dữ liệu sự kiện, đăng ký và attendance được lưu trữ tập trung, có thể tra cứu và sử dụng để lập báo cáo cơ bản theo từng sự kiện. Các số liệu về đăng ký, tham dự, vắng mặt và tỷ lệ attendance được tổng hợp nhất quán từ cùng nguồn dữ liệu. Lịch sử tham gia có thể hỗ trợ việc xem xét các nghiệp vụ tương lai, nhưng MVP chưa tích hợp tính điểm rèn luyện, công nhận hoạt động ngoại khóa hoặc cung cấp báo cáo học kỳ.
+
+\item \textbf{Đối với việc bàn giao dự án:} Nhóm dự kiến bàn giao một MVP chạy được, thể hiện các luồng nghiệp vụ cốt lõi trong scope đã thống nhất và có bằng chứng kiểm thử. Trong phạm vi BTL, hệ thống sử dụng dữ liệu sinh viên giả lập và không kết nối trực tiếp với MyBK hoặc cơ sở dữ liệu thật của trường. Việc hoàn thành sản phẩm và việc đạt các objectives nghiệp vụ được đánh giá riêng; kết quả kiểm thử chưa đủ để khẳng định lợi ích khi triển khai trên toàn trường.
+\end{itemize}
+
+\subsubsection{Measurable Measures of Effectiveness}
+
+Nhóm xây dựng các measures of effectiveness để đánh giá mức độ đạt các objectives: giảm thao tác thủ công, rút ngắn thời gian tổng hợp báo cáo, hạn chế sai lệch dữ liệu và cải thiện trải nghiệm sinh viên. Do client chưa cung cấp baseline và target định lượng, các ngưỡng dưới đây là proposed targets của nhóm:
+
+\begin{itemize}
+\item \textbf{M1. Số thao tác tổng hợp dữ liệu thủ công:} Chỉ số này đo số thao tác sao chép, ghép dữ liệu hoặc tính toán ngoài hệ thống để hoàn thành một báo cáo sự kiện và xuất Excel/CSV. Các thao tác chọn sự kiện, xem báo cáo và tải file không được tính là thao tác tổng hợp dữ liệu. Proposed target là \textbf{0 thao tác tổng hợp thủ công}, vì báo cáo phải được tạo trực tiếp từ dữ liệu đăng ký và attendance trong hệ thống.
+
+\item \textbf{M2. Thời gian tạo báo cáo và xuất dữ liệu:} Thời gian tạo báo cáo được đo từ lúc người dùng yêu cầu đến khi báo cáo hiển thị đầy đủ. Thời gian xuất dữ liệu được đo riêng, từ lúc yêu cầu xuất đến khi file sẵn sàng tải. Nhóm đề xuất sử dụng bộ dữ liệu gồm \textbf{500 bản ghi đăng ký}, có trường hợp tham dự và vắng mặt; thực hiện mỗi thao tác \textbf{5 lần} trong cùng môi trường và lấy thời gian trung bình. Proposed targets là \textbf{không quá 5 giây} để hiển thị báo cáo và \textbf{không quá 10 giây} để tạo file Excel/CSV. Cấu hình môi trường kiểm thử được ghi lại cùng kết quả đo.
+
+\item \textbf{M3. Mức độ tự động hóa waitlist:} Chỉ số được tính bằng số trường hợp hợp lệ được tự động chuyển đúng sinh viên đầu waitlist sang trạng thái registered và kích hoạt gửi email thành công, chia cho tổng số trường hợp hợp lệ được kiểm thử, nhân 100\%. Nhóm đề xuất kiểm thử tối thiểu \textbf{10 trường hợp} có người hủy đăng ký, còn sinh viên đủ điều kiện trong waitlist và dịch vụ email hoạt động bình thường. Proposed target là \textbf{100\% trường hợp hợp lệ được xử lý tự động}, không cần người tổ chức lựa chọn hoặc phê duyệt thủ công người được chuyển.
+
+\item \textbf{M4. Data Discrepancy Rate:} Chỉ số này đo tỷ lệ bản ghi có lỗi về trạng thái đăng ký, thứ tự waitlist hoặc attendance khi đối chiếu với kết quả mong đợi. Công thức là số bản ghi có ít nhất một lỗi chia cho tổng số bản ghi được đối chiếu, nhân 100\%; mỗi bản ghi lỗi chỉ được tính một lần. Nhóm sử dụng bộ dữ liệu đã xác định trước kết quả, bao gồm đăng ký, hủy, chuyển waitlist, điểm danh và chỉnh sửa attendance. Proposed target là \textbf{0\% bản ghi sai lệch trong bộ kiểm thử}, đồng thời các số liệu báo cáo phải khớp kết quả mong đợi. Sinh viên đã đăng ký nhưng không tham dự được ghi nhận là vắng mặt hợp lệ, không tính là lỗi dữ liệu.
+
+\item \textbf{M5. Task Completion Rate của sinh viên:} Chỉ số này đánh giá khả năng sử dụng hệ thống thông qua tỷ lệ hoàn thành tác vụ đúng mà không cần người hướng dẫn hỗ trợ. Nhóm đề xuất tối thiểu 5 người dùng đại diện, mỗi người thực hiện bốn tác vụ: tìm và xem sự kiện, đăng ký, hủy đăng ký và xem trạng thái registered/waitlisted. Tỷ lệ được tính bằng số lượt hoàn thành đúng chia cho tổng số lượt thực hiện, nhân 100\%. Proposed target là \textbf{từ 90\% trở lên} trên ít nhất 20 lượt thực hiện.
+\end{itemize}

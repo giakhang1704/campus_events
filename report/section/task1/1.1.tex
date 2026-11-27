@@ -1,0 +1,166 @@
+\subsection{Analyze the initial project brief. Conduct client consultations and maintain the Client Interaction Log.}
+
+\subsubsection{Phân tích brief ban đầu}
+
+Brief cho biết mục tiêu chung của dự án là xây dựng một hệ thống hỗ trợ nhà trường tổ chức sự kiện, tiếp nhận đăng ký, quản lý người tham gia và theo dõi việc tham dự. Vấn đề chính của quy trình hiện tại là dữ liệu sự kiện, đăng ký và điểm danh đang được quản lý bằng nhiều công cụ khác nhau. Điều này gây khó khăn khi kiểm soát danh sách người tham gia và tổng hợp thông tin sau sự kiện.
+
+Tuy nhiên, brief mới chỉ mô tả nhu cầu ở mức tổng quát. Nhóm chưa biết chính xác quy trình và công cụ hiện tại, những chức năng bắt buộc của phiên bản đầu tiên, các nhóm người dùng, nguồn dữ liệu sinh viên, quy tắc đăng ký và hủy đăng ký, cách điểm danh, loại báo cáo cần thiết cũng như các ràng buộc về bảo mật và công nghệ. Nếu chưa làm rõ các nội dung này, nhóm khó xác định phạm vi và có thể phát triển những chức năng không đúng với nhu cầu thực tế.
+
+Vì vậy, trước khi lập kế hoạch và triển khai hệ thống, nhóm đã trao đổi với khách hàng để bổ sung các thông tin còn thiếu trong brief.
+
+Các câu hỏi cụ thể, câu trả lời của khách hàng và tác động của từng câu trả lời tới dự án được ghi lại trong Client Interaction Log dưới đây.
+
+\subsubsection{Client Interaction Log}
+
+Bảng giữ nguyên tiêu đề cột và nội dung câu hỏi/câu trả lời trong file Excel. Cột \emph{Impact on Project} được bổ sung để thể hiện cách thông tin từ khách hàng ảnh hưởng tới yêu cầu, phạm vi hoặc kế hoạch của dự án.
+
+\Needspace{4cm}
+\paragraph*{Tuần 1.}
+
+\begingroup
+\setlength{\tabcolsep}{2pt}
+\renewcommand{\arraystretch}{1.15}
+\scriptsize
+\begin{longtable}{>{\RaggedRight\arraybackslash}p{1.70cm}
+                  >{\RaggedRight\arraybackslash}p{0.85cm}
+                  >{\RaggedRight\arraybackslash}p{3.95cm}
+                  >{\RaggedRight\arraybackslash}p{4.20cm}
+                  >{\RaggedRight\arraybackslash}p{4.15cm}}
+\rowcolor{headerblue}
+\color{white}\textbf{Category} &
+\color{white}\textbf{Date} &
+\color{white}\textbf{Team Question} &
+\color{white}\textbf{Client Response} &
+\color{white}\textbf{Impact on Project} \\
+\endfirsthead
+\rowcolor{headerblue}
+\color{white}\textbf{Category} &
+\color{white}\textbf{Date} &
+\color{white}\textbf{Team Question} &
+\color{white}\textbf{Client Response} &
+\color{white}\textbf{Impact on Project} \\
+\endhead
+
+\rowcolor{lightgray}
+Tổng quan & Week 1 & Nhà trường có những quy định hoặc ràng buộc nào mà hệ thống bắt buộc phải tuân thủ không? (Ví dụ: Yêu cầu về bảo mật dữ liệu sinh viên, nơi lưu trữ dữ liệu, bắt buộc làm nền tảng Web hay Mobile, công nghệ được phép sử dụng)? & Hệ thống cần bảo vệ thông tin cá nhân của sinh viên và phân quyền truy cập phù hợp. Trong phạm vi BTL, không bắt buộc Web hay Mobile và không giới hạn công nghệ triển khai; nhóm có thể lựa chọn nhưng cần giải thích lựa chọn của mình. Không có yêu cầu riêng về nơi lưu trữ dữ liệu. & Bổ sung bảo vệ dữ liệu và phân quyền theo vai trò thành yêu cầu chất lượng bắt buộc, kèm kiểm thử tương ứng. Nền tảng và công nghệ là quyết định của nhóm nhưng phải được giải thích. Ghi nhận bảo mật/quyền riêng tư là rủi ro dự án. \\
+
+Business context & Week 1 & Về quy trình và công cụ: Cụ thể hiện nay nhà trường đang sử dụng sự kết hợp của những công cụ nào (ví dụ: Google Forms đăng ký, điểm danh bằng giấy/Excel, thông báo qua Zalo/Email) cho một sự kiện? & Hiện tại có thể xem quy trình đang sử dụng nhiều công cụ rời rạc: form trực tuyến để đăng ký, Excel để quản lý danh sách/điểm danh và Email để gửi thông báo. Dữ liệu giữa các bước chưa được quản lý tập trung. & Xác nhận quy trình hiện tại bị phân mảnh. Sản phẩm cần tập trung dữ liệu sự kiện, đăng ký, điểm danh và báo cáo, đồng thời tiếp tục sử dụng email làm kênh thông báo. \\
+
+\rowcolor{lightgray}
+Business context & Week 1 & Về điểm nghẽn (Bottleneck): Trong quy trình hiện tại, bước nào (đăng ký, check-in tại chỗ, hay tổng hợp báo cáo sau sự kiện) đang chiếm nhiều thời gian, nhân lực hoặc dễ xảy ra sai sót nhất? & Điểm nghẽn chính là việc quản lý danh sách đăng ký và điểm danh, sau đó phải tổng hợp dữ liệu thủ công để lập báo cáo. Việc dữ liệu nằm ở nhiều công cụ cũng làm tăng khả năng sai lệch và tốn thời gian đối soát. & Ưu tiên quản lý danh sách đăng ký, ghi nhận điểm danh và tạo báo cáo. Hoạt động xác minh nên so sánh số thao tác hoặc thời gian đối soát thủ công trước và sau khi áp dụng hệ thống. \\
+
+Scope/\allowbreak acceptance & Week 1 & Trong phiên bản đầu tiên, những nghiệp vụ / chức năng nào bắt buộc phải có để nhà trường sử dụng? Những phần nào có thể để sau hoặc không cần thực hiện? & Phiên bản đầu tiên cần hỗ trợ tối thiểu: tạo và quản lý sự kiện, công bố sự kiện, sinh viên xem và đăng ký/hủy đăng ký, quản lý số lượng người tham gia, điểm danh và xem báo cáo cơ bản sau sự kiện. Các chức năng nâng cao như recommendation, SMS, phân tích nâng cao hoặc các chức năng tương tự không bắt buộc trong phiên bản đầu tiên. & Xác định đường cơ sở phạm vi MVP. Recommendation, SMS và phân tích nâng cao được hoãn hoặc loại khỏi MVP nếu chưa có thay đổi được phê duyệt. Ước lượng và lịch biểu phải bảo vệ luồng nghiệp vụ cốt lõi hoàn chỉnh trước. \\
+
+\rowcolor{lightgray}
+Scope/\allowbreak acceptance & Week 1 & Client mong muốn dùng những kết quả/chỉ số nào để đánh giá hệ thống mới tốt hơn quy trình hiện tại? Ví dụ thời gian tổng hợp báo cáo, số thao tác thủ công, tỷ lệ sai lệch dữ liệu hoặc độ chính xác của attendance. Nếu có số liệu hiện tại và mức mục tiêu, Client có thể cung cấp giúp nhóm không? & Mục tiêu chính là giảm các thao tác thủ công trong quản lý đăng ký và điểm danh, giảm thời gian tổng hợp danh sách/báo cáo và hạn chế sai lệch dữ liệu. Hiện tại khách hàng chưa cung cấp baseline định lượng cụ thể. Nhóm có thể đề xuất các chỉ số và target hợp lý để sử dụng trong kế hoạch, nhưng phải ghi rõ đó là assumption/proposed target. & Sử dụng ba nội dung này làm nhóm chỉ số hiệu quả nhưng không được trình bày con số do nhóm đề xuất như chỉ tiêu khách hàng đã phê duyệt. Cần thu thập baseline/thử nghiệm nếu khả thi và xin xác nhận cho các target đề xuất. \\
+
+Stakeholder/\allowbreak integration & Week 1 & Về dữ liệu thông tin của sinh viên, hệ thống kết nối với CSDL có sẵn của trường (ví dụ mybk) hay là dữ liệu riêng? & Trong phạm vi BTL, không yêu cầu kết nối trực tiếp với MyBK hoặc CSDL thật của trường. Nhóm có thể giả lập dữ liệu sinh viên cần thiết. & Loại tích hợp trực tiếp với hệ thống thật của trường khỏi MVP và sử dụng bộ dữ liệu giả lập có kiểm soát. Điều này giảm phụ thuộc bên ngoài và công sức tích hợp nhưng không loại bỏ yêu cầu về bảo mật và phân quyền. \\
+
+\rowcolor{lightgray}
+Stakeholder/\allowbreak integration & Week 1 & Những nhóm người dùng nào sẽ trực tiếp sử dụng hệ thống? Ví dụ: sinh viên, người tổ chức sự kiện, quản trị viên, giảng viên/phòng ban? Mỗi nhóm có vai trò chính gì và được phép thực hiện những thao tác gì? & Các nhóm người dùng chính gồm Sinh viên, Người tổ chức sự kiện và Quản trị viên hệ thống. Sinh viên chủ yếu xem/đăng ký/hủy và theo dõi sự kiện của mình; người tổ chức tạo và quản lý sự kiện, danh sách đăng ký, attendance và báo cáo; quản trị viên quản lý tài khoản/quyền truy cập và hỗ trợ vận hành hệ thống. & Thiết lập ba vai trò và ma trận quyền tương ứng. Thiết kế luồng nghiệp vụ và kiểm thử phân quyền cho từng vai trò; đưa quản lý tài khoản/quyền của quản trị viên vào phạm vi cốt lõi. \\
+
+Nghiệp vụ chi tiết & Week 1 & Một sự kiện (seminar, workshop) khi tạo mới trên hệ thống bắt buộc phải có những trường thông tin nào (ví dụ: Diễn giả, Số lượng tối đa, Điểm rèn luyện/Ngày CTXH, Thời gian mở/đóng form đăng ký) để được coi là hợp lệ? & Một sự kiện tối thiểu cần có tên, mô tả, thời gian, địa điểm, đơn vị/người tổ chức, thời gian đăng ký và số lượng người tham dự tối đa nếu có giới hạn. Các thông tin như diễn giả, đối tượng tham gia hoặc quyền lợi khi tham gia có thể bổ sung tùy loại sự kiện. & Xác định mô hình dữ liệu sự kiện và quy tắc validation. Kiểm thử nghiệm thu phải bao gồm trường bắt buộc, thời gian đăng ký, ngày giờ và số lượng; trường tùy chọn không được ngăn công bố sự kiện. \\
+
+\rowcolor{lightgray}
+Nghiệp vụ chi tiết & Week 1 & Sau khi sự kiện đã được công bố và đã có người đăng ký, người tổ chức có được sửa thời gian, địa điểm, số lượng hoặc nội dung sự kiện không? Nếu có thì hệ thống cần xử lý những người đã đăng ký như thế nào? & Có thể sửa thông tin sự kiện sau khi công bố. Tuy nhiên, nếu thay đổi ảnh hưởng trực tiếp đến người đã đăng ký, chẳng hạn thời gian hoặc địa điểm, hệ thống cần thông báo cho họ. Với những thay đổi lớn, người tham gia vẫn phải có khả năng hủy đăng ký. & Cho phép chỉnh sửa có kiểm soát sau khi công bố. Bổ sung email thông báo thay đổi quan trọng và duy trì khả năng hủy đăng ký. Đưa kịch bản thay đổi--thông báo--hủy vào hoạt động xác minh. \\
+
+Nghiệp vụ chi tiết & Week 1 & Một sự kiện có giới hạn số lượng người tham dự không? Nếu đã đủ chỗ thì hệ thống cần từ chối đăng ký hay đưa sinh viên vào danh sách chờ? Khi có người hủy, người trong danh sách chờ có được tự động chuyển sang đã đăng ký không? Sinh viên đăng ký hoặc hủy đăng ký theo những điều kiện nào, và hệ thống xử lý ra sao khi sự kiện hết chỗ hoặc có đăng ký trùng? & Sự kiện có thể có giới hạn số lượng. Khi đủ chỗ, sinh viên có thể được đưa vào waitlist. Khi có người hủy, hệ thống có thể tự động đưa người đầu tiên trong waitlist vào danh sách đăng ký và thông báo cho sinh viên đó. Sinh viên không được đăng ký cùng một sự kiện nhiều lần. Việc hủy được cho phép trước khi sự kiện bắt đầu. & Bổ sung ràng buộc đăng ký duy nhất, kiểm tra sức chứa, waitlist có thứ tự, tự động đưa người đầu tiên lên danh sách đăng ký, thông báo và quy tắc hủy trước khi sự kiện bắt đầu. Các quy tắc này làm tăng công sức cho luồng xử lý, xử lý đồng thời và kiểm thử. \\
+
+\rowcolor{lightgray}
+Nghiệp vụ chi tiết & Week 1 & Kịch bản gửi thông báo cho người dùng sẽ diễn ra như thế nào? Hệ thống có cần tích hợp gửi Email/SMS tự động để nhắc nhở sinh viên 24h trước khi diễn ra sự kiện, thông báo khi sự kiện thay đổi thời gian, hoặc báo tin khi sinh viên được đôn lên từ danh sách chờ (waitlist) không? & Trong phạm vi MVP, Email là đủ; không bắt buộc SMS. Hệ thống cần hỗ trợ các thông báo quan trọng như xác nhận đăng ký, thay đổi quan trọng của sự kiện và được chuyển từ waitlist sang registered. Nhắc trước sự kiện là chức năng mong muốn nhưng nhóm có thể xác định mức ưu tiên phù hợp trong kế hoạch. & Đưa email xác nhận, thông báo thay đổi và thông báo chuyển từ waitlist vào MVP; loại SMS. Xếp email nhắc trước sự kiện ở mức ưu tiên thấp hơn. Ghi nhận cấu hình hoặc lỗi dịch vụ email là phụ thuộc và rủi ro. \\
+
+Nghiệp vụ chi tiết & Week 1 & Về việc giới hạn/ưu tiên đối tượng tham gia: Hệ thống có cần tính năng giới hạn hoặc ưu tiên đối tượng cho từng sự kiện không? (Ví dụ: Một buổi seminar định hướng nghề nghiệp chỉ cho phép sinh viên năm cuối đăng ký, hoặc sinh viên thuộc một khoa cụ thể được quyền đăng ký trước 24 giờ). & Có. Người tổ chức có thể giới hạn đối tượng tham gia theo một số tiêu chí, chẳng hạn khoa hoặc năm học. Tuy nhiên, cơ chế ưu tiên phức tạp như cho một nhóm đăng ký sớm hơn 24 giờ không phải yêu cầu bắt buộc của MVP. & Đưa giới hạn cơ bản theo khoa/năm học và các kiểm thử validation liên quan vào phạm vi. Hoãn cơ chế mở đăng ký sớm phức tạp để tránh tăng quá mức công sức xây dựng và quản lý quy tắc. \\
+
+\rowcolor{lightgray}
+Attendance & Week 1 & Client mong muốn việc điểm danh được thực hiện bằng cách nào (QR Code, quẹt thẻ, thủ công)? Và hệ thống có cần cơ chế xử lý (ví dụ: điểm danh offline) khi xảy ra rủi ro rớt mạng tại địa điểm tổ chức không? Cần xử lý trường hợp điểm danh hộ, đến muộn hoặc lỗi kết nối ra sao? & Phương án mong muốn là QR Code, đồng thời người tổ chức cần có khả năng điểm danh/chỉnh sửa attendance thủ công khi cần. Không bắt buộc triển khai đầy đủ offline synchronization trong MVP. Các trường hợp đặc biệt như lỗi mạng hoặc QR không hoạt động có thể được xử lý thủ công bởi người tổ chức. Việc ngăn điểm danh hộ ở mức tuyệt đối không phải yêu cầu của BTL. & Chọn QR Code làm luồng điểm danh chính và ghi nhận/chỉnh sửa thủ công làm phương án dự phòng bắt buộc. Loại đồng bộ offline đầy đủ và biện pháp chống điểm danh hộ tuyệt đối. Chỉ người tổ chức được sửa thủ công; phải kiểm thử cả luồng bình thường và dự phòng. \\
+
+Reporting & Week 1 & Sau mỗi sự kiện, ban tổ chức cần những báo cáo, số liệu nào và có cần xuất dữ liệu sang Excel hoặc PDF không? & Sau mỗi sự kiện cần có tối thiểu số người đăng ký, số người tham dự/vắng mặt, danh sách người tham gia và tỷ lệ attendance. Cần hỗ trợ xuất dữ liệu sang Excel/CSV; PDF không bắt buộc trong MVP. & Đưa các trường/chỉ số báo cáo tối thiểu, công thức tỷ lệ và xuất CSV/Excel vào tiêu chí nghiệm thu. Hoãn xuất PDF. Kiểm thử số liệu và tỷ lệ attendance bằng bộ dữ liệu đã biết trước kết quả. \\
+
+\rowcolor{lightgray}
+Reporting & Week 1 & Về nhu cầu thống kê của cấp quản lý (Ban giám hiệu/Trưởng phòng): Ngoài các báo cáo chi tiết cho từng sự kiện lẻ, cấp quản lý có cần xem các thống kê tổng quan của cả một học kỳ/năm học không? & Có nhu cầu xem thống kê tổng hợp theo khoảng thời gian, chẳng hạn số sự kiện, số lượt đăng ký và tỷ lệ tham dự trong học kỳ. Tuy nhiên đây là chức năng có mức ưu tiên thấp hơn các chức năng vận hành một sự kiện và có thể được nhóm đưa vào phạm vi nếu nguồn lực cho phép. & Xếp dashboard tổng hợp vào nhóm chức năng có điều kiện và ưu tiên thấp. Không để chức năng này làm chậm luồng sự kiện cốt lõi; chỉ đưa vào baseline nếu phân tích nguồn lực và lịch biểu cho thấy còn đủ khả năng thực hiện. \\
+
+\bottomrule
+\end{longtable}
+\endgroup
+
+\paragraph*{Tuần 2.}
+
+Từ các nội dung đã trao đổi trong Tuần~1, nhóm tiếp tục hỏi khách hàng về việc tự động hóa waitlist, trải nghiệm của sinh viên, báo cáo, khả năng sử dụng dữ liệu trong tương lai và thẩm quyền xác nhận yêu cầu. Nhóm cũng hỏi thêm số liệu về thời gian xử lý, sai lệch dữ liệu và số sự kiện để làm cơ sở đánh giá hiệu quả dự án. Nội dung trao đổi và tác động đến dự án được ghi nhận trong bảng sau:
+
+\begingroup
+\setlength{\tabcolsep}{2pt}
+\setlength{\parskip}{0pt}
+\renewcommand{\arraystretch}{1.15}
+\footnotesize
+\begin{longtable}{>{\RaggedRight\arraybackslash}p{1.70cm}
+                  >{\RaggedRight\arraybackslash}p{0.85cm}
+                  >{\RaggedRight\arraybackslash}p{3.95cm}
+                  >{\RaggedRight\arraybackslash}p{4.20cm}
+                  >{\RaggedRight\arraybackslash}p{4.15cm}}
+\rowcolor{headerblue}
+\color{white}\textbf{Category} &
+\color{white}\textbf{Date} &
+\color{white}\textbf{Team Question} &
+\color{white}\textbf{Client Response} &
+\color{white}\textbf{Impact on Project} \\
+\endfirsthead
+\rowcolor{headerblue}
+\color{white}\textbf{Category} &
+\color{white}\textbf{Date} &
+\color{white}\textbf{Team Question} &
+\color{white}\textbf{Client Response} &
+\color{white}\textbf{Impact on Project} \\
+\endhead
+
+\rowcolor{lightgray}
+Nghiệp vụ chi tiết & Week 2 &
+Đối với việc quản lý danh sách đăng ký hiện tại, ban tổ chức thường tốn khoảng bao nhiêu thời gian hoặc thực hiện bao nhiêu thao tác cho việc cập nhật sinh viên từ danh sách chờ (waitlist) lên chính thức và gửi email thông báo? Nhà trường kỳ vọng hệ thống sẽ tự động hóa được bao nhiêu phần trăm khối lượng công việc này? &
+Hiện chưa có số liệu cụ thể về thời gian/thao tác của quy trình này. Về yêu cầu, hệ thống nên tự động chuyển người đầu tiên trong waitlist sang danh sách đăng ký khi có chỗ trống và gửi email thông báo, hạn chế tối đa thao tác thủ công. &
+Làm rõ yêu cầu tự động chuyển người đầu tiên trong waitlist khi có chỗ trống và gửi email thông báo; bổ sung kịch bản kiểm thử cho luồng này. Chưa có số liệu để xác nhận thời gian hoặc tỷ lệ công việc tiết kiệm được. \\
+
+Scope/\allowbreak acceptance & Week 2 &
+Ngoài mục tiêu cốt lõi là giảm thao tác thủ công và tiết kiệm thời gian vận hành cho ban tổ chức, nhà trường có đặt trọng tâm vào việc cải thiện trải nghiệm số của sinh viên (ví dụ: tăng mức độ hài lòng, dễ dàng tiếp cận thông tin) để thúc đẩy tỷ lệ tham gia sự kiện không? &
+Có. Ngoài giảm thao tác thủ công, hệ thống cũng hướng đến việc giúp sinh viên dễ dàng tìm kiếm thông tin, đăng ký và theo dõi trạng thái tham gia sự kiện. Tuy nhiên, tăng tỷ lệ tham gia không phải KPI bắt buộc của MVP. &
+Bổ sung mục tiêu giúp sinh viên dễ tìm thông tin, đăng ký và theo dõi trạng thái tham gia; xem xét tính dễ sử dụng khi thiết kế và kiểm thử. Không đưa mức tăng tỷ lệ tham gia thành KPI bắt buộc của MVP. \\
+
+\rowcolor{lightgray}
+Reporting & Week 2 &
+Dù nhà trường chưa có số liệu baseline định lượng chính xác, ban tổ chức có thể ước lượng thời gian trung bình hiện tại để hoàn thành một báo cáo sau sự kiện (ví dụ: mất khoảng 4 tiếng hay mất 1-2 ngày) không? Với hệ thống mới, thời gian tối đa để hệ thống tự động xuất báo cáo mà nhà trường kỳ vọng là bao lâu? &
+Hiện chưa có baseline cụ thể về thời gian lập báo cáo. Với hệ thống mới, các báo cáo cơ bản nên được tổng hợp và hiển thị ngay từ dữ liệu đã có trong hệ thống; việc xuất Excel/CSV cũng không nên yêu cầu tổng hợp thủ công. &
+Xác định báo cáo và dữ liệu xuất Excel/CSV được tổng hợp từ dữ liệu trong hệ thống, không cần đối soát thủ công giữa nhiều nguồn. Chưa đặt thời gian phản hồi cụ thể vì khách hàng chưa xác nhận ngưỡng định lượng. \\
+
+Stakeholder/\allowbreak integration & Week 2 &
+Đối với nguồn dữ liệu lịch sử tham gia sự kiện của sinh viên sau khi được tập trung hóa, nhà trường có định hướng hoặc kỳ vọng sử dụng dữ liệu này cho các quy trình nghiệp vụ khác trong tương lai không (ví dụ: làm cơ sở tự động tính điểm rèn luyện, chứng nhận hoạt động ngoại khóa)? &
+Có thể định hướng sử dụng dữ liệu này cho các nghiệp vụ khác trong tương lai, ví dụ ghi nhận hoạt động ngoại khóa hoặc điểm rèn luyện. Tuy nhiên, các tích hợp này không thuộc phạm vi MVP hiện tại. &
+Ghi nhận khả năng sử dụng dữ liệu cho các nghiệp vụ khác trong tương lai. Loại tích hợp tính điểm rèn luyện hoặc chứng nhận hoạt động ngoại khóa khỏi MVP hiện tại, tránh mở rộng phạm vi dự án. \\
+
+\rowcolor{lightgray}
+Scope/\allowbreak acceptance & Week 2 &
+Với quy trình thủ công hiện tại, tình trạng sai lệch dữ liệu (giữa số lượng đăng ký trên form và số lượng điểm danh thực tế) thường rơi vào khoảng bao nhiêu phần trăm? Với hệ thống mới, nhà trường kỳ vọng mức độ sai sót này phải được kiểm soát tối đa ở ngưỡng bao nhiêu \%? &
+Hiện chưa có số liệu cụ thể về tỷ lệ sai lệch. Nhóm có thể đề xuất target hợp lý và ghi rõ đây là assumption/proposed target. &
+Các target về sai lệch dữ liệu phải được ghi rõ là assumption/proposed target. Khi đề xuất cách đo, cần phân biệt lỗi hoặc dữ liệu không nhất quán với trường hợp sinh viên đã đăng ký nhưng không tham dự. \\
+
+Stakeholder/\allowbreak integration & Week 2 &
+Qua lần trao đổi đầu tiên, nhóm xác định nhà trường là client của dự án và thầy Nguyễn Minh Tâm là người đại diện. Tuy nhiên đây mới là client ở cấp tổ chức nói chung, chưa xác định đơn vị cụ thể trong trường, chẳng hạn Ban Giám hiệu, Phòng Công tác Sinh viên, Phòng Đào...
+\par\smallskip
+Thầy có thể giúp nhóm xác định đơn vị hoặc cá nhân chịu trách nhiệm đối với từng nội dung sau:
+\par - Xác định và làm rõ yêu cầu của hệ thống.
+\par - Xác định tiêu chí nghiệm thu và chấp nhận sản phẩm cuối cùng.
+\par - Bảo trợ dự án, cung cấp nguồn lực hoặc phê duyệt ngân sách.
+\par - Phê duyệt phạm vi, chi phí, tiến độ và Project Baseline.
+\par - Phê duyệt các thay đổi lớn về yêu cầu, phạm vi, chi phí hoặc tiến độ.
+\par - Tiếp nhận các vấn đề vượt quá thẩm quyền của project manager và đưa ra quyết định cuối cùng.
+\par\smallskip
+Các trách nhiệm trên thuộc cùng một đơn vị hay được phân chia cho nhiều bên khác nhau? Nếu được phân chia, thầy có thể cho nhóm biết đơn vị tương ứng với từng trách nhiệm không? &
+Trong phạm vi BTL, có thể xem nhà trường là client và thầy là đại diện client để xác nhận yêu cầu, phạm vi, tiêu chí nghiệm thu và các thay đổi lớn. Không cần mô hình hóa chi tiết Ban Giám hiệu/Phòng CTSV hay quy trình ngân sách thực tế. Các giả định về sponsor, budget hoặc cơ chế phê duyệt phục vụ môn học thì nhóm có thể đề xuất và ghi rõ. &
+Xác định nhà trường là client và thầy Nguyễn Minh Tâm là đại diện xác nhận yêu cầu, phạm vi, tiêu chí nghiệm thu và thay đổi lớn. Dùng thông tin này khi xây dựng project authority ở Task~1.5. Không tự gán trách nhiệm cho phòng ban; sponsor, budget và cơ chế phê duyệt chưa được xác nhận phải được ghi là giả định. \\
+
+\rowcolor{lightgray}
+Business context & Week 2 &
+Nhà trường có thể ước tính trung bình trong một năm tổ chức khoảng bao nhiêu sự kiện thuộc phạm vi hệ thống này không? Đồng thời, nếu so với quy trình hiện tại, nhà trường ước tính hệ thống mới có thể giúp tiết kiệm trung bình bao nhiêu thời gian cho mỗi sự kiện trong toàn bộ các khâu như quản lý đăng ký, danh sách người tham gia, điểm danh và tổng hợp/xuất báo cáo? Ví dụ: khoảng 50 sự kiện/năm và tiết kiệm trung bình 4 giờ/sự kiện. &
+Chưa có số liệu thực tế về số sự kiện/năm hay số giờ tiết kiệm trên mỗi sự kiện. Nhóm có thể đưa ra giả định phục vụ lập kế hoạch và đánh giá hiệu quả, nhưng cần ghi rõ đó là assumption/proposed target. &
+Khi đánh giá hiệu quả ở Task~1.3, số sự kiện/năm và số giờ tiết kiệm phải được ghi là giả định và phân biệt với dữ liệu thực tế. Không sử dụng ví dụ 50 sự kiện/năm, 4 giờ/sự kiện trong câu hỏi như số liệu khách hàng đã xác nhận. \\
+
+\bottomrule
+\end{longtable}
+\endgroup

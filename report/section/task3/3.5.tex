@@ -1,0 +1,69 @@
+\subsection{Task 3.5. Kiểm soát chất lượng}
+\label{sec:t3-quality}
+
+\subsubsection{Các đợt kiểm thử}
+
+Hoạt động kiểm soát chất lượng gồm ba lớp: (1) unit test và test tích hợp HTTP trên PostgreSQL thật do lập trình viên chạy; (2) kiểm thử độc lập API/UI bằng Playwright do QA thực hiện; (3) rà soát toàn hệ thống trước khi triển khai. Mỗi đợt gắn với một commit cụ thể để có thể chạy lại.
+
+\begingroup\footnotesize
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}p{.10\linewidth}p{.13\linewidth}p{.40\linewidth}p{.30\linewidth}@{}}
+\caption{Tổng hợp bằng chứng kiểm thử}\label{tab:t3-test-runs}\\
+\toprule
+\textbf{Ngày} & \textbf{Đợt / CP} & \textbf{Kết quả} & \textbf{Nguồn bằng chứng}\\\midrule\endfirsthead
+\toprule
+\textbf{Ngày} & \textbf{Đợt / CP} & \textbf{Kết quả} & \textbf{Nguồn bằng chứng}\\\midrule\endhead
+\bottomrule\endfoot
+07/11 & Regression I1 (CP1) & 208 passed, 1 skipped / 209 kịch bản (136 API, 71 UI E2E) trên build \texttt{aa2494d}. & Mục \ref{sec:i1-development}; \texttt{I1\_RESULTS.md}\\
+12/11 & Backend I2 (CP2) & 29 unit test đạt; HTTP test I2 trên PostgreSQL 17 + mail giả lập đạt; regression I1 đạt. & \texttt{docs/testing/I2\_RESULTS.md}\\
+18/11 & Backend I3 (CP3) & 43 unit test đạt; HTTP test I3 đạt; regression I1, I2 đạt; migration chạy lặp giữ nguyên dữ liệu. & \texttt{docs/testing/I3\_RESULTS.md}\\
+25/11 & Rà soát hệ thống & 55 test backend đạt (50 unit + 5 migration/HTTP); kiểm tra tổng thể trên 10.008 đăng ký; 15 nhóm UI contract đạt; build frontend production đạt. & \texttt{SYSTEM\_REVIEW\_2026-11-25.md}\\
+27/11 & Kiểm tra cloud & \texttt{/api/health} 200, \texttt{/api/auth/me} 401 khi chưa đăng nhập, proxy Vercel $\to$ Render hoạt động. & Kiểm tra thủ công của nhóm\\
+\TBD{} & Integration test A12.1 (CP4) & \TBD{kết quả luồng end-to-end trên HTTPS, gồm quét QR bằng điện thoại thật}. & \TBD{}\\
+\end{longtable}
+\endgroup
+
+\subsubsection{Ma trận kiểm chứng yêu cầu}
+
+\begingroup\footnotesize
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}p{.12\linewidth}p{.50\linewidth}p{.15\linewidth}p{.14\linewidth}@{}}
+\caption{Kiểm chứng các yêu cầu quan trọng}\label{tab:t3-verification}\\
+\toprule
+\textbf{Yêu cầu} & \textbf{Ca kiểm tra tiêu biểu} & \textbf{Đợt} & \textbf{Kết quả}\\\midrule\endfirsthead
+\toprule
+\textbf{Yêu cầu} & \textbf{Ca kiểm tra tiêu biểu} & \textbf{Đợt} & \textbf{Kết quả}\\\midrule\endhead
+\bottomrule\endfoot
+FR-01 & UC01-TC01/TC02: đăng ký hợp lệ; trùng email/MSSV trả 409; payload chèn role vẫn ra Sinh viên. & I1 & Đạt\\
+FR-04, NFR-05 & RBAC-TC01: Sinh viên gọi API quản trị trả 403; thiếu CSRF bị từ chối; Organizer khác nhận 404. & I1, I2, I3 & Đạt\\
+FR-07 & ADM-06/07: chặn tự khóa; luôn còn một Admin \texttt{ACTIVE}. & I1 & Đạt\\
+FR-08, FR-09 & UC12-TC01, UC14-TC01: thứ tự thời gian sai bị từ chối; version cũ trả 409. & I1 & Đạt\\
+FR-12, NFR-02 & 6 sinh viên tranh 1 chỗ: đúng 1 \texttt{REGISTERED}, 5 \texttt{WAITLISTED}. & I2 & Đạt\\
+FR-15 & Hủy sau đóng đăng ký vẫn đôn đúng người đầu; tăng sức chứa 1 $\to$ 3 nhận 2 người tiếp theo; người sai năm bị \texttt{SKIP}. & I2 & Đạt\\
+FR-16, NFR-07 & 3 loại email được gửi; 503 thì retry rồi thành công; 400 thì dừng; lỗi ghi outbox làm rollback cả đăng ký. & I2 & Đạt\\
+FR-20, NFR-06 & Preview không ghi dữ liệu; xác nhận cũ trả \texttt{CONFIRMATION\_STALE}; phiên hết hạn trong lúc ghi trả \texttt{QR\_SESSION\_INVALID}, không ghi một phần. & I3 & Đạt\\
+FR-21 & Ghi thủ công có lý do và lịch sử; báo cáo đổi từ 0 lên 1 sau xác nhận. & I3 & Đạt\\
+FR-22, FR-23 & Tỷ lệ chỉ tính \texttt{REGISTERED}; CSV có BOM, chống công thức; 10.001 dòng bị chặn 413. & I3 & Đạt\\
+NFR-01 & Báo cáo 0,066 s, CSV 0,909 s trên 2.000 đăng ký (ngưỡng: 5 s và 10 s). & I3 & Đạt (local)\\
+NFR-12 & Truy cập bản triển khai qua HTTPS, health 200. & 27/11 & Đạt\\
+FR-11 & TC-BRW-API-08: lọc sự kiện theo thời gian. & I1 & Chưa làm (để lại)\\
+\end{longtable}
+\endgroup
+
+\subsubsection{Lỗi phát hiện và xử lý}
+
+\begin{table}[H]
+\centering\footnotesize
+\caption{Nhật ký lỗi chính}\label{tab:t3-defects}
+\begin{tabularx}{\linewidth}{@{}p{.12\linewidth}Xp{.10\linewidth}p{.25\linewidth}@{}}
+\toprule
+\textbf{Mã} & \textbf{Mô tả} & \textbf{Phát hiện} & \textbf{Xử lý}\\\midrule
+BUG-P2-05 & Gõ sai đường dẫn API trả 401 khiến giao diện tự đăng xuất. & 07/11, QA & Sửa phân loại mã lỗi; retest \TBD{ngày}.\\
+DEF-I2-01 & Test email phụ thuộc thời gian, lúc đạt lúc không. & 18/11, dev & Sửa harness, không đổi logic.\\
+DEF-I3-01 & Màn QR hiển thị ``có mặt'' cũ khi đăng ký đã hủy. & 25/11, rà soát & Kiểm tra cả trạng thái đăng ký hiện hành.\\
+DEF-I3-02 & 100 sự kiện nháp ở trang đầu che mất sự kiện đã công bố khi chọn sự kiện. & 25/11, rà soát & Tải tiếp theo trang, chống lặp.\\
+DEF-DEP-01 & Build trên Render lỗi do Maven 429. & 25/11, deploy & Mirror và retry (NR2).\\
+DEF-UI-01 & Biểu mẫu đăng nhập giữ dữ liệu cũ sau khi đăng nhập thành công. & 25/11 & Sửa (\texttt{cd4c5dd}).\\
+\bottomrule
+\end{tabularx}
+\end{table}

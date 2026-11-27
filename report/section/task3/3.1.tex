@@ -1,0 +1,58 @@
+\subsection{Task 3.1. Triển khai Increment 2, Increment 3 và tích hợp hệ thống}
+\label{sec:t3-impl}
+
+Mục \ref{sec:i1-development} đã trình bày Increment 1. Mục này trình bày hai Increment còn lại và bước tích hợp, triển khai. Mỗi nội dung được đối chiếu với mã hoạt động trong Project Baseline V1.0 và commit tương ứng trên repository để có thể truy vết.
+
+\subsubsection{Increment 2: Đăng ký, danh sách chờ và email (A07.1--A08)}
+
+Trước khi lập trình I2, nhóm tự quyết định các quy tắc còn mở sau CP1 (ngày 12/11/2026), dựa trên phương án đề xuất A3, A5 của bản đặc tả. Các quyết định này \textbf{chưa được khách hàng xác nhận} (xem Mục \ref{sec:t3-limitation-review}):
+\begin{itemize}
+    \item Mỗi cặp sự kiện--sinh viên chỉ có \textbf{một dòng đăng ký hiện hành}, dùng lại khi đăng ký lại; mọi chuyển trạng thái được lưu ở \texttt{registration\_history}.
+    \item Được đôn người trong danh sách chờ sau khi đóng đăng ký cho đến \texttt{starts\_at}. Người không còn đủ điều kiện (khoa/năm) bị bỏ qua và ghi \texttt{SKIP}, nhưng vẫn giữ thứ tự để được xét lại ở lần xử lý sau.
+    \item Email chỉ gửi ở ba mốc: xác nhận có chỗ, được đôn từ danh sách chờ, sự kiện đổi thời gian hoặc địa điểm. Không gửi email nhắc trước sự kiện (đúng với Exclusions ở Task 1.4).
+\end{itemize}
+
+Backend I2 (commit \texttt{43f8c4c}, 12/11) thực hiện các quy tắc trên trong cùng transaction: kiểm tra sức chứa, đưa vào danh sách chờ, đôn FIFO khi có người hủy hoặc khi tăng sức chứa, ghi lịch sử. Email dùng mẫu \textit{transactional outbox}: ghi bản ghi gửi thư cùng transaction nghiệp vụ, gửi qua Brevo HTTP API sau khi commit, retry có giới hạn khi nhà cung cấp lỗi. Cách này tránh tình trạng gửi email cho một thao tác đã bị rollback. Frontend I2 (đăng ký, danh sách chờ, sự kiện của tôi, danh sách người tham gia) được hợp nhất qua PR \#3 ngày 18/11.
+
+Cùng ngày 12/11, nhóm tái cấu trúc backend sang kiến trúc phân tầng có interface Service/Repository (commit \texttt{4d56706}). Đây là công việc \textbf{không có trong baseline}, được thực hiện để I2/I3 không phải viết lại phần truy cập dữ liệu. Công sức của nó được ghi nhận riêng ở Mục \ref{sec:t3-actual}.
+
+\subsubsection{Increment 3: Điểm danh và báo cáo (A09.1--A10.2)}
+
+Ngày 18/11/2026, nhóm quyết định (theo đề xuất A4, chưa có xác nhận của khách hàng): QR được mở từ \textbf{30 phút trước} \texttt{starts\_at}; mỗi sinh viên chỉ có một lượt check-in, không check-out; sinh viên phải bấm \textbf{xác nhận} sau khi quét thì hệ thống mới ghi điểm danh. Từ đó, luồng I3 được thiết kế như sau:
+\begin{enumerate}
+    \item Organizer mở phiên QR có thời hạn 1--30 phút (không vượt \texttt{ends\_at}); có thể đóng sớm hoặc đóng rồi mở lại để đổi mã.
+    \item Sinh viên đăng nhập, quét mã bằng camera. Hệ thống gọi API \textit{preview} chỉ đọc để hiển thị thông tin sự kiện.
+    \item Sinh viên bấm xác nhận. API check-in kiểm tra lại version của sự kiện, đăng ký và điểm danh. Nếu dữ liệu đã thay đổi kể từ lúc preview thì trả \texttt{409 CONFIRMATION\_STALE}.
+    \item Khi QR hoặc mạng gặp sự cố, Organizer ghi điểm danh thủ công; mọi chỉnh sửa sau sự kiện phải có lý do và được lưu lịch sử.
+    \item Báo cáo tính số đăng ký, có mặt, vắng (chỉ suy ra sau \texttt{ends\_at}) và tỷ lệ tham dự trên số đăng ký \texttt{REGISTERED}; xuất CSV có BOM UTF-8 và chống CSV injection.
+\end{enumerate}
+
+Backend I3 hoàn thành ngày 18/11 (commit \texttt{1b99579}). Frontend được hoàn thành theo ba phần: trang điểm danh của Organizer (18--19/11), báo cáo và CSV (22/11, commit \texttt{98f6024}), trang quét QR của sinh viên (23/11, commit \texttt{26efcbb}).
+
+\subsubsection{Tích hợp và triển khai (A11)}
+
+Đến 25/11, nhánh \texttt{main} vẫn chỉ chứa I1; I2 và I3 nằm trên các nhánh tính năng nối tiếp nhau. Nhóm lập nhánh \texttt{test/system-validation} để rà soát toàn hệ thống (biên bản \texttt{docs/testing/SYSTEM\_REVIEW\_2026-11-25.md}), sửa lỗi và hợp nhất vào \texttt{main} trong cùng ngày (commit \texttt{727f379}).
+
+Nền tảng triển khai thực tế là \textbf{Vercel} (Angular), \textbf{Render} (Spring Boot trong Docker), \textbf{Neon} (PostgreSQL) và \textbf{Brevo} (email), khác với AWS Lightsail trong baseline. Quyết định này được phân tích như một yêu cầu thay đổi ở Mục \ref{sec:t3-baseline-v2} (CR-04). Frontend gọi \texttt{/api} qua proxy của Vercel để giữ nguyên cơ chế cookie HttpOnly và CSRF đã kiểm thử ở local. Hai sự cố khi build trên cloud được xử lý ngay trong ngày 25/11: Maven Central trả \texttt{429 Too Many Requests} (chuyển sang mirror và retry, commit \texttt{2923074}) và cấu hình proxy của Vercel (commit \texttt{030c2a5}).
+
+Kiểm tra ngày 27/11/2026 trên bản đã triển khai: \texttt{/api/health} trả 200 (kết nối được Neon), \texttt{/api/auth/me} trả 401 khi chưa đăng nhập đúng như thiết kế; \textbf{request đầu tiên sau khi backend ngủ mất khoảng 50 giây} do gói Render miễn phí. Rủi ro này được đưa vào sổ rủi ro (NR1, Mục \ref{sec:t3-risk}).
+
+\begin{table}[H]
+\centering\small
+\caption{Trạng thái chức năng sau tích hợp (27/11/2026)}\label{tab:t3-scope}
+\begin{tabularx}{\linewidth}{@{}p{.20\linewidth}p{.13\linewidth}X@{}}
+\toprule
+\textbf{Nhóm chức năng} & \textbf{Hoạt động} & \textbf{Kết quả}\\\midrule
+Tài khoản, RBAC & A05.1 & Hoàn thành ở I1; bổ sung giới hạn tần suất đăng nhập/đăng ký (429) trong đợt rà soát 25/11.\\
+Quản lý, tra cứu sự kiện & A05.2 & Hoàn thành ở I1; bổ sung giới hạn khoa/năm chọn nhiều ở I2.\\
+Đăng ký, hủy, sức chứa & A07.1 & Hoàn thành; kiểm thử 6 sinh viên tranh 1 chỗ chỉ có đúng 1 người được nhận.\\
+Danh sách chờ FIFO & A07.2 & Hoàn thành; đôn tự động khi hủy hoặc tăng sức chứa; bỏ qua người không đủ điều kiện.\\
+Email thông báo & A07.3 & Hoàn thành 3 loại thư qua Brevo; đã gửi thử thành công một thư thật.\\
+Điểm danh QR & A09.1 & Hoàn thành preview + xác nhận; \TBD{kết quả thử camera điện thoại thật qua HTTPS}.\\
+Điểm danh thủ công & A09.2 & Hoàn thành, có lý do và lịch sử chỉnh sửa.\\
+Báo cáo cơ bản & A10.1 & Hoàn thành; vắng mặt chỉ tính sau \texttt{ends\_at}.\\
+Xuất dữ liệu & A10.2 & \textbf{Chỉ CSV}; Excel được hoãn (CR-02).\\
+Triển khai & A11 & Đã chạy trên Vercel/Render/Neon (CR-04).\\
+\bottomrule
+\end{tabularx}
+\end{table}

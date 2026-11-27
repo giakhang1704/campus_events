@@ -1,0 +1,103 @@
+\subsection{Task 3.6. Phản hồi thay đổi do giảng viên công bố}
+\label{sec:t3-change}
+
+Rủi ro AR10 (Task 2.8) đã dự báo khả năng giảng viên công bố thay đổi trong giai đoạn thực hiện, với xác suất 60\% và $RE = 7{,}2$ giờ công. Rủi ro này \textbf{đã xảy ra}. Mục này phân tích thay đổi theo quy trình kiểm soát thay đổi ở Task 1.5: tiếp nhận $\to$ phân tích tác động $\to$ so sánh phương án $\to$ quyết định $\to$ cập nhật baseline.
+
+\subsubsection{Nội dung thay đổi}
+
+\begin{table}[H]
+\centering\small
+\caption{Yêu cầu thay đổi CR-05}\label{tab:t3-cr05}
+\begin{tabularx}{\linewidth}{@{}p{.24\linewidth}X@{}}
+\toprule
+Mã & CR-05\\
+Ngày nhận / kênh & \TBD{ngày} -- thông báo trực tiếp trên lớp.\\
+Người yêu cầu & Thầy Nguyễn Minh Tâm (Project Authority, đại diện khách hàng).\\
+Nội dung & Thời hạn hoàn thành dự án bị rút ngắn \textbf{1 tuần}. Hạn nộp báo cáo cuối kỳ đổi từ 06/12/2026 thành 29/11/2026 \TBD{xác nhận hạn mới và ngày demo}.\\
+Loại thay đổi & Thay đổi ràng buộc lịch trình; không thay đổi phạm vi chức năng được yêu cầu.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsubsection{Phân tích tác động}
+
+Tại thời điểm nhận thay đổi, các chức năng I1--I3 đã hoàn thành và đã triển khai lên cloud (25/11). Phần còn lại của baseline chủ yếu là kiểm thử nghiệm thu, đo chỉ tiêu và hồ sơ đóng dự án. Theo Bảng \ref{tab:ledger}, khối lượng còn lại là $\approx$ 48,5 giờ công: toàn bộ T6 (29,4 giờ) cộng phần chưa làm của A12.1 (10,5 giờ), A12.2 (5,8 giờ) và A14.1 (2,8 giờ) ở T5.
+
+\begin{table}[H]
+\centering\small
+\caption{Tác động của CR-05}\label{tab:t3-cr05-impact}
+\begin{tabularx}{\linewidth}{@{}p{.18\linewidth}X@{}}
+\toprule
+\textbf{Khía cạnh} & \textbf{Tác động}\\\midrule
+Yêu cầu / sản phẩm & Không thêm hay bớt FR. Sản phẩm quản lý bị ảnh hưởng: Quality Evidence (A12.2), User Guide (A14.1), báo cáo cuối kỳ (A18.2), Closure Plan (A16).\\
+Hoạt động & Toàn bộ T6 (A12.2, A15.2, A16, A18.2, A19.2, BL2) phải dồn vào khoảng 27--29/11, cùng lúc với phần còn lại của A12.1. Chuỗi A12 $\to$ A15.2 $\to$ A16 $\to$ A18.2 vốn tuần tự phải chạy song song.\\
+Công sức & $\approx$ 48,5 giờ công phải làm trong 3 ngày thay vì 9 ngày. Với năng lực thông thường $\approx$ 9--10 giờ/ngày cho cả nhóm, chỉ làm được $\approx$ 30 giờ.\\
+Nguồn lực & Vượt năng lực tuần của các thành viên ($C_{i,w}$, Mục 2.10) nếu giữ nguyên khối lượng. Thành viên phải tăng giờ trong thời gian ngắn.\\
+Rủi ro & Không còn thời gian gửi khách hàng review CR-01..04, đặc tả use case chỉnh sửa và Baseline V2.0 (NR7). Giảm chất lượng kiểm thử nghiệm thu nếu cắt A12.\\
+Lịch trình & Mất toàn bộ schedule buffer 04--06/12. Đường găng đi qua A12.1 $\to$ A12.2 $\to$ A15.2 $\to$ A18.2.\\
+Chi phí & Không tăng ngân sách; chi phí tương ứng với khối lượng được giữ lại.\\
+Chất lượng & Một số đo lường nghiệm thu không còn đủ thời gian thực hiện (thử nghiệm người dùng M5).\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsubsection{Phương án và quyết định}
+
+\begin{table}[H]
+\centering\small
+\caption{So sánh phương án xử lý CR-05}\label{tab:t3-cr05-options}
+\begin{tabularx}{\linewidth}{@{}p{.12\linewidth}XXp{.10\linewidth}@{}}
+\toprule
+\textbf{Phương án} & \textbf{Mô tả} & \textbf{Ưu / nhược} & \textbf{Giờ còn lại}\\\midrule
+PA1 \newline Crashing & Giữ nguyên mọi hoạt động; cả nhóm tăng giờ làm. & Đủ hồ sơ; nhưng vượt năng lực, nguy cơ sai sót do làm vội, ảnh hưởng lịch học. & 48,5\\
+PA2 \newline Cắt chức năng & Bỏ một chức năng (ví dụ điểm danh QR) để có thời gian cho hồ sơ. & Vô nghĩa vì chức năng đã xong; làm mất mục tiêu O1, O3. & --\\
+PA3 \newline Fast-tracking + thu gọn nghiệm thu & Giữ toàn bộ phần mềm. Chạy song song kiểm thử và viết báo cáo. Thu gọn các hoạt động nghiệm thu: dùng số đo M2 sẵn có, gộp User Guide vào README, đưa việc review của khách hàng vào buổi demo, hoãn thử nghiệm người dùng M5. & Khả thi trong năng lực; không mất chức năng. Đổi lại: phạm vi bằng chứng nghiệm thu giảm và các CR chưa có phê duyệt trước demo. & 37,0\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\noindent\textbf{Quyết định:} nhóm chọn \textbf{PA3}. Lý do: phần mềm, là phần có trọng số lớn nhất, đã hoàn thành, nên nguồn lực còn lại được dồn cho kiểm thử end-to-end trên cloud và hồ sơ quản lý. Các phần cắt giảm đều là bằng chứng bổ sung, không phải chức năng bắt buộc. Chúng được ghi lại công khai là hạn chế thay vì bỏ qua âm thầm.
+
+\begin{table}[H]
+\centering\small
+\caption{Kế hoạch thực hiện sau CR-05}\label{tab:t3-cr05-plan}
+\begin{tabularx}{\linewidth}{@{}p{.13\linewidth}Xp{.10\linewidth}p{.12\linewidth}@{}}
+\toprule
+\textbf{Hoạt động} & \textbf{Điều chỉnh} & \textbf{Giờ V1.0} & \textbf{Giờ V2.0}\\\midrule
+A12.1 & Chạy luồng end-to-end trên cloud qua HTTPS, gồm quét QR bằng điện thoại thật; song song với viết báo cáo. & 14,0 & 14,0\\
+A12.2 & Dùng số đo M2 đã có (2.000 đăng ký), bổ sung đo trên cloud; M5 hoãn. & 8,0 & 4,0\\
+A14.1 + BL2 & Gộp User Guide vào README và hướng dẫn chạy trong repository. & 7,0 & 3,0\\
+A15.2, A16, A18.2 & Viết đồng thời trong báo cáo cuối kỳ (Task 4). & 15,5 & 12,0\\
+A17, A19.2 & Demo và viva theo lịch giảng viên; review CR tại buổi demo. & 7,5 & 7,5\\
+\midrule
+\multicolumn{2}{@{}r}{\textbf{Tổng}} & \textbf{52,0} & \textbf{40,5}\\
+\multicolumn{2}{@{}r}{Còn lại sau 27/11 (trừ 3,5 giờ A12.1 đã làm)} & 48,5 & 37,0\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsubsection{Phân bổ lại nguồn lực cho phần việc còn lại}
+\label{sec:t3-realloc}
+
+Đến 27/11, khối lượng thực tế lệch khỏi kế hoạch phân bổ ở Mục 2.10 (AR6): sau khi phần backend của PM được chuyển sang BE, gần như toàn bộ backend I2--I3 do BE thực hiện. Khi lập kế hoạch sau CR-05, PM phân bổ lại 37,0 giờ còn lại theo hai nguyên tắc: (1) \textbf{giảm tải cho BE} để cân bằng tổng khối lượng cả dự án; (2) \textbf{người kiểm thử khác người viết mã}: FE, QA và PM chạy kiểm thử end-to-end phần backend do BE viết, đồng thời giúp các thành viên khác nắm được backend trước viva.
+
+\begin{table}[H]
+\centering\small
+\caption{Phân bổ 37,0 giờ còn lại sau CR-05 (giờ công)}\label{tab:t3-realloc}
+\begin{tabularx}{\linewidth}{@{}Xrrrrrr@{}}
+\toprule
+\textbf{Hoạt động} & \textbf{PM} & \textbf{BA} & \textbf{BE} & \textbf{FE} & \textbf{QA} & \textbf{Tổng}\\\midrule
+A12.1 Integration test trên cloud (phần còn lại) & 2,0 & -- & -- & 4,0 & 4,5 & 10,5\\
+A12.2 Đo chỉ tiêu, chốt evidence & 2,0 & 2,0 & -- & -- & -- & 4,0\\
+A14.1 + BL2 README, chốt phiên bản & 1,5 & -- & 1,5 & -- & -- & 3,0\\
+A15.2, A16, A18.2 Đánh giá, đóng dự án, báo cáo & 4,5 & 5,0 & -- & 1,5 & 1,0 & 12,0\\
+A17, A19.2 Demo, reflection, diễn tập viva & 1,5 & 1,5 & 1,5 & 1,5 & 1,5 & 7,5\\
+\midrule
+\textbf{Tổng} & \textbf{11,5} & \textbf{8,5} & \textbf{3,0} & \textbf{7,0} & \textbf{7,0} & \textbf{37,0}\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+BE nhận ít việc nhất trong giai đoạn cuối vì đã gánh phần lớn khối lượng lập trình; BE chỉ hỗ trợ chốt phiên bản và hướng dẫn chạy. PM nhận nhiều nhất: phần lập trình ban đầu của PM đã chuyển sang BE, nên PM dẫn dắt kiểm thử nghiệm thu, đo chỉ tiêu và báo cáo đóng dự án. BA phụ trách đánh giá mục tiêu, đúng chuyên môn phân tích nghiệp vụ. Khối lượng mỗi người trong 3 ngày (3,0--11,5 giờ) nằm trong năng lực $C_{i,w}$ ở Mục 2.10. Phân bổ lại ở giai đoạn cuối chỉ cân bằng một phần; mức chênh lệch còn lại trong cả dự án được ghi nhận trung thực ở Mục \ref{sec:t4-individual}.
+
+Phần chênh lệch 11,5 giờ là công sức \textbf{không thực hiện}, không phải công sức tiết kiệm được nhờ làm nhanh. Nó tương ứng với các bằng chứng nghiệm thu bị cắt giảm và được báo cáo là hạn chế ở Task 4.
