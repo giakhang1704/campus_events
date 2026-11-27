@@ -12,7 +12,7 @@
     \item \textbf{Điều chỉnh theo khối lượng}: so sánh số dòng mã và test thay đổi của hoạt động (đã loại lockfile, tài liệu, hình ảnh) trên mỗi giờ kế hoạch với mức trung vị của các hoạt động lập trình ($\approx$ 154 dòng/giờ). Hệ số điều chỉnh bị giới hạn trong khoảng $\pm$30\% vì số dòng không phản ánh đầy đủ thời gian tìm lỗi hay thiết kế.
     \item \textbf{Điều chỉnh theo sự kiện} có bằng chứng: thời gian xử lý sự cố (A03), phần làm lại (giao diện I1), phần bổ sung sau audit (QR).
 \end{enumerate}
-Các hoạt động không để lại dấu vết trên repository (thiết kế, viết test case, họp, quản lý, kiểm thử độc lập ở repository riêng của QA) được \textbf{giữ bằng giờ kế hoạch} và đánh dấu ``chưa xác minh''. Các thành viên đã rà soát số ước tính liên quan đến phần việc của mình: \TBD{xác nhận của từng thành viên}.
+Các hoạt động không để lại dấu vết trên repository (thiết kế, viết test case, họp, quản lý, kiểm thử độc lập ở repository riêng của QA) được \textbf{giữ bằng giờ kế hoạch} và đánh dấu ``chưa xác minh''. Mỗi thành viên rà soát số ước tính liên quan đến phần việc của mình trong phần tự đánh giá ở Mục \ref{sec:t4-individual}.
 
 \subsubsection{Ngày thực tế và công sức của các hoạt động chính}
 
@@ -49,6 +49,84 @@ RA06 & 09/11 & 12/11 & +3 & 1,2 & 1,2 & Quy tắc FIFO, email được chốt c�
 \end{longtable}
 \endgroup
 \noindent{\footnotesize $^{*}$ Ước tính hồi cứu theo Mục \ref{sec:t3-effort-method}.}
+
+\subsubsection{Biểu đồ theo dõi tiến độ (tracking Gantt)}
+
+Thanh xám là lịch kế hoạch V1.0; hình thoi là ngày hoàn thành thực tế có bằng chứng (Bảng \ref{tab:t3-actual}). Hình thoi nằm bên phải thanh là trễ, bên trái là sớm. Đường đỏ đánh dấu ngày báo cáo 27/11.
+
+\begin{figure}[H]
+\centering
+\begin{adjustbox}{max width=\linewidth}
+\begin{tikzpicture}[x=0.42cm, y=0.5cm]
+  \draw[gray!40] (0,0.5) -- (0,-14.2);
+  \node[font=\tiny, anchor=south] at (3.5,0.5) {T1};
+  \draw[gray!40] (7,0.5) -- (7,-14.2);
+  \node[font=\tiny, anchor=south] at (10.5,0.5) {T2};
+  \draw[gray!40] (14,0.5) -- (14,-14.2);
+  \node[font=\tiny, anchor=south] at (17.5,0.5) {T3};
+  \draw[gray!40] (21,0.5) -- (21,-14.2);
+  \node[font=\tiny, anchor=south] at (24.5,0.5) {T4};
+  \draw[gray!40] (28,0.5) -- (28,-14.2);
+  \node[font=\tiny, anchor=south] at (31.5,0.5) {T5};
+  \draw[gray!40] (35,0.5) -- (35,-14.2);
+  \node[font=\tiny, anchor=south] at (38.5,0.5) {T6};
+  \node[font=\tiny, anchor=north, gray] at (0,-14.2) {26/10};
+  \node[font=\tiny, anchor=north, gray] at (7,-14.2) {02/11};
+  \node[font=\tiny, anchor=north, gray] at (14,-14.2) {09/11};
+  \node[font=\tiny, anchor=north, gray] at (21,-14.2) {16/11};
+  \node[font=\tiny, anchor=north, gray] at (28,-14.2) {23/11};
+  \node[font=\tiny, anchor=north, gray] at (35,-14.2) {30/11};
+  \node[font=\scriptsize, anchor=east] at (-0.3,-1) {A03};
+  \fill[gray!45] (3,-1.28) rectangle (5,-0.72);
+  \node[diamond, fill=blue!70!black, inner sep=1.6pt] at (8.5,-1) {};
+  \node[font=\scriptsize, anchor=east] at (-0.3,-2) {A05.1};
+  \fill[gray!45] (7,-2.28) rectangle (10,-1.72);
+  \node[diamond, fill=blue!70!black, inner sep=1.6pt] at (8.5,-2) {};
+  \node[font=\scriptsize, anchor=east] at (-0.3,-3) {A05.2};
+  \fill[gray!45] (4,-3.28) rectangle (9,-2.72);
+  \node[diamond, fill=blue!70!black, inner sep=1.6pt] at (11.5,-3) {};
+  \node[font=\scriptsize, anchor=east] at (-0.3,-4) {A06};
+  \fill[gray!45] (10,-4.28) rectangle (15,-3.72);
+  \node[diamond, fill=blue!70!black, inner sep=1.6pt] at (12.5,-4) {};
+  \node[font=\scriptsize, anchor=east] at (-0.3,-5) {A07.1};
+  \fill[gray!45] (14,-5.28) rectangle (17,-4.72);
+  \node[diamond, fill=blue!70!black, inner sep=1.6pt] at (17.5,-5) {};
+  \node[font=\scriptsize, anchor=east] at (-0.3,-6) {A07.2};
+  \fill[gray!45] (17,-6.28) rectangle (22,-5.72);
+  \node[diamond, fill=blue!70!black, inner sep=1.6pt] at (17.5,-6) {};
+  \node[font=\scriptsize, anchor=east] at (-0.3,-7) {A07.3};
+  \fill[gray!45] (22,-7.28) rectangle (23,-6.72);
+  \node[diamond, fill=blue!70!black, inner sep=1.6pt] at (17.5,-7) {};
+  \node[font=\scriptsize, anchor=east] at (-0.3,-8) {A08};
+  \fill[gray!45] (23,-8.28) rectangle (25,-7.72);
+  \node[diamond, fill=blue!70!black, inner sep=1.6pt] at (23.5,-8) {};
+  \node[font=\scriptsize, anchor=east] at (-0.3,-9) {A09.1};
+  \fill[gray!45] (26,-9.28) rectangle (30,-8.72);
+  \node[diamond, fill=blue!70!black, inner sep=1.6pt] at (28.5,-9) {};
+  \node[font=\scriptsize, anchor=east] at (-0.3,-10) {A09.2};
+  \fill[gray!45] (25,-10.28) rectangle (29,-9.72);
+  \node[diamond, fill=blue!70!black, inner sep=1.6pt] at (24.5,-10) {};
+  \node[font=\scriptsize, anchor=east] at (-0.3,-11) {A10.1};
+  \fill[gray!45] (25,-11.28) rectangle (27,-10.72);
+  \node[diamond, fill=blue!70!black, inner sep=1.6pt] at (27.5,-11) {};
+  \node[font=\scriptsize, anchor=east] at (-0.3,-12) {A10.2};
+  \fill[gray!45] (28,-12.28) rectangle (29,-11.72);
+  \node[diamond, fill=blue!70!black, inner sep=1.6pt] at (27.5,-12) {};
+  \node[font=\scriptsize, anchor=east] at (-0.3,-13) {A11};
+  \fill[gray!45] (29,-13.28) rectangle (31,-12.72);
+  \node[diamond, fill=blue!70!black, inner sep=1.6pt] at (30.5,-13) {};
+  \node[font=\scriptsize, anchor=east] at (-0.3,-14) {A12.1};
+  \fill[gray!45] (31,-14.28) rectangle (33,-13.72);
+  \draw[red, thick] (32.5,0.5) -- (32.5,-14.2);
+  \node[font=\tiny, red, anchor=south west] at (32.6,0.5) {27/11};
+\end{tikzpicture}
+\end{adjustbox}
+\vspace{4pt}
+\caption{Lịch kế hoạch V1.0 và ngày hoàn thành thực tế các hoạt động phát triển}\label{fig:t3-tracking-gantt}
+\end{figure}
+
+Biểu đồ cho thấy rõ hai giai đoạn: đến CP1, các hoạt động trễ do A03 (hình thoi bên phải thanh); từ I2, hầu hết hoạt động hoàn thành sớm hơn kế hoạch, riêng A07.1 và A10.1 trễ 1 ngày. Các hoạt động A07.1--A07.3 có cùng một ngày hoàn thành vì được gộp làm chung (Mục \ref{sec:t3-actual}).
+
 
 \subsubsection{Công việc phát sinh ngoài baseline}
 

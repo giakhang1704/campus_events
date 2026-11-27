@@ -1,9 +1,9 @@
-\subsection{Task 3.1. Triển khai Increment 2, Increment 3 và tích hợp hệ thống}
+\subsubsection{Triển khai Increment 2, Increment 3 và tích hợp hệ thống}
 \label{sec:t3-impl}
 
 Mục \ref{sec:i1-development} đã trình bày Increment 1. Mục này trình bày hai Increment còn lại và bước tích hợp, triển khai. Mỗi nội dung được đối chiếu với mã hoạt động trong Project Baseline V1.0 và commit tương ứng trên repository để có thể truy vết.
 
-\subsubsection{Increment 2: Đăng ký, danh sách chờ và email (A07.1--A08)}
+\subsubsubsection{Increment 2: Đăng ký, danh sách chờ và email (A07.1--A08)}
 
 Trước khi lập trình I2, nhóm tự quyết định các quy tắc còn mở sau CP1 (ngày 12/11/2026), dựa trên phương án đề xuất A3, A5 của bản đặc tả. Các quyết định này \textbf{chưa được khách hàng xác nhận} (xem Mục \ref{sec:t3-limitation-review}):
 \begin{itemize}
@@ -16,7 +16,7 @@ Backend I2 (commit \texttt{43f8c4c}, 12/11) thực hiện các quy tắc trên t
 
 Cùng ngày 12/11, nhóm tái cấu trúc backend sang kiến trúc phân tầng có interface Service/Repository (commit \texttt{4d56706}). Đây là công việc \textbf{không có trong baseline}, được thực hiện để I2/I3 không phải viết lại phần truy cập dữ liệu. Công sức của nó được ghi nhận riêng ở Mục \ref{sec:t3-actual}.
 
-\subsubsection{Increment 3: Điểm danh và báo cáo (A09.1--A10.2)}
+\subsubsubsection{Increment 3: Điểm danh và báo cáo (A09.1--A10.2)}
 
 Ngày 18/11/2026, nhóm quyết định (theo đề xuất A4, chưa có xác nhận của khách hàng): QR được mở từ \textbf{30 phút trước} \texttt{starts\_at}; mỗi sinh viên chỉ có một lượt check-in, không check-out; sinh viên phải bấm \textbf{xác nhận} sau khi quét thì hệ thống mới ghi điểm danh. Từ đó, luồng I3 được thiết kế như sau:
 \begin{enumerate}
@@ -29,7 +29,7 @@ Ngày 18/11/2026, nhóm quyết định (theo đề xuất A4, chưa có xác nh
 
 Backend I3 hoàn thành ngày 18/11 (commit \texttt{1b99579}). Frontend được hoàn thành theo ba phần: trang điểm danh của Organizer (18--19/11), báo cáo và CSV (22/11, commit \texttt{98f6024}), trang quét QR của sinh viên (23/11, commit \texttt{26efcbb}).
 
-\subsubsection{Tích hợp và triển khai (A11)}
+\subsubsubsection{Tích hợp và triển khai (A11)}
 
 Đến 25/11, nhánh \texttt{main} vẫn chỉ chứa I1; I2 và I3 nằm trên các nhánh tính năng nối tiếp nhau. Nhóm lập nhánh \texttt{test/system-validation} để rà soát toàn hệ thống (biên bản \texttt{docs/testing/SYSTEM\_REVIEW\_2026-11-25.md}), sửa lỗi và hợp nhất vào \texttt{main} trong cùng ngày (commit \texttt{727f379}).
 
@@ -48,7 +48,7 @@ Quản lý, tra cứu sự kiện & A05.2 & Hoàn thành ở I1; bổ sung giớ
 Đăng ký, hủy, sức chứa & A07.1 & Hoàn thành; kiểm thử 6 sinh viên tranh 1 chỗ chỉ có đúng 1 người được nhận.\\
 Danh sách chờ FIFO & A07.2 & Hoàn thành; đôn tự động khi hủy hoặc tăng sức chứa; bỏ qua người không đủ điều kiện.\\
 Email thông báo & A07.3 & Hoàn thành 3 loại thư qua Brevo; đã gửi thử thành công một thư thật.\\
-Điểm danh QR & A09.1 & Hoàn thành preview + xác nhận; \TBD{kết quả thử camera điện thoại thật qua HTTPS}.\\
+Điểm danh QR & A09.1 & Hoàn thành preview + xác nhận; đạt với camera giả lập; thử trên điện thoại thật qua HTTPS chưa thực hiện tại thời điểm nộp báo cáo (CR-05), sẽ chạy trước buổi demo.\\
 Điểm danh thủ công & A09.2 & Hoàn thành, có lý do và lịch sử chỉnh sửa.\\
 Báo cáo cơ bản & A10.1 & Hoàn thành; vắng mặt chỉ tính sau \texttt{ends\_at}.\\
 Xuất dữ liệu & A10.2 & \textbf{Chỉ CSV}; Excel được hoãn (CR-02).\\

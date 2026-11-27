@@ -1,9 +1,9 @@
-\subsection{Mô hình use case}
+\subsubsection{Mô hình use case}
 \label{sec:t3-usecase}
 
 Bản đặc tả use case đầu tiên được lập ngày 31/10/2026 (tệp \texttt{DacTa\_UseCase\_HeThongSuKien.docx}, 24 use case). Bản này được viết trước khi lập trình nên chứa nhiều đề xuất A1--A7 chưa được khách hàng xác nhận. Khi kết thúc I3, nhóm \textbf{rà soát lại toàn bộ đặc tả theo mã nguồn thực tế} và các quyết định phạm vi đã chốt. Kết quả là 23 use case được giữ (UC-01 đến UC-23), UC-24 bị loại bỏ, và bổ sung UC-25 \textit{Đổi mật khẩu} vốn đã có trong hệ thống nhưng chưa được đặc tả. Mã use case cũ được giữ nguyên để không làm đứt truy vết với các test case đã đặt tên theo mã này (ví dụ UC01-TC01, UC12-TC01).
 
-\subsubsection{Tác nhân}
+\subsubsubsection{Tác nhân}
 
 \begin{table}[H]
 \centering\small
@@ -20,7 +20,7 @@ Dịch vụ email (Brevo) & Hệ thống ngoài nhận yêu cầu gửi thư ở
 \end{tabularx}
 \end{table}
 
-\subsubsection{Sơ đồ use case}
+\subsubsubsection{Sơ đồ use case}
 
 \tikzset{
   uc/.style={ellipse, draw, align=center, font=\scriptsize, inner sep=0pt,
@@ -149,7 +149,7 @@ Các sơ đồ dưới đây chia theo vai trò để dễ đọc. Đường li�
 
 UC-09 không có tác nhân khởi tạo trực tiếp: đây là hành vi tự động trong biên hệ thống, mở rộng có điều kiện của UC-08 (hủy làm trống chỗ) và UC-13 (tăng sức chứa). Ngoài ra, trước khi nhận một đăng ký mới ở UC-06, hệ thống cũng chạy bước đôn để người chờ cũ không bị người đến sau vượt lên.
 
-\subsubsection{Điều chỉnh so với bản đặc tả ngày 31/10/2026}
+\subsubsubsection{Điều chỉnh so với bản đặc tả ngày 31/10/2026}
 
 Bảng \ref{tab:t3-uc-diff} liệt kê các điểm bản đặc tả cũ khác với hệ thống được triển khai. Các thay đổi về phạm vi (CR-01 đến CR-03) được quản lý như yêu cầu thay đổi ở Mục \ref{sec:t3-baseline-v2}; phần còn lại là chi tiết hóa các đề xuất A1--A7 do nhóm quyết định, không làm tăng phạm vi. Toàn bộ bảng này \textbf{chưa được khách hàng review} vì thời hạn dự án bị rút ngắn (Mục \ref{sec:t3-limitation-review}).
 
@@ -180,7 +180,7 @@ UC-23 & Không có điều kiện liên quan đến sự kiện. & Không khóa 
 \end{longtable}
 \endgroup
 
-\subsubsection{Đặc tả use case}
+\subsubsubsection{Đặc tả use case}
 
 Mỗi use case được đặc tả theo mẫu thống nhất. Các mã lỗi trong luồng ngoại lệ là mã thực tế API trả về, giúp đối chiếu trực tiếp với test case.
 

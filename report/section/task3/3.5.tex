@@ -19,7 +19,7 @@ Hoạt động kiểm soát chất lượng gồm ba lớp: (1) unit test và te
 18/11 & Backend I3 (CP3) & 43 unit test đạt; HTTP test I3 đạt; regression I1, I2 đạt; migration chạy lặp giữ nguyên dữ liệu. & \texttt{docs/testing/I3\_RESULTS.md}\\
 25/11 & Rà soát hệ thống & 55 test backend đạt (50 unit + 5 migration/HTTP); kiểm tra tổng thể trên 10.008 đăng ký; 15 nhóm UI contract đạt; build frontend production đạt. & \texttt{SYSTEM\_REVIEW\_2026-11-25.md}\\
 27/11 & Kiểm tra cloud & \texttt{/api/health} 200, \texttt{/api/auth/me} 401 khi chưa đăng nhập, proxy Vercel $\to$ Render hoạt động. & Kiểm tra thủ công của nhóm\\
-\TBD{} & Integration test A12.1 (CP4) & \TBD{kết quả luồng end-to-end trên HTTPS, gồm quét QR bằng điện thoại thật}. & \TBD{}\\
+26/11-- & Integration test A12.1 (CP4) & Đang thực hiện; luồng end-to-end trên HTTPS và quét QR bằng điện thoại thật chưa thực hiện tại thời điểm nộp báo cáo (CR-05), sẽ chạy trước buổi demo. & Kịch bản ở Mục \ref{sec:t4-delivery}\\
 \end{longtable}
 \endgroup
 
@@ -58,7 +58,7 @@ FR-11 & TC-BRW-API-08: lọc sự kiện theo thời gian. & I1 & Chưa làm (đ
 \begin{tabularx}{\linewidth}{@{}p{.12\linewidth}Xp{.10\linewidth}p{.25\linewidth}@{}}
 \toprule
 \textbf{Mã} & \textbf{Mô tả} & \textbf{Phát hiện} & \textbf{Xử lý}\\\midrule
-BUG-P2-05 & Gõ sai đường dẫn API trả 401 khiến giao diện tự đăng xuất. & 07/11, QA & Sửa phân loại mã lỗi; retest \TBD{ngày}.\\
+BUG-P2-05 & Gõ sai đường dẫn API trả 401 khiến giao diện tự đăng xuất. & 07/11, QA & Sửa phân loại mã lỗi; retest qua regression I1 ngày 12/11 (đạt).\\
 DEF-I2-01 & Test email phụ thuộc thời gian, lúc đạt lúc không. & 18/11, dev & Sửa harness, không đổi logic.\\
 DEF-I3-01 & Màn QR hiển thị ``có mặt'' cũ khi đăng ký đã hủy. & 25/11, rà soát & Kiểm tra cả trạng thái đăng ký hiện hành.\\
 DEF-I3-02 & 100 sự kiện nháp ở trang đầu che mất sự kiện đã công bố khi chọn sự kiện. & 25/11, rà soát & Tải tiếp theo trang, chống lặp.\\

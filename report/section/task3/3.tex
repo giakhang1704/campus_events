@@ -1,4 +1,4 @@
-\subsection{Tổ chức thực hiện}
+\subsubsection{Tổ chức thực hiện}
 \label{sec:i1-organization}
 
 Sau bước lập kế hoạch, quá trình phát triển hệ thống được phân chia thành ba Increment. Increment 1 (I1) thiết lập hạ tầng cốt lõi gồm quản lý tài khoản, phân quyền (RBAC), quản lý sự kiện và tra cứu. Mỗi Increment chỉ được chuyển giao sau khi vượt qua rà soát tại mốc kiểm soát (checkpoint) tương ứng.
@@ -15,12 +15,12 @@ Công tác quản lý và vận hành được phân định chặt chẽ theo 5
 
 Mã nguồn được quản lý theo mô hình Feature Branch và sáp nhập qua Pull Request (PR) có kiểm duyệt chéo. Quá trình kiểm thử độc lập áp dụng phiên bản bộ test và môi trường riêng biệt để bảo đảm tính trung lập. Tiến độ hàng tuần được ghi nhận qua Weekly Project Log (gồm công việc, công sức planned/actual, rủi ro và hành động quản lý). Giờ công thực tế được tổng hợp từ timesheet cá nhân để đối chiếu trực tiếp với các mã hoạt động trong baseline.
 
-\subsection{Chuẩn bị và triển khai Increment 1}
+\subsubsection{Chuẩn bị và triển khai Increment 1}
 \label{sec:i1-development}
 
 Increment 1 hoàn thiện luồng nghiệp vụ từ khởi tạo tài khoản Organizer đến tạo, công bố và tra cứu sự kiện. Mốc CP1 được thiết lập vào ngày 09/11/2026, ngay sau khi hoàn thành các hoạt động A06 và RA06. Trình tự triển khai bao gồm: cụ thể hóa thiết kế, thiết lập môi trường, phát triển chức năng, kiểm thử và đánh giá checkpoint.
 
-\subsubsection{Chuẩn bị thiết kế}
+\subsubsubsection{Chuẩn bị thiết kế}
 
 Kết quả của hoạt động A01 (ERD, đặc tả API, mockup UI) được chuyển đổi thành schema PostgreSQL, hợp đồng REST API và các màn hình Angular thực tế. Nhóm tuân thủ kiến trúc 3 tầng (Controller--Service--Repository), đảm bảo tính toàn vẹn transaction (rollback toàn bộ nếu trùng MSSV hoặc email). API giao tiếp qua định dạng JSON UTF-8 với nhóm mã lỗi chuẩn hóa: 400 (Validation), 401 (Unauthenticated), 403 (Forbidden), 404 (Not Found) và 409 (Conflict). 
 
@@ -42,7 +42,7 @@ A06 & QA; Dev sửa lỗi & Chạy test API/UI, phân loại kết quả, xử l
 
 Các quy tắc như vòng đời CSRF Token, ngắt session khi logout hoặc cơ chế Optimistic Locking được cập nhật bổ sung vào kế hoạch chi tiết trong quá trình thực hiện. Đây là các chi tiết kỹ thuật thuộc phạm vi đã duyệt, không phải phát sinh yêu cầu mới.
 
-\subsubsection{Thiết lập môi trường}
+\subsubsubsection{Thiết lập môi trường}
 
 Môi trường local chạy qua Docker Compose gồm Angular v21.0.0, Spring Boot v3.5.7 (Java 21) và PostgreSQL v17 (schema \texttt{campus}). Ngân sách kế hoạch A03 (8,0h) phân bổ cho PM (2,0h), BE (3,0h), FE (1,0h) và QA (2,0h). Smoke test ngày 03/11 xác nhận hạ tầng kết nối ổn định với schema 15 bảng. Các sự cố socket Docker Desktop, Java socket trên Windows và múi giờ JDBC đã được xử lý ở local.
 
@@ -62,13 +62,13 @@ Triển khai cloud & Đã có cấu trúc thư mục và hướng dẫn vận h�
 
 Dữ liệu thử nghiệm I1 (A04.1) khởi tạo danh mục khoa/viện, tài khoản mẫu cho 3 vai trò (Student, Organizer, Admin) và các sự kiện mẫu. Script kiểm thử tích hợp sử dụng môi trường Compose độc lập với CSDL tmpfs, cho phép thực thi lặp lại các kịch bản tạo, khóa, sửa và rollback mà không ảnh hưởng đến dữ liệu phát triển local.
 
-\subsubsection{Phát triển tài khoản}
+\subsubsubsection{Phát triển tài khoản}
 
 Phân hệ tài khoản (A05.1) hỗ trợ sinh viên tự đăng ký với thông tin cá nhân, MSSV, email, khoa và khóa học. Backend mặc định gán vai trò \texttt{STUDENT}; mọi giá trị vai trò do client tự gửi lên đều bị từ chối. MSSV và email bắt buộc duy nhất (ràng buộc Unique), nếu trùng sẽ trả mã lỗi 409. Khi đăng nhập thành công, hệ thống tạo session và trả cookie HttpOnly. Các thao tác ghi bắt buộc có CSRF token hợp lệ; việc ẩn nút trên UI chỉ mang tính hỗ trợ trải nghiệm. Tự kiểm thử dev xác nhận hệ thống xử lý đúng các trường hợp đăng ký hợp lệ, trùng dữ liệu, tài khoản bị khóa và giữ phiên sau reload.
 
 Chức năng Quản trị và RBAC (A05.1) cho phép Admin tìm kiếm tài khoản, lọc theo vai trò/trạng thái, khởi tạo Organizer (cấp mật khẩu tạm buộc đổi lần đầu) và khóa/mở khóa tài khoản. Backend kiểm tra quyền trực tiếp tại tầng API. Quy tắc bảo vệ hệ thống: từ chối Admin tự khóa chính mình, luôn duy trì tối thiểu một Admin \texttt{ACTIVE} và kiểm tra \texttt{version} để chống ghi đè đồng thời. Dự án đã chốt mô hình một vai trò cố định cho mỗi tài khoản và bỏ chức năng chuyển đổi vai trò (UC-24).
 
-\subsubsection{Phát triển sự kiện}
+\subsubsubsection{Phát triển sự kiện}
 
 Phân hệ quản lý sự kiện (A05.2) hỗ trợ Organizer tạo sự kiện ở dạng nháp (\texttt{DRAFT}), chỉnh sửa và công bố (\texttt{PUBLISHED}). Thông tin chủ sở hữu (ownership) trích xuất trực tiếp từ session. Ràng buộc thời gian được kiểm tra chặt chẽ: mở đăng ký $\le$ đóng đăng ký $\le$ bắt đầu $\le$ kết thúc; sức chứa phải là số nguyên dương. Mỗi cập nhật đều kiểm tra \texttt{version} (Optimistic Locking) để tránh xung đột dữ liệu (trả lỗi 409 nếu trùng). Thao tác truy cập sự kiện ngoài quyền sở hữu bị chặn bằng lỗi 404.
 
@@ -89,7 +89,7 @@ Chức năng I2/I3 & Đã có schema/placeholder; chưa phát triển nghiệp v
 \end{tabularx}
 \end{table}
 
-\subsubsection{Kiểm thử I1}
+\subsubsubsection{Kiểm thử I1}
 
 Công tác kiểm thử (A06) được tổ chức thành 2 lớp độc lập:
 \begin{enumerate}
@@ -263,7 +263,7 @@ Hồ sơ QA hiện có & Có test cases, acceptance criteria, log tổng hợp. 
 \end{tabularx}
 \end{table}
 
-\subsubsection{Xử lý vấn đề}
+\subsubsubsection{Xử lý vấn đề}
 
 Nhóm thiết lập danh mục theo dõi các sai lệch kỹ thuật (I1-01--I1-06) để xử lý dứt điểm trước mốc CP1. Trong đó, lỗi I1-04 (liên quan mã lỗi \texttt{BUG-P2-05}: API trả 401 khi gõ sai đường dẫn khiến UI tự đăng xuất) được ưu tiên khắc phục ngay.
 
@@ -285,7 +285,7 @@ I1-06 & Chưa có biên bản RA06 và hồ sơ nghiệm thu CP1. & Tổ chức 
 
 Về rủi ro, AR2 (Phân quyền) đã hoàn thành test suite RBAC; AR3 (Môi trường) đã khắc phục ở local nhưng tiếp tục theo dõi trên cloud; AR7 (Kỳ vọng yêu cầu) được quản lý qua tác vụ RA06. Các hoạt động RA02 (AWS Lightsail) và RA03 (Email) tiếp tục triển khai theo kế hoạch. Tổng công sức ứng phó rủi ro nằm trong ngân sách 11,1 giờ công đã lập.
 
-\subsubsection{Theo dõi tiến độ}
+\subsubsubsection{Theo dõi tiến độ}
 
 Tổng công sức kế hoạch cho 7 hoạt động chuẩn bị và triển khai I1 là 78,5 giờ công. Ghi nhận thực tế cho thấy smoke test local (03/11) muộn 4 ngày so với A03 (30/10); tự test sự kiện (04/11) muộn 1 ngày so với A05.2 (03/11). Do chưa chốt đủ timesheet cá nhân, dự án chưa tính chỉ số Chi phí thực tế ($AC$) và EVM trong đợt báo cáo này.
 
@@ -318,7 +318,7 @@ T2: 02--08/11 & Smoke test local (03/11), tự test dev (04/11), regression QA (
 \end{tabularx}
 \end{table}
 
-\subsubsection{Đánh giá CP1}
+\subsubsubsection{Đánh giá CP1}
 
 Trạng thái I1 hiện đạt mức sẵn sàng về mã nguồn và kết quả kiểm thử regression, đang tiến hành chốt điều chỉnh phạm vi và chuẩn bị hồ sơ demo nghiệm thu cho CP1 (09/11/2026).
 
