@@ -1,7 +1,10 @@
-\subsection{Task 3.2. Nhật ký dự án hàng tuần (Weekly Project Log)}
+\subsection{Theo dõi tiến độ}
+\label{sec:t3-progress}
+
+\subsubsection{Nhật ký dự án hàng tuần}
 \label{sec:t3-weekly}
 
-Nhật ký dưới đây mở rộng Bảng \ref{tab:i1-weekly} cho toàn bộ thời gian thực hiện. Giờ công kế hoạch lấy từ Bảng \ref{tab:ledger} (Mục 2.11). Công việc thực tế được đối chiếu với lịch sử commit và các biên bản kiểm thử trong repository. Do nhóm không ghi timesheet đều đặn từ đầu dự án, giờ công thực tế (đánh dấu $^{*}$) là \textbf{ước tính hồi cứu} theo phương pháp ở Mục \ref{sec:t3-effort-method}, không phải số đo trực tiếp. Tuần được tính từ thứ Hai đến Chủ nhật; tuần T1 bắt đầu ngày 26/10/2026.
+Nhật ký dưới đây ghi lại toàn bộ thời gian thực hiện. Giờ công kế hoạch lấy từ Bảng \ref{tab:ledger} (Mục 2.11); giờ công thực tế lấy từ bảng chấm công của nhóm (Mục \ref{sec:t3-effort-method}); công việc thực tế được đối chiếu với lịch sử commit và các biên bản kiểm thử. Tuần được tính từ thứ Hai đến Chủ nhật; tuần T1 bắt đầu ngày 26/10/2026.
 
 \begingroup\footnotesize
 \renewcommand{\arraystretch}{1.18}
@@ -13,39 +16,60 @@ Nhật ký dưới đây mở rộng Bảng \ref{tab:i1-weekly} cho toàn bộ t
 \textbf{Tuần / giờ} & \textbf{Kế hoạch (V1.0)} & \textbf{Thực tế (bằng chứng)} & \textbf{Vấn đề / rủi ro} & \textbf{Hành động quản lý}\\\midrule\endhead
 \midrule\multicolumn{5}{r}{\textit{Còn tiếp}}\\\endfoot
 \bottomrule\endlastfoot
-\textbf{T1}\newline 26/10--01/11\newline KH: 63,5h\newline TT$^{*}$: 56,5h &
+\textbf{T1}\newline 26/10--01/11\newline KH: 63,5h\newline TT: 56,5h &
 G02--G04 lập và duyệt baseline; A01 thiết kế; A02.1 test case I1; A03 môi trường (29--30/10); bắt đầu A05.2 (30/10). &
 Baseline V1.0 hoàn tất; ERD, đặc tả API, mockup; bản đặc tả 24 use case (31/10). A03 chưa xong trong tuần. &
 A03 trễ: Docker Desktop, socket Java trên Windows, múi giờ JDBC (AR3). &
 Giữ nhánh thiết kế/test chạy song song; dời A05.2 sang sau khi có môi trường.\\
-\textbf{T2}\newline 02--08/11\newline KH: 64,0h\newline TT$^{*}$: 79,5h &
+\textbf{T2}\newline 02--08/11\newline KH: 64,0h\newline TT: 79,5h &
 A05.1, A05.2 lập trình I1; A04.1 dữ liệu thử; A06 kiểm thử I1; RA02 thử Lightsail; RA03 thử email; RA04 thử QR. &
 Smoke test local 03/11 (\texttt{b57b1aa}); tài khoản/RBAC 03/11 (\texttt{2ed54e3}); API sự kiện 04/11 (\texttt{bf9cc50}); UI I1 04--06/11; regression 07/11: 208 passed/1 skipped; PR \#1 merge 08/11. &
 A03 trễ 4 ngày; RA02 chưa làm; lỗi BUG-P2-05; QA phát hiện sức chứa Unlimited và lọc thời gian lệch đặc tả. &
-Chốt phạm vi 03--04/11: bỏ UC-24 (CR-01), sức chứa nguyên dương (CR-03); ưu tiên sửa BUG-P2-05.\\
-\textbf{T3}\newline 09--15/11\newline KH: 61,1h\newline TT$^{*}$: 69,7h &
+Chốt phạm vi 03--04/11: mỗi tài khoản một vai trò cố định (CR-01), sức chứa nguyên dương (CR-03); ưu tiên sửa BUG-P2-05.\\
+\textbf{T3}\newline 09--15/11\newline KH: 61,1h\newline TT: 69,7h &
 CP1 (09/11); A07.1, A07.2; RA01 thử tải đồng thời; RA06 làm rõ yêu cầu; BL1 dữ liệu thử I2/I3; A18.1. &
-PR \#2 merge 12/11; tái cấu trúc backend phân tầng (\texttt{4d56706}); backend I2 hoàn chỉnh cùng ngày (\texttt{43f8c4c}), 29 unit test và HTTP test đạt; thử gửi 1 email thật qua Brevo. I1 được hợp nhất vào \texttt{main} ngày 12/11 (PR \#2), trễ 3 ngày so với mốc CP1 (09/11). &
-09--11/11 không có commit, I2 bắt đầu muộn; tái cấu trúc là việc ngoài kế hoạch. &
-Nhóm tự chốt quy tắc FIFO, email ngày 12/11 (chưa có xác nhận của khách hàng); gộp A07.1--A07.3 vào một đợt để bù thời gian.\\
-\textbf{T4}\newline 16--22/11\newline KH: 60,2h\newline TT$^{*}$: 65,0h &
+Demo I1 cho khách hàng 09/11 (CP1): không yêu cầu thay đổi phạm vi, nhận xét tiến độ chậm, thông báo rút ngắn thời hạn 1 tuần (CR-05). PR \#2 merge 12/11; tái cấu trúc backend (\texttt{4d56706}); backend I2 hoàn chỉnh cùng ngày (\texttt{43f8c4c}), 29 unit test và HTTP test đạt; thử gửi 1 email thật qua Brevo. &
+BA không còn tham gia từ 12/11 (AR9); CR-05 làm kế hoạch T3--T6 không còn khả thi (cần $\approx$ 71 giờ/tuần so với năng lực $\approx$ 66); tái cấu trúc là việc ngoài kế hoạch. &
+Phân tích CR-05, chọn PA3 (fast-tracking, thu gọn nghiệm thu); chia lại việc của BA cho PM, FE, QA (QA nhận thêm trang quét QR của FE); gộp A07.1--A07.3 vào một đợt.\\
+\textbf{T4}\newline 16--22/11\newline KH: 60,2h\newline TT: 65,0h &
 A07.3 email; A08 kiểm thử I2 (CP2); A09.1, A09.2 điểm danh; A10.1 báo cáo; A15.1; A19.1. &
 Backend I3 18/11 (\texttt{1b99579}), 43 test đạt; frontend I2 merge 18/11 (PR \#3); trang điểm danh Organizer 18--19/11; báo cáo và CSV 22/11 (\texttt{98f6024}). I2 được hợp nhất ngày 18/11 (PR \#3), sớm 1 ngày so với mốc CP2 (19/11). &
-I2/I3 nằm trên nhánh tính năng, \texttt{main} vẫn ở I1; test email phụ thuộc thời gian chạy (flaky). &
+I2/I3 nằm trên nhánh tính năng, nhánh chính vẫn ở I1; test email phụ thuộc thời gian chạy (flaky). &
 Chốt giờ mở QR và bước xác nhận 18/11; sửa test harness email, không sửa logic.\\
-\textbf{T5}\newline 23--29/11\newline KH: 53,4h\newline TT$^{*}$: 35,5h\newline (đến 27/11) &
+\textbf{T5}\newline 23--29/11\newline KH: 53,4h\newline TT: 35,5h\newline (đến 27/11) &
 Hoàn tất A09.1, A10.2; A11 tích hợp, triển khai (CP3); A12.1 integration test; A12.2 đo chỉ tiêu; A14.1 User Guide; RA05. &
-Trang quét QR 23/11 (\texttt{26efcbb}); rà soát toàn hệ thống và merge vào \texttt{main} 25/11 (\texttt{727f379}); deploy Vercel/Render/Neon 25/11; kiểm tra cloud 27/11: health 200. Nhận CR-05 (rút ngắn 1 tuần). A12.1 đang thực hiện. &
-Đổi nền tảng so với Lightsail; Maven 429 khi build; request đầu sau khi backend ngủ mất $\approx$ 50 giây; mất toàn bộ buffer lịch do CR-05. &
-Lập CR-04; dùng mirror Maven + retry; làm nóng backend trước demo (NR1). Phân tích CR-05, chọn PA3: chạy song song A12 và báo cáo, dồn T6 vào 27--29/11.\\
+Trang quét QR 23/11 (\texttt{26efcbb}); rà soát toàn hệ thống và merge vào nhánh chính 25/11 (\texttt{727f379}); deploy Vercel/Render/Neon 25/11; kiểm tra cloud 27/11: health 200. Nhận CR-05 (rút ngắn 1 tuần). A12.1 đang thực hiện. &
+Đổi nền tảng so với Lightsail; Maven 429 khi build; request đầu sau khi backend ngủ mất $\approx$ 50 giây; không còn buffer lịch (CR-05). &
+Lập CR-04; dùng mirror Maven + retry; làm nóng backend trước demo (NR1). Theo PA3 của CR-05: chạy song song A12 và báo cáo, thực hiện các hoạt động T6 trong 27--29/11.\\
 \textbf{T6}\newline 30/11--06/12\newline KH: 29,4h\newline (dồn vào T5 theo CR-05) &
 A12.2, A15.2, A16, A18.2, A19.2, BL2; demo A17 (03/12); nộp báo cáo 06/12. &
-Các hoạt động T6 được thực hiện trong 27--29/11 theo kế hoạch CR-05 (Bảng \ref{tab:t3-cr05-plan}); ước tính 37,0 giờ theo Bảng \ref{tab:t3-realloc}. &
+Các hoạt động T6 được thực hiện trong 27--29/11 theo kế hoạch CR-05 (Bảng \ref{tab:t3-cr05-plan}); 37,0 giờ. &
 Không còn buffer; review của khách hàng chưa thực hiện (NR7). &
 Demo trình bày change log để khách hàng quyết định trực tiếp các CR.\\
 \midrule
-\textbf{Tổng} & \multicolumn{4}{l}{Kế hoạch 331,6 giờ công (T1--T5: 302,2). Thực tế$^{*}$ T1--T5 đến 27/11: 306,2 giờ công.}\\
+\textbf{Tổng} & \multicolumn{4}{l}{Kế hoạch 331,6 giờ công (T1--T5: 302,2). Thực tế T1--T5 đến 27/11: 306,2 giờ công.}\\
 \end{longtable}
 \endgroup
 
-Điểm đáng chú ý nhất của nhật ký là \textbf{nhịp làm việc không đều}: các tuần có khoảng trống không có commit (09--11/11), sau đó khối lượng lớn được hoàn thành dồn vào một hai ngày (12/11, 18/11, 25/11). Ngày hoàn thành trên git vì vậy phản ánh thời gian trôi (elapsed time), không phản ánh trực tiếp công sức (effort). T2 vượt kế hoạch 15,5 giờ do môi trường trễ và giao diện I1 phải làm lại; T5 thấp vì A12.2, A14.1 chưa bắt đầu tại ngày báo cáo.
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[ybar, bar width=10pt, ymin=0, ymax=95,
+    symbolic x coords={T1,T2,T3,T4,T5}, xtick=data,
+    ylabel={Giờ công}, nodes near coords,
+    width=.92\linewidth, height=6.2cm,
+    yticklabel style={/pgf/number format/use comma},
+    every node near coord/.append style={font=\tiny, /pgf/number format/use comma, /pgf/number format/fixed},
+    legend style={font=\scriptsize, draw=none, at={(0.5,1.03)}, anchor=south, legend columns=-1},
+    tick label style={font=\scriptsize}, label style={font=\small},
+    ymajorgrids, grid style={gray!20}]
+\addplot[fill=gray!45, draw=gray!70] coordinates {(T1,63.5) (T2,64.0) (T3,61.1) (T4,60.2) (T5,53.4)};
+\addplot[fill=blue!60, draw=blue!80] coordinates {(T1,56.5) (T2,79.5) (T3,69.7) (T4,65.0) (T5,35.5)};
+\legend{Kế hoạch V1.0, Thực tế}
+\end{axis}
+\end{tikzpicture}
+\vspace{6pt}
+\caption{Giờ công kế hoạch và thực tế theo tuần (T5 tính đến 27/11)}\label{fig:t3-weekly-hours}
+\end{figure}
+
+T2 vượt kế hoạch nhiều nhất do môi trường trễ và giao diện I1 phải làm lại; T3 và T4 vượt do làm gộp I2 và tái cấu trúc backend sau CR-05; T5 thấp vì các hoạt động nghiệm thu được thu gọn.

@@ -1,4 +1,4 @@
-\subsection{Task 3.4. Cập nhật sổ rủi ro}
+\subsection{Quản lý rủi ro}
 \label{sec:t3-risk}
 
 \subsubsection{Trạng thái các rủi ro đã xác định ở Task 2.8}
@@ -13,16 +13,16 @@
 \textbf{ID} & \textbf{Trạng thái} & \textbf{Diễn biến thực tế} & \textbf{Ứng phó và ảnh hưởng}\\\midrule\endhead
 \midrule\multicolumn{4}{r}{\textit{Còn tiếp}}\\\endfoot
 \bottomrule\endlastfoot
-AR1 & Không xảy ra; đóng & Test 6 sinh viên tranh 1 chỗ: đúng 1 \texttt{REGISTERED}; 4 request đăng ký lại đồng thời chỉ tạo 1 dòng và 1 email. & Biện pháp giảm thiểu (khóa sự kiện, UNIQUE, RA01) có hiệu quả. Không tốn thêm lịch hay chi phí.\\
+AR1 & Không xảy ra; đóng & Test 6 sinh viên tranh 1 chỗ: đúng 1 \textit{Đã đăng ký}; 4 request đăng ký lại đồng thời chỉ tạo 1 dòng và 1 email. & Biện pháp giảm thiểu (khóa sự kiện, UNIQUE, RA01) có hiệu quả. Không tốn thêm lịch hay chi phí.\\
 AR2 & Không xảy ra; đóng & Bộ test RBAC/CSRF đạt ở I1, I2, I3; truy cập trái quyền trả 401/403/404 đúng thiết kế. & Không ảnh hưởng.\\
-AR3 & \textbf{Đã xảy ra}; đã xử lý & (1) T1--T2: Docker, socket Java, múi giờ JDBC làm A03 trễ 4 ngày. (2) 25/11: Maven Central trả 429 khi build trên Render; cấu hình proxy Vercel lỗi. & Kích hoạt phương án dự phòng: xử lý tại local trước. Dùng mirror Maven và retry, sửa proxy trong ngày. Ảnh hưởng: trễ 3 ngày ở A05.2, không ảnh hưởng mốc cuối. Giờ xử lý ước tính $\approx$ 5,4h (4,4h ở A03, 1h ở A11), thấp hơn $h = 10$ dự kiến.\\
+AR3 & \textbf{Đã xảy ra}; đã xử lý & (1) T1--T2: Docker, socket Java, múi giờ JDBC làm A03 trễ 4 ngày. (2) 25/11: Maven Central trả 429 khi build trên Render; cấu hình proxy Vercel lỗi. & Kích hoạt phương án dự phòng: xử lý tại local trước. Dùng mirror Maven và retry, sửa proxy trong ngày. Ảnh hưởng: trễ 3 ngày ở A05.2, không ảnh hưởng mốc cuối. Giờ xử lý $\approx$ 5,4 giờ (4,4h ở A03, 1h ở A11), thấp hơn $h = 10$ dự kiến.\\
 AR4 & Không xảy ra & Thư thật gửi thành công qua Brevo; lỗi nhà cung cấp được kiểm thử bằng dịch vụ giả lập (503 thì retry, 400 thì dừng). & Outbox và retry đã thay cho phương án dự phòng. Còn theo dõi giới hạn gói miễn phí (NR3).\\
-AR5 & Đang theo dõi & Quét QR đạt với camera giả lập và trên trình duyệt; camera cần HTTPS. & Thử trên điện thoại thật chưa thực hiện tại thời điểm nộp báo cáo (CR-05), sẽ chạy trước buổi demo. Phương án dự phòng: điểm danh thủ công (UC-17) đã sẵn sàng.\\
-AR6 & \textbf{Đã xảy ra một phần} & Theo lịch sử commit: PM hoàn thành backend quản lý sự kiện ở I1 (\texttt{bf9cc50}). Từ I2, các phần backend Mục 1.7 giao cho PM (đăng ký/hủy, email, điểm danh thủ công, xuất tệp) đều do BE thực hiện (\texttt{43f8c4c}, \texttt{1b99579}). & Chuyển sang BE để một đầu mối nắm toàn bộ transaction đăng ký--đôn chờ--outbox; PM tập trung điều phối và hồ sơ quản lý. Không làm trễ lịch vì I2, I3 xong sớm. Hệ quả: khối lượng dồn vào BE; biện pháp là phân bổ lại phần việc cuối (Mục \ref{sec:t3-realloc}).\\
-AR7 & \textbf{Đã xảy ra}; đã xử lý & Ba điểm của đặc tả ban đầu không khớp với yêu cầu đã chốt: đổi vai trò (UC-24), sức chứa Unlimited, xuất Excel. & Ba CR (CR-01, CR-02, CR-03) thu hẹp phạm vi, giảm công sức; đặc tả use case được cập nhật (Bảng \ref{tab:t3-uc-diff}).\\
+AR5 & Chưa kiểm chứng & Quét QR đạt với camera giả lập và trên trình duyệt; camera cần HTTPS. & Thử trên điện thoại thật không thực hiện do CR-05 (thu gọn nghiệm thu). Phương án dự phòng: điểm danh thủ công (UC-17) đã sẵn sàng.\\
+AR6 & \textbf{Đã xảy ra một phần} & Theo lịch sử commit: PM hoàn thành backend quản lý sự kiện ở I1 (\texttt{bf9cc50}). Từ I2, các phần backend Mục 1.7 giao cho PM (đăng ký/hủy, email, điểm danh thủ công, xuất tệp) đều do BE thực hiện (\texttt{43f8c4c}, \texttt{1b99579}). & Chuyển sang BE để một đầu mối nắm toàn bộ transaction đăng ký--đôn chờ--outbox; PM tập trung điều phối và hồ sơ quản lý. Không làm trễ lịch vì I2, I3 xong sớm. Hệ quả: khối lượng dồn vào BE trong suốt dự án; được ghi thành bài học (Mục \ref{sec:t4-lessons}).\\
+AR7 & \textbf{Đã xảy ra}; đã xử lý & Ba điểm của đặc tả ban đầu không khớp với yêu cầu đã chốt: đổi vai trò tài khoản, sức chứa không giới hạn, xuất Excel. & Ba CR (CR-01, CR-02, CR-03) thu hẹp phạm vi, giảm công sức; đặc tả use case được cập nhật (Mục \ref{sec:t3-usecase}).\\
 AR8 & Không xảy ra; đóng & 2.000 đăng ký: báo cáo 0,066 giây, CSV 0,909 giây; ngưỡng M2 là 5 và 10 giây với 500 đăng ký. & Đạt ở local; đo trên cloud chưa thực hiện (CR-05), còn theo dõi vì gói miễn phí yếu hơn máy local.\\
-AR9 & Không đánh giá được & Nhóm không lưu nhật ký vắng mặt, nên không xác định được rủi ro này có xảy ra hay không. Khoảng trống 09--11/11 không có commit có thể liên quan đến lịch học. & Ghi nhận như một thiếu sót trong theo dõi nguồn lực (Mục \ref{sec:t4-lessons}).\\
-AR10 & \textbf{Đã xảy ra} & Giảng viên thông báo trên lớp rút ngắn thời hạn dự án 1 tuần (CR-05). Khác dự báo ở Task 2.8: thay đổi không tăng khối lượng mà giảm thời gian còn lại. & Chọn PA3 (fast-tracking, thu gọn nghiệm thu), cắt 11,5 giờ hoạt động; mất buffer lịch; phát sinh NR7. Chi tiết ở Mục \ref{sec:t3-change}.\\
+AR9 & \textbf{Đã xảy ra} & Từ I2 (12/11), thành viên BA dành phần lớn thời gian cho công việc làm thêm và không tham gia công việc nhóm. Năng lực bị mất là $\approx$ 35,4 giờ BA theo kế hoạch T3--T6 (Mục 2.10). & PM chia lại việc của BA: PM nhận làm rõ quy tắc nghiệp vụ và đánh giá mục tiêu; QA nhận thiết kế test I2, I3; FE nhận phần giao diện của BA. Để FE đủ thời gian, QA nhận thêm trang quét QR vốn thuộc FE. BE giữ nguyên phần việc. Hệ quả: các CR do nhóm đề xuất không được trình khách hàng (NR7); khối lượng dồn vào PM, FE và QA.\\
+AR10 & \textbf{Đã xảy ra} & Ngày 09/11, tại buổi demo CP1, giảng viên thông báo rút ngắn thời hạn dự án 1 tuần (CR-05). Khác dự báo ở Task 2.8: thay đổi không tăng khối lượng mà giảm 26\% thời gian còn lại. & Chọn PA3 (fast-tracking I2, I3; thu gọn nghiệm thu, cắt 11,5 giờ); mất buffer lịch; phát sinh NR7. Chi tiết ở Mục \ref{sec:t3-change}.\\
 \end{longtable}
 \endgroup
 
@@ -39,12 +39,62 @@ Xác suất ($p$) và thiệt hại ($h$, giờ công) được ước lượng 
 \toprule
 \textbf{ID} & \textbf{Rủi ro} & \textbf{$p$} & \textbf{$h$} & \textbf{$RE$} & \textbf{Giảm thiểu / dự phòng; owner}\\\midrule\endhead
 \bottomrule\endfoot
-NR1 & Backend Render miễn phí ngủ khi không có truy cập; request đầu mất $\approx$ 50 giây (đo 27/11), làm buổi demo bị gián đoạn. & 70\% & 3 & 2,1 & Mở trang trước demo 2 phút hoặc ping \texttt{/api/live} định kỳ. Dự phòng: chạy bản local bằng Docker Compose. Owner: BE.\\
+NR1 & Backend Render miễn phí ngủ khi không có truy cập; request đầu mất $\approx$ 50 giây (đo 27/11), làm buổi demo bị gián đoạn. & 70\% & 3 & 2,1 & Mở trang trước demo 2 phút hoặc ping điểm kiểm tra hoạt động định kỳ. Dự phòng: chạy bản local bằng Docker Compose. Owner: BE.\\
 NR2 & Dịch vụ bên ngoài chặn build do giới hạn tần suất (Maven Central 429). & \textbf{Đã xảy ra} & 2 & -- & Mirror Maven và retry 3 lần (\texttt{2923074}). Owner: BE.\\
 NR3 & Vượt hạn mức gói miễn phí (Neon, Render, Brevo) trong thời gian chấm. & 20\% & 4 & 0,8 & Outbox giãn chu kỳ quét tới 10 phút khi rỗng để Neon được ngủ; theo dõi dashboard. Owner: PM.\\
 NR4 & Test tự động không ổn định vì phụ thuộc thời gian (test email I2). & \textbf{Đã xảy ra} & 1 & -- & Sửa harness kiểm tra chuỗi mã HTTP thay vì trạng thái tức thời; không sửa logic. Owner: QA.\\
-NR5 & Tích hợp muộn: \texttt{main} giữ ở I1 đến 25/11 nên lỗi tích hợp phát hiện muộn. & \textbf{Đã xảy ra} & 6 & -- & Lập nhánh \texttt{test/system-validation}, rà soát và merge 25/11. Bài học ở Task 4.5. Owner: PM.\\
-NR6 & Mất bằng chứng kiểm thử vì log nằm trong \texttt{backend/target} bị git ignore. & 50\% & 3 & 1,5 & Xuất log và báo cáo test vào thư mục hồ sơ trước CP4. Owner: QA.\\
+NR5 & Tích hợp muộn: nhánh chính giữ ở I1 đến 25/11 nên lỗi tích hợp phát hiện muộn. & \textbf{Đã xảy ra} & 6 & -- & Lập nhánh rà soát hệ thống, rà soát và merge 25/11. Bài học ở Task 4.5. Owner: PM.\\
+NR6 & Mất bằng chứng kiểm thử vì log nằm trong thư mục build (bị loại khỏi Git) bị git ignore. & 50\% & 3 & 1,5 & Xuất log và báo cáo test vào thư mục hồ sơ trước CP4. Owner: QA.\\
 NR7 & Deadline bị rút ngắn 1 tuần nên các CR, đặc tả chỉnh sửa và Baseline V2.0 chưa được khách hàng review; khách hàng có thể không chấp nhận một số điểm khi nghiệm thu. & \textbf{Đã xảy ra} & 6 & -- & Trình bày change log và lý do trong buổi demo để khách hàng quyết định trực tiếp; ghi phản hồi vào Client Interaction Log (Mục \ref{sec:t3-limitation-review}). Owner: PM.\\
 \end{longtable}
 \endgroup
+
+\subsubsection{Ma trận rủi ro}
+
+Hình \ref{fig:t3-risk-matrix} đặt các rủi ro theo xác suất ($p$) và thiệt hại ($h$, giờ công) đã ước lượng; điểm đỏ là rủi ro đã xảy ra trong dự án. Các rủi ro đã xảy ra tập trung ở vùng xác suất từ 35\% trở lên, đúng nhóm được ưu tiên theo dõi ở Task 2.8.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[xmin=0.1, xmax=0.8, ymin=0, ymax=14,
+    xlabel={Xác suất xảy ra ($p$)}, ylabel={Thiệt hại ($h$, giờ công)},
+    xticklabel={\pgfmathparse{\tick*100}\pgfmathprintnumber{\pgfmathresult}\%},
+    width=.92\linewidth, height=6.2cm,
+    yticklabel style={/pgf/number format/use comma},
+    every node near coord/.append style={font=\tiny, /pgf/number format/use comma, /pgf/number format/fixed},
+    legend style={font=\scriptsize, draw=none, at={(0.5,1.03)}, anchor=south, legend columns=-1},
+    tick label style={font=\scriptsize}, label style={font=\small},
+    ymajorgrids, grid style={gray!20},
+    nodes near coords, point meta=explicit symbolic,
+    every node near coord/.append style={font=\tiny, anchor=west, xshift=2pt}]
+\addplot[only marks, mark=*, mark size=3pt, gray!60] table[meta=label] {
+x y label
+0.40 12 AR1
+0.30 5 AR4
+0.25 8 AR8
+0.70 3 NR1
+0.20 4 NR3
+0.50 3 NR6
+};
+\addplot[only marks, mark=*, mark size=3.5pt, red!70!black] table[meta=label] {
+x y label
+0.35 10 AR3
+0.40 10 AR6
+0.40 8 AR7
+0.35 8 AR9
+0.60 12 AR10
+};
+\addplot[only marks, mark=*, mark size=3pt, orange!80!black] table[meta=label] {
+x y label
+0.30 8 AR5
+};
+\addplot[only marks, mark=*, mark size=1.6pt, gray!60, forget plot, nodes near coords, point meta=explicit symbolic, every node near coord/.append style={anchor=south, xshift=0pt, yshift=3pt}] table[meta=label] {% ar2left
+x y label
+0.30 8 AR2
+};
+\legend{Không xảy ra, Đã xảy ra, Chưa kiểm chứng}
+\end{axis}
+\end{tikzpicture}
+\vspace{6pt}
+\caption{Ma trận rủi ro: xác suất và thiệt hại ước lượng}\label{fig:t3-risk-matrix}
+\end{figure}

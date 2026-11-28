@@ -1,26 +1,18 @@
-\subsubsection{Tổ chức thực hiện}
-\label{sec:i1-organization}
-
-Sau bước lập kế hoạch, quá trình phát triển hệ thống được phân chia thành ba Increment. Increment 1 (I1) thiết lập hạ tầng cốt lõi gồm quản lý tài khoản, phân quyền (RBAC), quản lý sự kiện và tra cứu. Mỗi Increment chỉ được chuyển giao sau khi vượt qua rà soát tại mốc kiểm soát (checkpoint) tương ứng.
-
-
-Công tác quản lý và vận hành được phân định chặt chẽ theo 5 vai trò:
-\begin{itemize}
-    \item \textbf{PM:} Theo dõi tiến độ, điều phối nhân sự, quản lý rủi ro và tổng hợp các quyết định phê duyệt.
-    \item \textbf{BA:} Trích xuất quy tắc nghiệp vụ, xây dựng tiêu chí nghiệm thu (Acceptance Criteria) và hỗ trợ thiết kế giao diện.
-    \item \textbf{BE:} Phụ trách kiến trúc backend, thiết kế CSDL và xây dựng hợp đồng API.
-    \item \textbf{FE:} Xây dựng giao diện người dùng Angular, tích hợp API và review phần UI.
-    \item \textbf{QA:} Xây dựng kịch bản kiểm thử độc lập, thực thi test suite và theo dõi lỗi phát sinh.
-\end{itemize}
-
-Mã nguồn được quản lý theo mô hình Feature Branch và sáp nhập qua Pull Request (PR) có kiểm duyệt chéo. Quá trình kiểm thử độc lập áp dụng phiên bản bộ test và môi trường riêng biệt để bảo đảm tính trung lập. Tiến độ hàng tuần được ghi nhận qua Weekly Project Log (gồm công việc, công sức planned/actual, rủi ro và hành động quản lý). Giờ công thực tế được tổng hợp từ timesheet cá nhân để đối chiếu trực tiếp với các mã hoạt động trong baseline.
-
-\subsubsection{Chuẩn bị và triển khai Increment 1}
+\subsection{Increment 1: Tài khoản, phân quyền và quản lý sự kiện}
 \label{sec:i1-development}
 
-Increment 1 hoàn thiện luồng nghiệp vụ từ khởi tạo tài khoản Organizer đến tạo, công bố và tra cứu sự kiện. Mốc CP1 được thiết lập vào ngày 09/11/2026, ngay sau khi hoàn thành các hoạt động A06 và RA06. Trình tự triển khai bao gồm: cụ thể hóa thiết kế, thiết lập môi trường, phát triển chức năng, kiểm thử và đánh giá checkpoint.
+\subsubsection{Mục tiêu và phạm vi}
 
-\subsubsubsection{Chuẩn bị thiết kế}
+I1 xây dựng nền tảng cho các increment sau: luồng từ khi Quản trị viên cấp tài khoản Người tổ chức đến khi Người tổ chức tạo, công bố sự kiện và sinh viên tra cứu được sự kiện.
+
+\begin{itemize}
+    \item \textbf{Yêu cầu:} FR-01 đến FR-11; NFR-03, NFR-04, NFR-05. Use case UC-01 đến UC-05, UC-12 đến UC-14, UC-21 đến UC-23, UC-24.
+    \item \textbf{Hoạt động:} A01, A02.1, A03, A04.1, A05.1, A05.2, A06.
+    \item \textbf{Mục tiêu đóng góp:} O3 (dữ liệu nhất quán nhờ ràng buộc và version), O4 (sinh viên tìm được sự kiện).
+    \item \textbf{Checkpoint:} CP1, kế hoạch ngày 09/11/2026.
+\end{itemize}
+
+\subsubsection{Kế hoạch chi tiết}
 
 Kết quả của hoạt động A01 (ERD, đặc tả API, mockup UI) được chuyển đổi thành schema PostgreSQL, hợp đồng REST API và các màn hình Angular thực tế. Nhóm tuân thủ kiến trúc 3 tầng (Controller--Service--Repository), đảm bảo tính toàn vẹn transaction (rollback toàn bộ nếu trùng MSSV hoặc email). API giao tiếp qua định dạng JSON UTF-8 với nhóm mã lỗi chuẩn hóa: 400 (Validation), 401 (Unauthenticated), 403 (Forbidden), 404 (Not Found) và 409 (Conflict). 
 
@@ -35,16 +27,18 @@ Cơ chế xác thực sử dụng Session Cookie HttpOnly kết hợp CSRF token
 A03 & BE; PM, FE, QA & Cấu hình CSDL, biến môi trường, build, API health và hướng dẫn chạy. & Khởi động stack thành công; FE--BE--CSDL kết nối đạt; ghi nhận phần cloud/email còn thiếu.\\
 A05.1 & BE; BA hỗ trợ UI & Đăng ký, đăng nhập, session, CSRF, quản trị tài khoản và RBAC. & Luồng hợp lệ vận hành đúng; truy cập trái quyền bị chặn ở API; CSDL nhất quán.\\
 A05.2 & PM, FE; BE review & Tạo/sửa/công bố sự kiện; kiểm tra ownership/version; tra cứu danh sách và chi tiết. & Không lộ sự kiện nháp; chặn sửa sự kiện người khác; xử lý xung đột; UI dùng API thật.\\
-A06 & QA; Dev sửa lỗi & Chạy test API/UI, phân loại kết quả, xử lý lỗi, retest và chuẩn bị CP1. & Có test report theo phiên bản; sai lệch được xử lý hoặc có quyết định chấp nhận.\\
+A06 & QA; BE, FE sửa lỗi & Chạy test API/UI, phân loại kết quả, xử lý lỗi, retest và chuẩn bị CP1. & Có test report theo phiên bản; sai lệch được xử lý hoặc có quyết định chấp nhận.\\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 Các quy tắc như vòng đời CSRF Token, ngắt session khi logout hoặc cơ chế Optimistic Locking được cập nhật bổ sung vào kế hoạch chi tiết trong quá trình thực hiện. Đây là các chi tiết kỹ thuật thuộc phạm vi đã duyệt, không phải phát sinh yêu cầu mới.
 
-\subsubsubsection{Thiết lập môi trường}
+\subsubsection{Triển khai}
 
-Môi trường local chạy qua Docker Compose gồm Angular v21.0.0, Spring Boot v3.5.7 (Java 21) và PostgreSQL v17 (schema \texttt{campus}). Ngân sách kế hoạch A03 (8,0h) phân bổ cho PM (2,0h), BE (3,0h), FE (1,0h) và QA (2,0h). Smoke test ngày 03/11 xác nhận hạ tầng kết nối ổn định với schema 15 bảng. Các sự cố socket Docker Desktop, Java socket trên Windows và múi giờ JDBC đã được xử lý ở local.
+\subsubsubsection{Môi trường}
+
+Môi trường local chạy qua Docker Compose gồm Angular v21.0.0, Spring Boot v3.5.7 (Java 21) và PostgreSQL v17 (schema riêng của hệ thống). Ngân sách kế hoạch A03 (8,0h) phân bổ cho PM (2,0h), BE (3,0h), FE (1,0h) và QA (2,0h). Smoke test ngày 03/11 xác nhận hạ tầng kết nối ổn định với schema 15 bảng. Các sự cố socket Docker Desktop, Java socket trên Windows và múi giờ JDBC đã được xử lý ở local.
 
 \begin{table}[H]
 \centering\small
@@ -62,17 +56,17 @@ Triển khai cloud & Đã có cấu trúc thư mục và hướng dẫn vận h�
 
 Dữ liệu thử nghiệm I1 (A04.1) khởi tạo danh mục khoa/viện, tài khoản mẫu cho 3 vai trò (Student, Organizer, Admin) và các sự kiện mẫu. Script kiểm thử tích hợp sử dụng môi trường Compose độc lập với CSDL tmpfs, cho phép thực thi lặp lại các kịch bản tạo, khóa, sửa và rollback mà không ảnh hưởng đến dữ liệu phát triển local.
 
-\subsubsubsection{Phát triển tài khoản}
+\subsubsubsection{Tài khoản và phân quyền}
 
-Phân hệ tài khoản (A05.1) hỗ trợ sinh viên tự đăng ký với thông tin cá nhân, MSSV, email, khoa và khóa học. Backend mặc định gán vai trò \texttt{STUDENT}; mọi giá trị vai trò do client tự gửi lên đều bị từ chối. MSSV và email bắt buộc duy nhất (ràng buộc Unique), nếu trùng sẽ trả mã lỗi 409. Khi đăng nhập thành công, hệ thống tạo session và trả cookie HttpOnly. Các thao tác ghi bắt buộc có CSRF token hợp lệ; việc ẩn nút trên UI chỉ mang tính hỗ trợ trải nghiệm. Tự kiểm thử dev xác nhận hệ thống xử lý đúng các trường hợp đăng ký hợp lệ, trùng dữ liệu, tài khoản bị khóa và giữ phiên sau reload.
+Phân hệ tài khoản (A05.1) hỗ trợ sinh viên tự đăng ký với thông tin cá nhân, MSSV, email, khoa và khóa học. Backend mặc định gán vai trò \textit{Sinh viên}; mọi giá trị vai trò do client tự gửi lên đều bị từ chối. MSSV và email bắt buộc duy nhất (ràng buộc Unique), nếu trùng sẽ trả mã lỗi 409. Khi đăng nhập thành công, hệ thống tạo session và trả cookie HttpOnly. Các thao tác ghi bắt buộc có CSRF token hợp lệ; việc ẩn nút trên UI chỉ mang tính hỗ trợ trải nghiệm. Tự kiểm thử của BE xác nhận hệ thống xử lý đúng các trường hợp đăng ký hợp lệ, trùng dữ liệu, tài khoản bị khóa và giữ phiên sau reload.
 
-Chức năng Quản trị và RBAC (A05.1) cho phép Admin tìm kiếm tài khoản, lọc theo vai trò/trạng thái, khởi tạo Organizer (cấp mật khẩu tạm buộc đổi lần đầu) và khóa/mở khóa tài khoản. Backend kiểm tra quyền trực tiếp tại tầng API. Quy tắc bảo vệ hệ thống: từ chối Admin tự khóa chính mình, luôn duy trì tối thiểu một Admin \texttt{ACTIVE} và kiểm tra \texttt{version} để chống ghi đè đồng thời. Dự án đã chốt mô hình một vai trò cố định cho mỗi tài khoản và bỏ chức năng chuyển đổi vai trò (UC-24).
+Chức năng Quản trị và RBAC (A05.1) cho phép Admin tìm kiếm tài khoản, lọc theo vai trò/trạng thái, khởi tạo Organizer (cấp mật khẩu tạm buộc đổi lần đầu) và khóa/mở khóa tài khoản. Backend kiểm tra quyền trực tiếp tại tầng API. Quy tắc bảo vệ hệ thống: từ chối Admin tự khóa chính mình, luôn duy trì tối thiểu một Admin \textit{Hoạt động} và kiểm tra số phiên bản để chống ghi đè đồng thời. Dự án đã chốt mô hình một vai trò cố định cho mỗi tài khoản.
 
-\subsubsubsection{Phát triển sự kiện}
+\subsubsubsection{Quản lý và tra cứu sự kiện}
 
-Phân hệ quản lý sự kiện (A05.2) hỗ trợ Organizer tạo sự kiện ở dạng nháp (\texttt{DRAFT}), chỉnh sửa và công bố (\texttt{PUBLISHED}). Thông tin chủ sở hữu (ownership) trích xuất trực tiếp từ session. Ràng buộc thời gian được kiểm tra chặt chẽ: mở đăng ký $\le$ đóng đăng ký $\le$ bắt đầu $\le$ kết thúc; sức chứa phải là số nguyên dương. Mỗi cập nhật đều kiểm tra \texttt{version} (Optimistic Locking) để tránh xung đột dữ liệu (trả lỗi 409 nếu trùng). Thao tác truy cập sự kiện ngoài quyền sở hữu bị chặn bằng lỗi 404.
+Phân hệ quản lý sự kiện (A05.2) hỗ trợ Organizer tạo sự kiện ở dạng nháp (\textit{Nháp}), chỉnh sửa và công bố (\textit{Đã công bố}). Thông tin chủ sở hữu (ownership) trích xuất trực tiếp từ session. Ràng buộc thời gian được kiểm tra chặt chẽ: mở đăng ký $\le$ đóng đăng ký $\le$ bắt đầu $\le$ kết thúc; sức chứa phải là số nguyên dương. Mỗi cập nhật đều kiểm tra số phiên bản (Optimistic Locking) để tránh xung đột dữ liệu (trả lỗi 409 nếu trùng). Thao tác truy cập sự kiện ngoài quyền sở hữu bị chặn bằng lỗi 404.
 
-API tra cứu sự kiện (Danh sách/Chi tiết) chỉ hiển thị sự kiện đã công bố (\texttt{PUBLISHED}) cho người dùng đã xác thực, hỗ trợ phân trang và tìm kiếm theo tiêu đề (có chống SQL Injection). Màn hình Angular kết nối trực tiếp với API thật qua \texttt{EventApi}; chế độ fixture dữ liệu giả chỉ dùng trong tự kiểm thử giao diện.
+API tra cứu sự kiện (Danh sách/Chi tiết) chỉ hiển thị sự kiện đã công bố (\textit{Đã công bố}) cho người dùng đã xác thực, hỗ trợ phân trang và tìm kiếm theo tiêu đề (có chống SQL Injection). Màn hình Angular kết nối trực tiếp với API thật qua lớp gọi API; chế độ fixture dữ liệu giả chỉ dùng trong tự kiểm thử giao diện.
 
 \begin{table}[H]
 \centering\small
@@ -83,17 +77,17 @@ API tra cứu sự kiện (Danh sách/Chi tiết) chỉ hiển thị sự kiện
 Tài khoản và session & Có API và UI; hoàn thành tự kiểm thử. & Ghép kết quả QA với commit bàn giao; hoàn tất review độc lập.\\
 Quản trị và RBAC & Phân quyền 3 vai trò, cấp Organizer, bảo vệ Admin. & Chấp thuận phạm vi vai trò cố định; đóng các sai lệch liên quan.\\
 Quản lý sự kiện & Tạo, sửa, công bố, kiểm tra ownership và version. & Xác nhận kết quả regression và demo luồng tích hợp.\\
-Tra cứu sự kiện & API và giao diện Angular tìm kiếm/chi tiết. & Đồng bộ README; xác nhận sử dụng API thật khi demo.\\
+Tra cứu sự kiện & API và giao diện Angular tìm kiếm/chi tiết. & Đồng bộ hướng dẫn chạy; xác nhận sử dụng API thật khi demo.\\
 Chức năng I2/I3 & Đã có schema/placeholder; chưa phát triển nghiệp vụ. & Tiếp tục backlog các Increment sau; không tính vào kết quả I1.\\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\subsubsubsection{Kiểm thử I1}
+\subsubsection{Kiểm thử}
 
 Công tác kiểm thử (A06) được tổ chức thành 2 lớp độc lập:
 \begin{enumerate}
-    \item \textbf{Dev QA:} Unit test backend vượt qua 17 ca test (6 ca \texttt{EventRulesTest}, 5 ca \texttt{EventServiceTest}, 6 ca \texttt{EventReadServiceTest}).
+    \item \textbf{Tự kiểm thử (BE):} Unit test backend vượt qua 17 ca test (6 ca quy tắc sự kiện, 5 ca tạo và sửa sự kiện, 6 ca tra cứu sự kiện).
     \item \textbf{Independent QA:} Sử dụng Playwright/TypeScript kiểm thử tự động API và UI E2E theo mô hình Page Object Model.
 \end{enumerate}
 
@@ -135,16 +129,16 @@ Tra cứu & Tìm kiếm sự kiện PUBLISHED và DRAFT. & Chỉ trả về PUBL
 \begin{tabularx}{\linewidth}{@{}p{.20\linewidth}XX@{}}
 \toprule
 \textbf{Nhóm} & \textbf{Thao tác kiểm tra} & \textbf{Expected result}\\\midrule
-RBAC-TC01 / AUTH-08 & Session STUDENT gọi API quản trị \path{/api/admin/users}. & HTTP 403; chặn thao tác; không thay đổi dữ liệu.\\
+RBAC-TC01 / AUTH-08 & Phiên đăng nhập của sinh viên gọi API quản trị tài khoản. & HTTP 403; chặn thao tác; không thay đổi dữ liệu.\\
 CSRF / AUTH-07 & Bỏ CSRF token trên request ghi (POST/PUT/DELETE). & Request bị từ chối; dữ liệu không bị ghi nhận.\\
 ADM-02, 03 & Admin cấp Organizer; đăng nhập tài khoản mới. & Yêu cầu đổi mật khẩu tạm ở lần đầu; sau đó mới cấp quyền nghiệp vụ.\\
 ADM-06, 07 & Admin tự khóa; hai Admin khóa đồng thời. & Chặn tự khóa; luôn duy trì tối thiểu một Admin ACTIVE.\\
-ADM-05 & Gọi API đổi vai trò tài khoản (UC-24). & HTTP 403; giữ nguyên vai trò cố định theo thiết kế mới.\\
+ADM-05 & Gọi API đổi vai trò tài khoản. & HTTP 403; giữ nguyên vai trò cố định theo thiết kế mới.\\
 \bottomrule\end{tabularx}
 \end{table}
 
 \paragraph{Đặc tả test cases.}
-Các bảng sau mô tả chi tiết năm test case tiêu biểu của I1. Kết quả mong đợi là tiêu chí đối chiếu; kết quả thực thi được ghi nhận riêng trong test report và phần tổng hợp regression.
+Các bảng sau mô tả chi tiết năm test case tiêu biểu của I1.
 
 \begin{table}[H]
 \centering
@@ -160,7 +154,7 @@ Các bảng sau mô tả chi tiết năm test case tiêu biểu của I1. Kết 
 \textbf{Dữ liệu} & Họ tên: Sinh Viên Một; MSSV: 9991111; email: sv01.test@example.edu.vn; khoa: Khoa Học Máy Tính; mật khẩu: Test@12345. \\ \addlinespace[3pt]
 \textbf{Bước thực hiện} & 1. Mở trang Đăng ký tài khoản.\newline 2. Nhập đầy đủ thông tin hợp lệ.\newline 3. Nhấn Đăng ký.\newline 4. Đăng nhập bằng tài khoản vừa tạo. \\ \addlinespace[3pt]
 \textbf{Kết quả mong đợi} & Tài khoản được tạo với vai trò STUDENT; mật khẩu không xuất hiện trong phản hồi. Người dùng có thể đăng nhập bằng thông tin vừa đăng ký. \\ \addlinespace[3pt]
-\textbf{Kết quả thực tế} & Đối chiếu test report của lần chạy tương ứng; không dùng kết quả mong đợi để thay cho trạng thái thực thi. \\ \addlinespace[3pt]
+\textbf{Kết quả thực tế} & Đạt -- regression 07/11/2026 trên build \texttt{aa2494d}.\\ \addlinespace[3pt]
 \bottomrule
 \end{tabularx}
 \endgroup
@@ -180,7 +174,7 @@ Các bảng sau mô tả chi tiết năm test case tiêu biểu của I1. Kết 
 \textbf{Dữ liệu} & Lần 1: email đã tồn tại, MSSV mới. Lần 2: MSSV đã tồn tại, email mới. Các trường khác hợp lệ. \\ \addlinespace[3pt]
 \textbf{Bước thực hiện} & 1. Chuẩn bị tài khoản có sẵn.\newline 2. Gửi yêu cầu đăng ký với email trùng.\newline 3. Gửi yêu cầu riêng với MSSV trùng.\newline 4. Kiểm tra phản hồi và dữ liệu sau mỗi yêu cầu. \\ \addlinespace[3pt]
 \textbf{Kết quả mong đợi} & API trả HTTP 409 Conflict cho từng trường hợp; không tạo tài khoản mới hoặc bản ghi hồ sơ dở dang. \\ \addlinespace[3pt]
-\textbf{Kết quả thực tế} & Đối chiếu test report theo từng trường hợp email trùng và MSSV trùng. \\ \addlinespace[3pt]
+\textbf{Kết quả thực tế} & Đạt -- regression 07/11/2026 trên build \texttt{aa2494d}.\\ \addlinespace[3pt]
 \bottomrule
 \end{tabularx}
 \endgroup
@@ -200,7 +194,7 @@ Các bảng sau mô tả chi tiết năm test case tiêu biểu của I1. Kết 
 \textbf{Dữ liệu} & Tên: Hội thảo Demo QA; địa điểm: Hội trường A; sức chứa: 150. Các mốc thời gian hợp lệ: mở đăng ký < đóng đăng ký $\leq$ bắt đầu < kết thúc. \\ \addlinespace[3pt]
 \textbf{Bước thực hiện} & 1. Mở chức năng Tạo sự kiện.\newline 2. Nhập đầy đủ thông tin hợp lệ.\newline 3. Lưu nháp.\newline 4. Kiểm tra sự kiện trong danh sách quản lý.\newline 5. Dùng tài khoản Student tra cứu sự kiện. \\ \addlinespace[3pt]
 \textbf{Kết quả mong đợi} & Sự kiện được lưu ở trạng thái DRAFT, thuộc Organizer đang đăng nhập. Student không thấy sự kiện trên danh sách công khai; truy cập chi tiết sự kiện chưa công bố nhận HTTP 404. \\ \addlinespace[3pt]
-\textbf{Kết quả thực tế} & Đối chiếu test report của ca tạo nháp và kiểm tra khả năng truy cập từ Student. \\ \addlinespace[3pt]
+\textbf{Kết quả thực tế} & Đạt -- regression 07/11/2026 trên build \texttt{aa2494d}.\\ \addlinespace[3pt]
 \bottomrule
 \end{tabularx}
 \endgroup
@@ -220,7 +214,7 @@ Các bảng sau mô tả chi tiết năm test case tiêu biểu của I1. Kết 
 \textbf{Dữ liệu} & Đóng đăng ký: 20/11/2026 09:00; bắt đầu: 20/11/2026 08:00. Các trường khác giữ hợp lệ. \\ \addlinespace[3pt]
 \textbf{Bước thực hiện} & 1. Mở sự kiện nháp của Organizer.\newline 2. Gửi cập nhật với các mốc thời gian trên.\newline 3. Kiểm tra phản hồi và dữ liệu đã lưu.\newline 4. Kiểm tra trạng thái công bố của sự kiện. \\ \addlinespace[3pt]
 \textbf{Kết quả mong đợi} & Hệ thống từ chối dữ liệu thời gian không hợp lệ ngay khi cập nhật; không lưu lịch sai. Sự kiện giữ trạng thái DRAFT, không được công bố với lịch không hợp lệ. \\ \addlinespace[3pt]
-\textbf{Kết quả thực tế} & Đối chiếu test report tại bước cập nhật; không giả định dữ liệu sai đã được lưu để chờ kiểm tra khi công bố. \\ \addlinespace[3pt]
+\textbf{Kết quả thực tế} & Đạt -- regression 07/11/2026 trên build \texttt{aa2494d}.\\ \addlinespace[3pt]
 \bottomrule
 \end{tabularx}
 \endgroup
@@ -238,16 +232,16 @@ Các bảng sau mô tả chi tiết năm test case tiêu biểu của I1. Kết 
 \textbf{Loại kiểm thử} & API / Security; tự động hóa bằng Playwright. \\ \addlinespace[3pt]
 \textbf{Điều kiện tiên quyết} & Student có cookie session hợp lệ; request ghi có CSRF token hợp lệ để phân biệt lỗi phân quyền với lỗi CSRF. \\ \addlinespace[3pt]
 \textbf{Dữ liệu} & Payload tạo Organizer hợp lệ theo API, sử dụng email chưa tồn tại và đầy đủ các trường bắt buộc. \\ \addlinespace[3pt]
-\textbf{Bước thực hiện} & 1. Đăng nhập bằng tài khoản Student.\newline 2. Giữ cookie session và lấy CSRF token.\newline 3. Gửi POST đến \path{/api/admin/users} trong cùng phiên.\newline 4. Kiểm tra phản hồi và xác nhận không có tài khoản mới được tạo. \\ \addlinespace[3pt]
+\textbf{Bước thực hiện} & 1. Đăng nhập bằng tài khoản Student.\newline 2. Giữ cookie session và lấy CSRF token.\newline 3. Gửi yêu cầu tạo tài khoản tới API quản trị trong cùng phiên.\newline 4. Kiểm tra phản hồi và xác nhận không có tài khoản mới được tạo. \\ \addlinespace[3pt]
 \textbf{Kết quả mong đợi} & HTTP 403 Forbidden; yêu cầu bị chặn tại backend; không tạo Organizer và không thay đổi vai trò của Student. \\ \addlinespace[3pt]
-\textbf{Kết quả thực tế} & Đối chiếu test report của request đủ session và CSRF; không kết luận RBAC đạt từ một request thiếu CSRF token. \\ \addlinespace[3pt]
+\textbf{Kết quả thực tế} & Đạt -- regression 07/11/2026 trên build \texttt{aa2494d}.\\ \addlinespace[3pt]
 \bottomrule
 \end{tabularx}
 \endgroup
 \end{table}
 
 \paragraph{Kết quả regression.}
-Đợt kiểm thử Regression Phase 1 (07/11/2026) trên bản build \texttt{aa2494d} đạt 208 passed và 1 skipped trên tổng số 209 kịch bản (136 API test, 71 UI E2E test, 2 bước setup). Ca test sức chứa Unlimited (\texttt{TC-CAP-API-03}) được gắn nhãn \texttt{test.fail()} (expected failure) và ca lọc thời gian (\texttt{TC-BRW-API-08}) gắn nhãn \texttt{test.fixme()} (bỏ qua).
+Đợt kiểm thử Regression Phase 1 (07/11/2026) trên bản build \texttt{aa2494d} đạt 208 passed và 1 skipped trên tổng số 209 kịch bản (136 API test, 71 UI E2E test, 2 bước setup). Ca test sức chứa Unlimited (TC-CAP-API-03) được gắn nhãn lỗi dự kiến (expected failure) và ca lọc thời gian (TC-BRW-API-08) gắn nhãn tạm bỏ qua (bỏ qua).
 
 \begin{table}[H]
 \centering\small
@@ -256,25 +250,25 @@ Các bảng sau mô tả chi tiết năm test case tiêu biểu của I1. Kết 
 \toprule
 \textbf{Nguồn} & \textbf{Kết quả ghi nhận} & \textbf{Ý nghĩa kết quả}\\\midrule
 Smoke test local, 03/11 & FE--BE--PostgreSQL đạt; schema 15 bảng. & Xác nhận nền tảng local hoạt động theo tài liệu.\\
-Tự kiểm thử, 04/11 & Build thành công; 17 unit test backend đạt. & Bằng chứng quá trình dev; không thay thế QA độc lập.\\
-Regression QA, 07/11 & 208 passed, 1 skipped trên build \texttt{aa2494d}. & Cần xuất report gốc để phân tách expected failure và ca nghiệp vụ.\\
-Hồ sơ QA hiện có & Có test cases, acceptance criteria, log tổng hợp. & Cần bổ sung HTML/JUnit XML report và trace thực thi chính thức.\\
+Tự kiểm thử, 04/11 & Build thành công; 17 unit test backend đạt. & Bằng chứng tự kiểm thử của BE; không thay thế QA độc lập.\\
+Regression QA, 07/11 & 208 passed, 1 skipped trên build \texttt{aa2494d}. & Bằng chứng chính cho CP1; hai ca ngoại lệ được xử lý bằng CR-03 và hoãn lọc thời gian.\\
+Hồ sơ QA hiện có & Có test cases, acceptance criteria, log tổng hợp. & Report HTML/JUnit chưa được lưu cùng commit (NR6).\\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\subsubsubsection{Xử lý vấn đề}
+\subsubsection{Vấn đề phát sinh và xử lý}
 
-Nhóm thiết lập danh mục theo dõi các sai lệch kỹ thuật (I1-01--I1-06) để xử lý dứt điểm trước mốc CP1. Trong đó, lỗi I1-04 (liên quan mã lỗi \texttt{BUG-P2-05}: API trả 401 khi gõ sai đường dẫn khiến UI tự đăng xuất) được ưu tiên khắc phục ngay.
+Nhóm thiết lập danh mục theo dõi các sai lệch kỹ thuật (I1-01--I1-06) trước mốc CP1. Trong đó, lỗi I1-04 (liên quan mã lỗi BUG-P2-05: API trả 401 khi gõ sai đường dẫn khiến UI tự đăng xuất) được ưu tiên khắc phục ngay.
 
 \begin{table}[H]
 \centering\small
-\caption{Các vấn đề cần xử lý trước khi chốt I1}\label{tab:i1-issues}
+\caption{Các vấn đề của I1}\label{tab:i1-issues}
 \begin{tabularx}{\linewidth}{@{}p{.08\linewidth}XXp{.13\linewidth}@{}}
 \toprule
-\textbf{Mã} & \textbf{Ảnh hưởng} & \textbf{Hành động cần thực hiện} & \textbf{Đầu mối đề xuất}\\\midrule
-I1-01 & README còn ghi FE Sinh viên chưa tích hợp, khác mã nguồn. & Đồng bộ tài liệu với release; kiểm tra luồng API thật. & FE, BE\\
-I1-02 & Bỏ UC-24 được ghi trong quyết định nội bộ; cần sign-off. & Đối chiếu baseline, xác nhận phạm vi, lưu quyết định. & PM, BA\\
+\textbf{Mã} & \textbf{Ảnh hưởng} & \textbf{Hành động} & \textbf{Đầu mối}\\\midrule
+I1-01 & Hướng dẫn chạy còn ghi FE Sinh viên chưa tích hợp, khác mã nguồn. & Đồng bộ tài liệu với release; kiểm tra luồng API thật. & FE, BE\\
+I1-02 & Mô hình một vai trò cố định chỉ được ghi trong quyết định nội bộ; cần sign-off. & Đối chiếu baseline, xác nhận phạm vi, lưu quyết định. & PM, BA\\
 I1-03 & Sức chứa Unlimited và lọc thời gian lệch đặc tả QA. & Xác nhận yêu cầu gốc; triển khai hoặc lập Change Request. & BA, BE, FE\\
 I1-04 & Route không tồn tại trả 401 làm UI tự xóa trạng thái phiên. & BE sửa phân loại mã lỗi HTTP; QA retest kiểm chứng. & BE, QA\\
 I1-05 & Báo cáo thực thi gốc chưa lưu cùng commit đối chiếu. & Xuất HTML/JUnit XML report; lưu trace hai repository. & QA\\
@@ -283,59 +277,43 @@ I1-06 & Chưa có biên bản RA06 và hồ sơ nghiệm thu CP1. & Tổ chức 
 \end{tabularx}
 \end{table}
 
-Về rủi ro, AR2 (Phân quyền) đã hoàn thành test suite RBAC; AR3 (Môi trường) đã khắc phục ở local nhưng tiếp tục theo dõi trên cloud; AR7 (Kỳ vọng yêu cầu) được quản lý qua tác vụ RA06. Các hoạt động RA02 (AWS Lightsail) và RA03 (Email) tiếp tục triển khai theo kế hoạch. Tổng công sức ứng phó rủi ro nằm trong ngân sách 11,1 giờ công đã lập.
+Kết quả xử lý: I1-01 được xử lý khi đồng bộ tài liệu ở đợt rà soát 25/11; I1-02 và I1-03 trở thành CR-01, CR-03 và hạng mục hoãn ``lọc theo thời gian''; I1-04 được sửa và retest qua regression I1 ngày 12/11; I1-05 và I1-06 chưa được xử lý đầy đủ (rủi ro NR6 và bài học về biên bản checkpoint ở Mục \ref{sec:t4-lessons}).
 
-\subsubsubsection{Theo dõi tiến độ}
+Về rủi ro: AR2 (phân quyền) không xảy ra nhờ bộ test RBAC; AR3 (môi trường) đã xảy ra và làm A03 trễ 4 ngày; AR7 (kỳ vọng yêu cầu) dẫn tới CR-01 và CR-03.
 
-Tổng công sức kế hoạch cho 7 hoạt động chuẩn bị và triển khai I1 là 78,5 giờ công. Ghi nhận thực tế cho thấy smoke test local (03/11) muộn 4 ngày so với A03 (30/10); tự test sự kiện (04/11) muộn 1 ngày so với A05.2 (03/11). Do chưa chốt đủ timesheet cá nhân, dự án chưa tính chỉ số Chi phí thực tế ($AC$) và EVM trong đợt báo cáo này.
+\subsubsection{Tiến độ và checkpoint}
 
 \begin{table}[H]
 \centering\small
-\caption{Đối chiếu baseline I1}\label{tab:i1-actual}
-\begin{tabularx}{\linewidth}{@{}p{.08\linewidth}p{.16\linewidth}rX@{}}
+\caption{Kế hoạch và thực tế các hoạt động I1}\label{tab:i1-actual}
+\begin{tabularx}{\linewidth}{@{}p{.08\linewidth}Xp{.15\linewidth}rrrr@{}}
 \toprule
-\textbf{Mã} & \textbf{Lịch kế hoạch} & \textbf{Giờ KH} & \textbf{Kết quả theo dõi đến 08/11}\\\midrule
-A01 & 26--28/10 & 16,0 & Đã có schema, mockup, API; chưa chốt ngày nghiệm thu thiết kế.\\
-A02.1 & 27/10--02/11 & 5,0 & Đã có acceptance và test design; chưa chốt Actual Effort.\\
-A03 & 29--30/10 & 8,0 & Smoke test local ghi nhận 03/11; phần cloud/email tiếp tục theo dõi.\\
-A04.1 & 03/11 & 3,5 & Đã khởi tạo seed data và tài khoản mẫu; chờ review dữ liệu.\\
-A05.1 & 02--04/11 & 18,0 & Đã có API/UI và tài liệu tự test 03--04/11; chờ chốt phiên bản.\\
-A05.2 & 30/10--03/11 & 18,0 & Đã kiểm tra Organizer và API đọc ngày 04/11; UI Sinh viên đã có mã nguồn.\\
-A06 & 05--09/11 & 10,0 & Regression QA ghi nhận 07/11; các sai lệch đang được xử lý.\\
+\textbf{Mã} & \textbf{Lịch KH} & \textbf{Hoàn thành TT} & \textbf{Lệch (ngày)} & \textbf{Giờ KH} & \textbf{Giờ TT} & \textbf{Lệch (giờ)}\\\midrule
+A01 & 26--28/10 & 28/10 & 0 & 16,0 & 16,0 & 0\\
+A02.1 & 27/10--02/11 & 02/11 & 0 & 5,0 & 5,0 & 0\\
+A03 & 29--30/10 & 03/11 & +4 & 8,0 & 10,0 & +2,0\\
+A04.1 & 03/11 & 03/11 & 0 & 3,5 & 3,5 & 0\\
+A05.1 & 02--04/11 & 03/11 & $-$1 & 18,0 & 14,0 & $-$4,0\\
+A05.2 & 30/10--03/11 & 06/11 & +3 & 18,0 & 31,0 & +13,0\\
+A06 & 05--09/11 & 07/11 & $-$2 & 10,0 & 10,0 & 0\\
+\midrule
+\multicolumn{4}{@{}r}{\textbf{Tổng I1}} & \textbf{78,5} & \textbf{89,5} & \textbf{+11,0} (+14,0\%)\\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \begin{table}[H]
 \centering\small
-\caption{Theo dõi theo tuần}\label{tab:i1-weekly}
-\begin{tabularx}{\linewidth}{@{}p{.14\linewidth}XX@{}}
+\caption{Đánh giá CP1}\label{tab:i1-gate}
+\begin{tabularx}{\linewidth}{@{}p{.25\linewidth}p{.12\linewidth}X@{}}
 \toprule
-\textbf{Tuần} & \textbf{Công việc có nguồn ghi nhận} & \textbf{Thông tin quản lý cần bổ sung}\\\midrule
-T1: 26/10--01/11 & Lập baseline, thiết kế, chuẩn bị test, dựng môi trường local. & Actual Effort theo thành viên và các phát sinh trong tuần.\\
-T2: 02--08/11 & Smoke test local (03/11), tự test dev (04/11), regression QA (07/11). & Nhật ký tuần chính thức, biên bản họp và bằng chứng review.\\
+\textbf{Điều kiện (Mục 2.5)} & \textbf{Kết quả} & \textbf{Bằng chứng}\\\midrule
+Luồng I1 chạy được end-to-end & Đạt & Demo Admin $\to$ Organizer $\to$ sinh viên trên build \texttt{aa2494d}.\\
+Test case I1 đạt, không lỗi chặn luồng chính & Đạt & 208/209; hai ngoại lệ thuộc CR-03 và hạng mục hoãn.\\
+Test log, build & Một phần & Có số liệu tổng hợp; report gốc chưa lưu cùng commit.\\
+Demo, phản hồi khách hàng & Đạt & Demo ngày 09/11: khách hàng nhận xét tiến độ chậm và thông báo CR-05 (Client Interaction Log, Tuần 3), không yêu cầu thay đổi phạm vi. Không lập biên bản ký.\\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\subsubsubsection{Đánh giá CP1}
-
-Trạng thái I1 hiện đạt mức sẵn sàng về mã nguồn và kết quả kiểm thử regression, đang tiến hành chốt điều chỉnh phạm vi và chuẩn bị hồ sơ demo nghiệm thu cho CP1 (09/11/2026).
-
-\begin{table}[H]
-\centering\small
-\caption{Điều kiện rà soát CP1}\label{tab:i1-gate}
-\begin{tabularx}{\linewidth}{@{}p{.25\linewidth}XX@{}}
-\toprule
-\textbf{Điều kiện} & \textbf{Tình trạng} & \textbf{Bằng chứng cần chốt}\\\midrule
-Luồng I1 tích hợp & Đã có đủ mã nguồn các phân hệ I1. & Demo luồng tích hợp trên release chính thức với CSDL thật.\\
-Kiểm thử A06 & Đã có kết quả QA và danh sách known gaps. & HTML/JUnit report gốc, phân loại expected failure và retest.\\
-Làm rõ yêu cầu RA06 & Đang hoàn thiện biên bản. & Quyết định chính thức về UC-24, sức chứa Unlimited và lọc thời gian.\\
-Review & Đang chuẩn bị biên bản nghiệm thu. & Người review, nhận xét, phản hồi đại diện khách hàng và biên bản CP1.\\
-Theo dõi thực tế & Đã ghi nhận các mốc thời gian kỹ thuật. & Timesheet cá nhân, Actual Start/Finish và Weekly Log hoàn chỉnh.\\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-Luồng demo CP1 dự kiến: Admin tạo tài khoản Organizer $\to$ Organizer đăng nhập, đổi mật khẩu tạm, tạo và công bố sự kiện $\to$ Sinh viên đăng ký tài khoản, đăng nhập và tra cứu chi tiết sự kiện. Toàn bộ các quyết định điều chỉnh phạm vi (mô hình một vai trò cố định, sức chứa nguyên dương) được duy trì theo đúng Project Baseline V1.0. Sau khi CP1 được phê duyệt, dự án sẽ chuyển giao nền tảng sang Increment 2.
-
+CP1 được tổ chức \textbf{đúng hạn ngày 09/11} bằng buổi demo với khách hàng. I1 được hợp nhất vào nhánh chính ngày 12/11 (PR \#2) sau khi review. Hai phản hồi của khách hàng (tiến độ chậm, rút ngắn thời hạn) trực tiếp dẫn tới quyết định fast-tracking ở I2 và I3 (Mục \ref{sec:t3-change}).

@@ -10,10 +10,10 @@
 \toprule
 \textbf{Sản phẩm} & \textbf{Nội dung / vị trí}\\\midrule
 Phần mềm đang chạy & \url{https://bk-events.vercel.app} (frontend Vercel, backend Render, PostgreSQL Neon, email Brevo).\\
-Mã nguồn & \url{https://github.com/giakhang1704/campus_events}, nhánh \texttt{main}; báo cáo trên nhánh \texttt{docs/report-task3-4}.\\
-Hướng dẫn chạy & \texttt{README.md}, \texttt{docs/environment/LOCAL\_RUN.md} (chạy local bằng Docker Compose); \texttt{deploy/} (triển khai cloud, vận hành, backup/restore).\\
-Tài liệu kỹ thuật & Hợp đồng API \texttt{docs/api/I1--I3.md}; kiến trúc \texttt{docs/architecture/}; quyết định phạm vi \texttt{docs/decisions/SCOPE.md}.\\
-Bằng chứng chất lượng & \texttt{docs/testing/} (kết quả I1--I3, rà soát hệ thống 25/11); bộ test tự động trong repository; CI \texttt{.github/workflows/validation.yml}.\\
+Mã nguồn & \url{https://github.com/giakhang1704/campus_events}, nhánh chính; báo cáo trên nhánh riêng của báo cáo.\\
+Hướng dẫn chạy & Hướng dẫn chạy local bằng Docker Compose; hướng dẫn triển khai cloud, vận hành, sao lưu và khôi phục.\\
+Tài liệu kỹ thuật & Đặc tả API của từng increment; tài liệu kiến trúc; nhật ký quyết định phạm vi.\\
+Bằng chứng chất lượng & Biên bản kết quả kiểm thử I1--I3 và rà soát hệ thống 25/11; bộ test tự động; kiểm thử tự động mỗi lần đẩy mã (CI).\\
 Hồ sơ quản lý & Báo cáo này: Baseline V1.0 (Task 2), Baseline V2.0 đề xuất, weekly log, sổ rủi ro, change log, ma trận truy vết.\\
 \bottomrule
 \end{tabularx}
@@ -36,18 +36,17 @@ Hồ sơ quản lý & Báo cáo này: Baseline V1.0 (Task 2), Baseline V2.0 đ�
  & Điểm danh QR, điểm danh thủ công có lịch sử, báo cáo, xuất CSV (FR-19..23). & Test I3 đạt.\\
  & Triển khai cloud qua HTTPS (NFR-12). & Kiểm tra 27/11.\\
 \midrule
-\textbf{Partially completed} & Kiểm thử nghiệm thu end-to-end trên cloud (A12.1). & Đang thực hiện; thu gọn theo CR-05.\\
- & Đo chỉ tiêu M2 (hiệu năng). & Đo ở local; chưa đo trên cloud.\\
- & User Guide (A14.1). & Gộp vào README theo CR-05, chưa có tài liệu riêng cho người dùng cuối.\\
- & Phê duyệt của khách hàng cho CR-01..04 và Baseline V2.0. & Chưa thực hiện do CR-05; trình bày tại demo.\\
+\textbf{Partially completed} & Kiểm thử nghiệm thu end-to-end trên cloud (A12.1). & Thu gọn theo CR-05: không chạy end-to-end trên cloud, không thử QR trên điện thoại thật.\\
+ & Đo chỉ tiêu M2 (hiệu năng). & Đạt ở local; hạn chế: chưa đo tốc độ thực tế trên cloud (SL-13).\\
+ & User Guide (A14.1). & Gộp vào hướng dẫn chạy theo CR-05, chưa có tài liệu riêng cho người dùng cuối.\\
+ & Phê duyệt của khách hàng cho các CR do nhóm đề xuất (CR-01..04, CR-06..10) và Baseline V2.0. & Chưa thực hiện do CR-05; trình bày tại demo.\\
 \midrule
 \textbf{Deferred} & Xuất Excel. & CR-02.\\
- & Lọc sự kiện theo thời gian (TC-BRW-API-08). & Chưa đủ thời gian; không thuộc chức năng bắt buộc.\\
+ & Lọc sự kiện theo thời gian (TC-BRW-API-08). & CR-10; không thuộc chức năng bắt buộc.\\
  & Thử nghiệm người dùng M5 (5 sinh viên, 20 lượt). & CR-05.\\
  & Email nhắc trước sự kiện, xác minh email/SSO, quên mật khẩu, theo dõi thư đã tới hay bị trả về. & Exclusions ở Task 1.4 hoặc ngoài MVP.\\
 \midrule
-\textbf{Removed} & UC-24 Thay đổi vai trò tài khoản. & CR-01.\\
- & Sức chứa ``Không giới hạn''. & CR-03.\\
+\textbf{Removed} & Sức chứa không giới hạn (Task 1.4: ``sức chứa nếu có giới hạn''). & CR-03.\\
  & Triển khai trên AWS Lightsail (RA02). & CR-04.\\
 \end{longtable}
 \endgroup
@@ -62,6 +61,6 @@ Buổi demo đi qua một luồng end-to-end duy nhất thay vì trình bày t�
     \item Người thứ nhất hủy: hệ thống tự đôn người thứ hai và gửi email.
     \item Người tổ chức mở phiên QR; sinh viên quét bằng điện thoại, xem trước rồi xác nhận.
     \item Người tổ chức sửa điểm danh thủ công có lý do; mở báo cáo và xuất CSV.
-    \item Trình bày phần quản lý: Baseline V1.0 và V2.0, change log CR-01..05, sổ rủi ro, số liệu kế hoạch và thực tế; xin khách hàng quyết định các CR chưa được duyệt.
+    \item Trình bày phần quản lý: Baseline V1.0 và V2.0, change log CR-01..10, sổ rủi ro, số liệu kế hoạch và thực tế; xin khách hàng quyết định các CR chưa được duyệt.
 \end{enumerate}
 Trước demo, nhóm mở trang khoảng 2 phút để backend Render khởi động (NR1). Phương án dự phòng là chạy bản local bằng Docker Compose.
