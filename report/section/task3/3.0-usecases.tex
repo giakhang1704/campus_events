@@ -1,0 +1,478 @@
+\subsection{Mô hình use case}
+\label{sec:t3-usecase}
+
+\subsubsection{Tác nhân}
+
+\begin{table}[H]
+\centering\small
+\caption{Tác nhân của hệ thống}\label{tab:t3-actors}
+\begin{tabularx}{\linewidth}{@{}p{.20\linewidth}X@{}}
+\toprule
+\textbf{Tác nhân} & \textbf{Vai trò trong hệ thống}\\\midrule
+Người dùng & Tác nhân khái quát của ba vai trò bên dưới; chỉ dùng cho đăng nhập, đăng xuất và đổi mật khẩu. Không phải vai trò thứ tư.\\
+Sinh viên & Tự tạo tài khoản; tìm, xem, đăng ký, hủy sự kiện; theo dõi sự kiện của mình; quét QR để điểm danh cho chính mình.\\
+Người tổ chức & Do Quản trị viên cấp tài khoản; tạo, sửa, công bố sự kiện của mình; xem danh sách đăng ký; mở phiên QR; ghi/sửa điểm danh thủ công; xem báo cáo và xuất CSV.\\
+Quản trị viên & Tra cứu tài khoản; cấp tài khoản Người tổ chức; khóa/mở khóa tài khoản. Không có quyền nghiệp vụ của Sinh viên hay Người tổ chức.\\
+Dịch vụ email (Brevo) & Hệ thống ngoài nhận yêu cầu gửi thư ở UC-06, UC-09 và UC-13.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsubsection{Sơ đồ use case}
+
+\tikzset{
+  uc/.style={ellipse, draw, align=center, font=\scriptsize, inner sep=0pt,
+             text width=3.9cm},
+  ucactor/.pic={
+    \draw (0,0.62) circle (0.16);
+    \draw (0,0.46) -- (0,0.05) (-0.28,0.33) -- (0.28,0.33)
+          (0,0.05) -- (-0.22,-0.35) (0,0.05) -- (0.22,-0.35);
+  },
+  actorlbl/.style={font=\scriptsize\bfseries, align=center},
+  ucext/.style={draw, dashed, -{Stealth[length=2mm]}},
+  ucgen/.style={draw, -{Triangle[open, length=3mm, width=3mm]}},
+  extlbl/.style={font=\tiny, fill=white, inner sep=1pt},
+  sysbox/.style={draw, rounded corners=3pt, thick}
+}
+
+Các sơ đồ dưới đây chia theo vai trò để dễ đọc. Đường liền là association; mũi tên nét đứt $\ll$extend$\gg$ hướng từ use case mở rộng tới use case cơ sở; mũi tên tam giác rỗng là generalization. Đăng nhập không được nối $\ll$include$\gg$ tới các use case khác vì đã đăng nhập là tiền điều kiện chung.
+
+\begin{figure}[H]
+\centering
+\begin{adjustbox}{max width=.82\linewidth}
+\begin{tikzpicture}
+  \draw[sysbox] (5.4,-0.9) rectangle (11.6,4.0);
+  \node[font=\scriptsize\itshape, anchor=north] at (8.5,3.95) {Hệ thống BKevent};
+  \node[uc] (u02) at (8.5,2.9) {UC-02\\Đăng nhập};
+  \node[uc] (u03) at (8.5,1.5) {UC-03\\Đăng xuất};
+  \node[uc] (u24) at (8.5,0.1) {UC-24\\Đổi mật khẩu};
+  \pic at (3,1.3) {ucactor};
+  \node[actorlbl] at (3,0.6) {Người dùng};
+  \coordinate (nd) at (3.35,1.6);
+  \foreach \y/\lbl in {3.4/Sinh viên, 1.3/Người tổ chức, -0.8/Quản trị viên} {
+    \pic at (0,\y) {ucactor};
+    \node[actorlbl] at (0,\y-0.7) {\lbl};
+    \draw[ucgen] (0.35,\y+0.3) -- (2.65,1.6);
+  }
+  \foreach \ucn in {u02,u03,u24} \draw (nd) -- (\ucn.west);
+\end{tikzpicture}
+\end{adjustbox}
+\vspace{8pt}
+\caption{Use case tài khoản dùng chung}\label{fig:t3-uc-common}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{adjustbox}{max width=\linewidth}
+\begin{tikzpicture}
+  \draw[sysbox] (2.1,1.6) rectangle (14.5,10.1);
+  \node[font=\scriptsize\itshape, anchor=north] at (8.3,10.05) {Hệ thống BKevent};
+  \node[uc] (u01) at (5.2,9.2) {UC-01\\Đăng ký tài khoản sinh viên};
+  \node[uc] (u04) at (5.2,8.05) {UC-04\\Tìm kiếm, xem danh sách sự kiện};
+  \node[uc] (u05) at (5.2,6.9) {UC-05\\Xem chi tiết sự kiện};
+  \node[uc] (u06) at (5.2,5.75) {UC-06\\Đăng ký tham gia sự kiện};
+  \node[uc] (u08) at (5.2,4.6) {UC-08\\Hủy đăng ký / rời danh sách chờ};
+  \node[uc] (u10) at (5.2,3.45) {UC-10\\Theo dõi sự kiện của tôi};
+  \node[uc] (u11) at (5.2,2.3) {UC-11\\Điểm danh bằng QR};
+  \node[uc] (u07) at (11.4,6.9) {UC-07\\Tham gia danh sách chờ};
+  \node[uc] (u09) at (11.4,4.6) {UC-09\\Tự động chuyển từ danh sách chờ};
+  \draw[ucext] (u07) -- node[extlbl, pos=0.5] {$\ll$extend$\gg$} (u06);
+  \draw[ucext] (u09) -- node[extlbl, pos=0.5] {$\ll$extend$\gg$} (u08);
+  \pic at (0,5.6) {ucactor};
+  \node[actorlbl] at (0,4.9) {Sinh viên};
+  \coordinate (sv) at (0.35,5.95);
+  \foreach \ucn in {u01,u04,u05,u06,u08,u10,u11} \draw (sv) -- (\ucn.west);
+  \pic at (16,4.6) {ucactor};
+  \node[actorlbl] at (16,3.9) {Dịch vụ\\email};
+  \coordinate (em) at (15.65,4.95);
+  \draw (em) -- (u06.east);
+  \draw (em) -- (u09.east);
+\end{tikzpicture}
+\end{adjustbox}
+\vspace{8pt}
+\caption{Use case của Sinh viên}\label{fig:t3-uc-student}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{adjustbox}{max width=\linewidth}
+\begin{tikzpicture}
+  \draw[sysbox] (2.1,0.45) rectangle (14.5,10.1);
+  \node[font=\scriptsize\itshape, anchor=north] at (8.3,10.05) {Hệ thống BKevent};
+  \node[uc] (u12) at (5.2,9.2) {UC-12\\Tạo sự kiện};
+  \node[uc] (u13) at (5.2,8.05) {UC-13\\Cập nhật thông tin sự kiện};
+  \node[uc] (u14) at (5.2,6.9) {UC-14\\Công bố sự kiện};
+  \node[uc] (u15) at (5.2,5.75) {UC-15\\Xem danh sách đăng ký, chờ};
+  \node[uc] (u16) at (5.2,4.6) {UC-16\\Mở/đóng phiên điểm danh QR};
+  \node[uc] (u17) at (5.2,3.45) {UC-17\\Ghi nhận điểm danh thủ công};
+  \node[uc] (u18) at (5.2,2.3) {UC-18\\Chỉnh sửa kết quả điểm danh};
+  \node[uc] (u19) at (5.2,1.15) {UC-19\\Xem báo cáo sự kiện};
+  \node[uc] (u09b) at (11.4,6.6) {UC-09\\Tự động chuyển từ danh sách chờ};
+  \node[uc] (u20) at (11.4,1.15) {UC-20\\Xuất báo cáo CSV};
+  \draw[ucext] (u09b) -- node[extlbl, pos=0.5] {$\ll$extend$\gg$} (u13);
+  \draw[ucext] (u20) -- node[extlbl, pos=0.5] {$\ll$extend$\gg$} (u19);
+  \pic at (0,4.9) {ucactor};
+  \node[actorlbl] at (0,4.2) {Người tổ chức};
+  \coordinate (org) at (0.35,5.25);
+  \foreach \ucn in {u12,u13,u14,u15,u16,u17,u18,u19} \draw (org) -- (\ucn.west);
+  \pic at (16,8.0) {ucactor};
+  \node[actorlbl] at (16,7.3) {Dịch vụ\\email};
+  \coordinate (em2) at (15.65,8.35);
+  \draw (em2) -- (u13.east);
+  \draw (em2) -- (u09b.east);
+\end{tikzpicture}
+\end{adjustbox}
+\vspace{8pt}
+\caption{Use case của Người tổ chức}\label{fig:t3-uc-organizer}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{adjustbox}{max width=.62\linewidth}
+\begin{tikzpicture}
+  \draw[sysbox] (2.1,0.45) rectangle (8.3,4.3);
+  \node[font=\scriptsize\itshape, anchor=north] at (5.2,4.25) {Hệ thống BKevent};
+  \node[uc] (u21) at (5.2,3.45) {UC-21\\Tra cứu tài khoản};
+  \node[uc] (u22) at (5.2,2.3) {UC-22\\Cấp tài khoản người tổ chức};
+  \node[uc] (u23) at (5.2,1.15) {UC-23\\Khóa hoặc mở khóa tài khoản};
+  \pic at (0,2.0) {ucactor};
+  \node[actorlbl] at (0,1.3) {Quản trị viên};
+  \coordinate (ad) at (0.35,2.35);
+  \foreach \ucn in {u21,u22,u23} \draw (ad) -- (\ucn.west);
+\end{tikzpicture}
+\end{adjustbox}
+\vspace{8pt}
+\caption{Use case của Quản trị viên}\label{fig:t3-uc-admin}
+\end{figure}
+
+UC-09 không có tác nhân khởi tạo trực tiếp: đây là hành vi tự động trong biên hệ thống, mở rộng có điều kiện của UC-08 (hủy làm trống chỗ) và UC-13 (tăng sức chứa). Ngoài ra, trước khi nhận một đăng ký mới ở UC-06, hệ thống cũng chạy bước đôn để người chờ cũ không bị người đến sau vượt lên.
+
+\subsubsection{Đặc tả use case}
+
+Mỗi use case được đặc tả theo mẫu thống nhất. Các mã lỗi trong luồng ngoại lệ là mã thực tế API trả về, giúp đối chiếu trực tiếp với test case.
+
+\newenvironment{ucspec}[2]{%
+  \begingroup\small\renewcommand{\arraystretch}{1.12}%
+  \begin{longtable}{@{}>{\bfseries\raggedright\arraybackslash}p{.19\linewidth}>{\raggedright\arraybackslash}p{.77\linewidth}@{}}
+  \caption{Đặc tả #1 -- #2}\\
+  \toprule
+  Use Case ID & #1\\
+  Use Case Name & #2\\\midrule
+  \endfirsthead
+  \toprule\endhead
+  \bottomrule\endfoot
+}{%
+  \end{longtable}\endgroup
+}
+
+% ---------------------------------------------------------------- UC-01
+\begin{ucspec}{UC-01}{Đăng ký tài khoản sinh viên}
+Description & Sinh viên tự tạo tài khoản để dùng hệ thống.\\
+Trigger & Sinh viên chọn ``Đăng ký tài khoản''.\\
+Primary Actor & Sinh viên (chưa có tài khoản).\\
+Secondary Actor & Không có.\\
+Pre-condition & Chưa đăng nhập.\\
+Post-condition & Thành công: tài khoản vai trò Sinh viên được tạo. Thất bại: không tạo dữ liệu nào.\\
+Normal flow & 1.~Sinh viên mở biểu mẫu đăng ký.\newline 2.~Nhập họ tên, MSSV, email, khoa (12 khoa/chương trình), năm học, mật khẩu ($\ge$ 8 ký tự).\newline 3.~Hệ thống chuẩn hóa email (chữ thường) và MSSV (chữ hoa), kiểm tra định dạng và tính duy nhất.\newline 4.~Hệ thống lưu tài khoản với mật khẩu băm BCrypt, vai trò luôn là Sinh viên.\newline 5.~Hệ thống báo thành công và chuyển đến đăng nhập.\\
+Alternative flow & 3a.~Thiếu hoặc sai dữ liệu: 400, báo lỗi tại trường tương ứng.\newline 3b.~Email hoặc MSSV đã tồn tại: lỗi email hoặc MSSV đã tồn tại (409), gợi ý đăng nhập.\newline 3c.~Payload chứa vai trò: bị bỏ qua, vẫn tạo Sinh viên.\\
+Exception flow & 4a.~Lỗi lưu: rollback toàn bộ, 503.\newline 2a.~Gửi quá nhiều lần: lỗi vượt số lần thử (429), kèm thời gian chờ.\\
+\end{ucspec}
+
+% ---------------------------------------------------------------- UC-02
+\begin{ucspec}{UC-02}{Đăng nhập}
+Description & Xác thực người dùng và mở chức năng theo vai trò.\\
+Trigger & Người dùng chọn ``Đăng nhập''.\\
+Primary Actor & Người dùng (Sinh viên, Người tổ chức, Quản trị viên).\\
+Secondary Actor & Không có.\\
+Pre-condition & Có tài khoản; chưa có phiên hợp lệ.\\
+Post-condition & Thành công: tạo phiên mới (cookie HttpOnly, hạn 8 giờ). Thất bại: không có phiên.\\
+Normal flow & 1.~Người dùng nhập email và mật khẩu.\newline 2.~Hệ thống kiểm tra thông tin và trạng thái \textit{Hoạt động}.\newline 3.~Hệ thống tạo phiên và trả thông tin người dùng.\newline 4.~Giao diện chuyển tới trang làm việc theo vai trò.\\
+Alternative flow & 2a.~Sai thông tin hoặc tài khoản bị khóa: cùng một lỗi 401, không cho biết lý do cụ thể.\newline 3a.~Tài khoản đang dùng mật khẩu tạm: chuyển tới UC-24; các API khác trả 403 đến khi đổi.\\
+Exception flow & 2b.~Thử sai quá nhiều lần: 429.\newline 2c.~Lỗi dữ liệu: 503, không tạo phiên.\\
+\end{ucspec}
+
+% ---------------------------------------------------------------- UC-03
+\begin{ucspec}{UC-03}{Đăng xuất}
+Description & Kết thúc phiên hiện tại.\\
+Trigger & Người dùng chọn ``Đăng xuất''.\\
+Primary Actor & Người dùng.\\
+Secondary Actor & Không có.\\
+Pre-condition & Đang đăng nhập.\\
+Post-condition & Phiên bị thu hồi phía máy chủ; cookie bị xóa.\\
+Normal flow & 1.~Người dùng chọn đăng xuất.\newline 2.~Hệ thống thu hồi phiên và xóa cookie (204).\newline 3.~Giao diện về màn hình đăng nhập.\\
+Alternative flow & 2a.~Phiên đã hết hạn hoặc gọi lại: vẫn trả 204.\\
+Exception flow & 2b.~Mất mạng: giao diện xóa người dùng hiện tại, đặt cờ chờ đăng xuất và thử lại khi có mạng; phiên máy chủ tự hết hạn sau tối đa 8 giờ.\\
+\end{ucspec}
+
+% ---------------------------------------------------------------- UC-04
+\begin{ucspec}{UC-04}{Tìm kiếm và xem danh sách sự kiện}
+Description & Tìm các sự kiện đã công bố.\\
+Trigger & Người dùng mở trang ``Sự kiện'' hoặc nhập từ khóa.\\
+Primary Actor & Sinh viên (người dùng đã đăng nhập khác cũng xem được).\\
+Secondary Actor & Không có.\\
+Pre-condition & Đã đăng nhập.\\
+Post-condition & Hiển thị danh sách; không thay đổi dữ liệu.\\
+Normal flow & 1.~Người dùng mở danh sách.\newline 2.~Hệ thống trả các sự kiện \textit{Đã công bố}, sắp theo giờ bắt đầu, 10 sự kiện/trang.\newline 3.~Người dùng nhập từ khóa (tối đa 100 ký tự).\newline 4.~Hệ thống tìm theo tên, không phân biệt hoa thường.\\
+Alternative flow & 4a.~Không có kết quả: danh sách rỗng.\newline 2a.~Sự kiện nháp không bao giờ xuất hiện.\\
+Exception flow & 4b.~Tham số sai: 400. Lỗi tải: báo lỗi và cho tải lại.\\
+\end{ucspec}
+
+% ---------------------------------------------------------------- UC-05
+\begin{ucspec}{UC-05}{Xem chi tiết sự kiện}
+Description & Xem thông tin, điều kiện tham gia và trạng thái của bản thân.\\
+Trigger & Người dùng chọn một sự kiện.\\
+Primary Actor & Sinh viên.\\
+Secondary Actor & Không có.\\
+Pre-condition & Đã đăng nhập; sự kiện đã công bố.\\
+Post-condition & Hiển thị chi tiết; không thay đổi dữ liệu.\\
+Normal flow & 1.~Hệ thống hiển thị tên, mô tả, địa điểm, đơn vị, các mốc thời gian, sức chứa, giới hạn khoa/năm.\newline 2.~Hệ thống hiển thị số chỗ còn, số người chờ, sinh viên có đủ điều kiện không và trạng thái đăng ký hiện tại.\newline 3.~Nếu đã đăng ký, hiển thị kết quả điểm danh và nút quét QR khi đang trong khung điểm danh.\newline 4.~Sinh viên chọn đăng ký (UC-06), hủy (UC-08) hoặc quay lại.\\
+Alternative flow & 2a.~Chưa mở hoặc đã đóng đăng ký: vẫn xem được nhưng nút bị vô hiệu kèm lý do.\newline 2b.~Không thuộc đối tượng: báo ``Không thuộc đối tượng tham gia''.\\
+Exception flow & 1a.~Sự kiện không tồn tại hoặc là nháp: lỗi không tìm thấy sự kiện (404).\\
+\end{ucspec}
+
+% ---------------------------------------------------------------- UC-06
+\begin{ucspec}{UC-06}{Đăng ký tham gia sự kiện}
+Description & Ghi nhận sinh viên vào danh sách chính thức khi còn chỗ.\\
+Trigger & Sinh viên bấm ``Đăng ký tham gia'' hoặc ``Đăng ký lại''.\\
+Primary Actor & Sinh viên.\\
+Secondary Actor & Dịch vụ email.\\
+Pre-condition & Đã đăng nhập; sự kiện đã công bố; giờ mở $\le$ hiện tại $<$ giờ đóng và trước giờ bắt đầu.\\
+Post-condition & Có chỗ: \textit{Đã đăng ký} và yêu cầu email xác nhận được ghi vào outbox. Hết chỗ: tiếp tục UC-07.\\
+Normal flow & 1.~Sinh viên bấm đăng ký (định danh lấy từ phiên).\newline 2.~Hệ thống khóa sự kiện, kiểm tra khung giờ và điều kiện khoa AND năm.\newline 3.~Hệ thống đôn người chờ hợp lệ trước (UC-09) rồi kiểm tra chỗ trống.\newline 4.~Hệ thống lưu \textit{Đã đăng ký}, lịch sử và yêu cầu email trong cùng transaction (201).\newline 5.~Sau commit, email xác nhận đăng ký được gửi.\\
+Alternative flow & 1a.~Đã \textit{Đã đăng ký}/\textit{Đang chờ}: trả trạng thái hiện có (200), không tạo thêm.\newline 1b.~Đã hủy trước đó: dùng lại dòng đăng ký cũ, tăng version, reset điểm danh về \textit{Chưa ghi nhận} và lưu snapshot cũ.\newline 3a.~Hết chỗ: chuyển sang UC-07.\\
+Exception flow & 2a.~Không đủ điều kiện: lỗi không thuộc đối tượng tham gia (403).\newline 2b.~Ngoài khung giờ: lỗi ngoài thời gian đăng ký (409).\newline 4a.~Lỗi ghi: rollback toàn bộ, 503.\newline 5a.~Email lỗi: đăng ký vẫn giữ; outbox thử lại tối đa 5 lần.\\
+\end{ucspec}
+
+% ---------------------------------------------------------------- UC-07
+\begin{ucspec}{UC-07}{Tham gia danh sách chờ}
+Description & Ghi nhận nguyện vọng khi sự kiện đã đủ chỗ.\\
+Trigger & Sinh viên bấm ``Tham gia danh sách chờ'' (nút hiển thị khi hết chỗ).\\
+Primary Actor & Sinh viên.\\
+Secondary Actor & Không có.\\
+Pre-condition & Như UC-06; số chỗ còn lại bằng 0.\\
+Post-condition & Sinh viên ở trạng thái \textit{Đang chờ}, có thời điểm chờ để xếp FIFO.\\
+Normal flow & 1.~Giao diện báo sự kiện đã đủ chỗ và đổi nhãn nút.\newline 2.~Sinh viên bấm nút (đồng ý vào danh sách chờ).\newline 3.~Hệ thống lưu \textit{Đang chờ} với thời điểm vào hàng chờ.\newline 4.~Hệ thống báo vị trí hiện tại trong danh sách chờ.\\
+Alternative flow & 2a.~Chỗ vừa trống khi bấm: hệ thống xếp \textit{Đã đăng ký} theo UC-06.\newline 2b.~Chỗ vừa hết khi bấm ``Đăng ký tham gia'': hệ thống đưa vào danh sách chờ và báo vị trí.\\
+Exception flow & 3a.~Lỗi ghi: rollback, không cấp vị trí chờ.\newline Không gửi email khi vào danh sách chờ.\\
+\end{ucspec}
+
+% ---------------------------------------------------------------- UC-08
+\begin{ucspec}{UC-08}{Hủy đăng ký hoặc rời danh sách chờ}
+Description & Sinh viên hủy chỗ hoặc rời danh sách chờ trước giờ bắt đầu.\\
+Trigger & Sinh viên bấm ``Hủy đăng ký''.\\
+Primary Actor & Sinh viên.\\
+Secondary Actor & Không có.\\
+Pre-condition & Có đăng ký \textit{Đã đăng ký} hoặc \textit{Đang chờ}; chưa đến giờ bắt đầu (kể cả đã đóng đăng ký).\\
+Post-condition & Đăng ký chuyển \textit{Đã hủy}; nếu trước đó là \textit{Đã đăng ký}, chỗ được giải phóng và UC-09 chạy.\\
+Normal flow & 1.~Sinh viên bấm hủy.\newline 2.~Giao diện hiện hộp xác nhận.\newline 3.~Sinh viên xác nhận; client gửi số phiên bản đang xem.\newline 4.~Hệ thống khóa sự kiện, lưu \textit{Đã hủy} và lịch sử.\newline 5.~Nếu chỗ vừa trống, chạy UC-09 trong cùng transaction.\\
+Alternative flow & 2a.~Chọn ``Giữ lại'': không thay đổi.\newline 4a.~Đã hủy rồi: trả hiện trạng (200), không ghi lặp.\newline 4b.~Đã có kết quả có mặt: giữ làm bằng chứng nhưng không tính vào báo cáo.\\
+Exception flow & 4c.~Sự kiện đã bắt đầu: lỗi sự kiện đã bắt đầu (409).\newline 4d.~Version cũ: lỗi xung đột phiên bản (409).\newline 4e.~Lỗi ghi: rollback cả hủy và đôn chờ.\\
+\end{ucspec}
+
+% ---------------------------------------------------------------- UC-09
+\begin{ucspec}{UC-09}{Tự động chuyển từ danh sách chờ}
+Description & Tự đôn người chờ hợp lệ đầu tiên khi có chỗ trống.\\
+Trigger & Chỗ trống xuất hiện do UC-08, do tăng sức chứa ở UC-13, hoặc trước khi nhận đăng ký mới ở UC-06.\\
+Primary Actor & Không có (hành vi tự động trong hệ thống).\\
+Secondary Actor & Sinh viên được đôn; Dịch vụ email.\\
+Pre-condition & Chưa đến giờ bắt đầu; có chỗ trống và có người \textit{Đang chờ}.\\
+Post-condition & Người được chọn thành \textit{Đã đăng ký}, mỗi chỗ chỉ cấp một lần; email thông báo được đôn được ghi vào outbox.\\
+Normal flow & 1.~Hệ thống duyệt danh sách chờ theo (thời điểm vào hàng chờ, mã).\newline 2.~Kiểm tra lại điều kiện khoa/năm của người đầu hàng.\newline 3.~Chuyển người hợp lệ sang \textit{Đã đăng ký}, ghi lịch sử.\newline 4.~Lặp lại đến khi hết chỗ hoặc hết người chờ.\newline 5.~Sau commit, gửi email thông báo.\\
+Alternative flow & 2a.~Người chờ không còn hợp lệ: ghi \textit{bỏ qua} kèm lý do, vẫn giữ \textit{Đang chờ} và thứ tự cũ để xét lại lần sau.\newline 4a.~Đã qua giờ đóng đăng ký nhưng chưa bắt đầu: vẫn đôn.\\
+Exception flow & 1a.~Đã đến giờ bắt đầu: không đôn.\newline 3a.~Lỗi ghi: rollback cùng thao tác kích hoạt.\\
+\end{ucspec}
+
+% ---------------------------------------------------------------- UC-10
+\begin{ucspec}{UC-10}{Theo dõi sự kiện của tôi}
+Description & Sinh viên xem các đăng ký và kết quả tham dự của mình.\\
+Trigger & Sinh viên chọn ``Sự kiện của tôi''.\\
+Primary Actor & Sinh viên.\\
+Secondary Actor & Không có.\\
+Pre-condition & Đã đăng nhập.\\
+Post-condition & Chỉ hiển thị dữ liệu của chính sinh viên.\\
+Normal flow & 1.~Hệ thống liệt kê đăng ký (20/trang) với tên sự kiện, thời gian, địa điểm, trạng thái và vị trí chờ.\newline 2.~Sinh viên lọc theo \textit{Đã đăng ký}/\textit{Đang chờ}/\textit{Đã hủy}.\newline 3.~Sinh viên mở chi tiết để xem kết quả điểm danh (UC-05).\\
+Alternative flow & 1a.~Chưa có đăng ký: thông báo và liên kết tìm sự kiện.\newline 3a.~Sự kiện chưa kết thúc và chưa quét: hiển thị ``Chưa ghi nhận'', không kết luận vắng.\\
+Exception flow & 1b.~Lỗi tải: báo lỗi và cho tải lại.\\
+\end{ucspec}
+
+% ---------------------------------------------------------------- UC-11
+\begin{ucspec}{UC-11}{Điểm danh bằng QR}
+Description & Sinh viên tự ghi nhận có mặt bằng cách quét QR của phiên.\\
+Trigger & Sinh viên chọn ``Quét QR''.\\
+Primary Actor & Sinh viên.\\
+Secondary Actor & Người tổ chức (đang hiển thị QR, UC-16).\\
+Pre-condition & Đã đăng nhập; \textit{Đã đăng ký}; phiên QR còn hiệu lực; thiết bị có camera và truy cập qua HTTPS.\\
+Post-condition & Có mặt (\textit{Có mặt}) được lưu với thời gian, phương thức QR và lịch sử.\\
+Normal flow & 1.~Sinh viên cấp quyền camera và quét mã.\newline 2.~Hệ thống gọi API preview (chỉ đọc) và hiển thị tên, địa điểm, thời gian sự kiện.\newline 3.~Sinh viên bấm ``Xác nhận''.\newline 4.~Hệ thống kiểm tra lại phiên, token và version của sự kiện, đăng ký, điểm danh.\newline 5.~Hệ thống lưu \textit{Có mặt} và báo thành công.\\
+Alternative flow & 2a.~Đã có mặt: hiển thị kết quả cũ, không ghi lặp.\newline 1a.~Không cấp camera: hướng dẫn cấp quyền hoặc nhờ Người tổ chức ghi thủ công (UC-17).\\
+Exception flow & 4a.~Phiên đóng, hết hạn hoặc mã sai: lỗi phiên QR không hợp lệ (409).\newline 4b.~Không phải \textit{Đã đăng ký}: lỗi chưa đăng ký chính thức (409).\newline 4c.~Dữ liệu đổi sau preview: lỗi thông tin xác nhận đã cũ (409), phải xem lại và xác nhận mới.\newline 4d.~Ngoài khung điểm danh: lỗi ngoài khung điểm danh (409).\\
+\end{ucspec}
+
+% ---------------------------------------------------------------- UC-12
+\begin{ucspec}{UC-12}{Tạo sự kiện}
+Description & Người tổ chức tạo sự kiện ở trạng thái nháp.\\
+Trigger & Người tổ chức chọn ``Tạo sự kiện''.\\
+Primary Actor & Người tổ chức.\\
+Secondary Actor & Không có.\\
+Pre-condition & Đăng nhập vai trò Người tổ chức; đã đổi mật khẩu tạm.\\
+Post-condition & Sự kiện \textit{Nháp} thuộc người tạo (lấy từ phiên); chưa hiển thị với người khác.\\
+Normal flow & 1.~Nhập tên ($\le$ 250 ký tự), mô tả ($\le$ 20.000 ký tự), địa điểm, đơn vị tổ chức.\newline 2.~Nhập 4 mốc: mở đăng ký $<$ đóng đăng ký $\le$ bắt đầu $<$ kết thúc (giờ UTC+07:00).\newline 3.~Nhập sức chứa nguyên dương; chọn nhiều khoa và nhiều năm học (bỏ trống = tất cả).\newline 4.~Hệ thống kiểm tra và lưu nháp (201).\\
+Alternative flow & 4a.~Sai dữ liệu hoặc thứ tự thời gian: 400 kèm lỗi từng trường, giữ nội dung đã nhập.\newline 1a.~Rời trang khi chưa lưu: cảnh báo mất dữ liệu.\\
+Exception flow & 4b.~Lỗi lưu: không tạo sự kiện hoặc giới hạn đối tượng dở dang.\\
+\end{ucspec}
+
+% ---------------------------------------------------------------- UC-13
+\begin{ucspec}{UC-13}{Cập nhật thông tin sự kiện}
+Description & Sửa sự kiện nháp hoặc đã công bố có kiểm soát.\\
+Trigger & Người tổ chức chọn ``Chỉnh sửa''.\\
+Primary Actor & Người tổ chức (chủ sự kiện).\\
+Secondary Actor & Dịch vụ email; Sinh viên đã đăng ký hoặc đang chờ.\\
+Pre-condition & Sự kiện thuộc người tổ chức hiện tại.\\
+Post-condition & Thay đổi được lưu; tăng version; thông báo được tạo nếu là thay đổi quan trọng.\\
+Normal flow & 1.~Hệ thống tải dữ liệu và version hiện tại.\newline 2.~Người tổ chức sửa và gửi lưu kèm version.\newline 3.~Hệ thống khóa sự kiện, kiểm tra dữ liệu và ảnh hưởng đến đăng ký.\newline 4.~Hệ thống lưu thay đổi.\newline 5.~Nếu tăng sức chứa và có người chờ: chạy UC-09.\newline 6.~Nếu đổi địa điểm hoặc một trong 4 mốc thời gian: tạo email thông báo thay đổi cho người \textit{Đã đăng ký} và \textit{Đang chờ}.\\
+Alternative flow & 6a.~Chỉ sửa tên, mô tả hoặc sức chứa: không gửi email thay đổi.\\
+Exception flow & 3a.~Giảm sức chứa dưới số đã đăng ký: lỗi sức chứa nhỏ hơn số đã đăng ký (409).\newline 3b.~Đổi khoa/năm khi đã có người đăng ký: lỗi đổi đối tượng khi đã có người đăng ký (409).\newline 3c.~Version cũ: lỗi xung đột phiên bản (409), không ghi đè.\newline 1a.~Sự kiện của người khác: 404.\\
+\end{ucspec}
+
+% ---------------------------------------------------------------- UC-14
+\begin{ucspec}{UC-14}{Công bố sự kiện}
+Description & Chuyển sự kiện nháp sang công bố.\\
+Trigger & Người tổ chức chọn ``Công bố''.\\
+Primary Actor & Người tổ chức (chủ sự kiện).\\
+Secondary Actor & Không có.\\
+Pre-condition & Sự kiện \textit{Nháp} hợp lệ.\\
+Post-condition & Sự kiện \textit{Đã công bố}, xuất hiện ở UC-04; đăng ký chỉ mở theo lịch đã đặt.\\
+Normal flow & 1.~Giao diện hiện bước xác nhận.\newline 2.~Người tổ chức xác nhận; client gửi version.\newline 3.~Hệ thống kiểm tra nội dung đã lưu và chuyển \textit{Đã công bố}.\\
+Alternative flow & 2a.~Hủy: giữ nháp.\newline 3a.~Đã công bố và version khớp: trả hiện trạng, không đổi gì.\\
+Exception flow & 3b.~Version cũ: 409. 3c.~Không phải chủ sự kiện: 404.\\
+\end{ucspec}
+
+% ---------------------------------------------------------------- UC-15
+\begin{ucspec}{UC-15}{Xem danh sách đăng ký và danh sách chờ}
+Description & Người tổ chức theo dõi người tham gia sự kiện của mình.\\
+Trigger & Người tổ chức mở ``Người tham gia''.\\
+Primary Actor & Người tổ chức (chủ sự kiện).\\
+Secondary Actor & Không có.\\
+Pre-condition & Sự kiện đã công bố và thuộc người tổ chức hiện tại.\\
+Post-condition & Hiển thị danh sách; không thay đổi thứ tự chờ.\\
+Normal flow & 1.~Hệ thống hiển thị số đã đăng ký, số đang chờ và sức chứa.\newline 2.~Hệ thống liệt kê họ tên, MSSV, email, khoa, năm, trạng thái (20/trang).\newline 3.~Người tổ chức lọc theo trạng thái hoặc tìm trong trang hiện tại.\\
+Alternative flow & 2a.~Chưa có ai đăng ký: danh sách rỗng, số liệu bằng 0.\newline 3a.~Cần xuất tệp: dùng UC-20 từ trang báo cáo.\\
+Exception flow & 1a.~Không phải chủ sự kiện: 404, không lộ thông tin cá nhân.\\
+\end{ucspec}
+
+% ---------------------------------------------------------------- UC-16
+\begin{ucspec}{UC-16}{Mở hoặc đóng phiên điểm danh QR}
+Description & Người tổ chức kiểm soát thời gian hiệu lực của mã QR.\\
+Trigger & Người tổ chức chọn ``Mở điểm danh'' hoặc ``Đóng''.\\
+Primary Actor & Người tổ chức (chủ sự kiện).\\
+Secondary Actor & Sinh viên quét QR (UC-11).\\
+Pre-condition & Sự kiện đã công bố; hiện tại nằm trong khoảng [bắt đầu $-$ 30 phút, kết thúc).\\
+Post-condition & Mở: có một phiên với mã QR ngẫu nhiên. Đóng: mã không còn dùng được.\\
+Normal flow & 1.~Người tổ chức chọn thời hạn 1--30 phút.\newline 2.~Hệ thống tạo phiên (hạn tối đa đến giờ kết thúc) và hiển thị QR dạng SVG.\newline 3.~Sinh viên quét trong thời hạn phiên.\newline 4.~Người tổ chức đóng phiên khi xong.\\
+Alternative flow & 2a.~Đang có phiên còn hạn: trả lại phiên đó, không gia hạn.\newline 2b.~Phiên cũ đã hết hạn: tự đóng và tạo phiên mới.\newline 4a.~Muốn đổi mã: đóng rồi mở phiên mới. Đóng lặp lại không gây lỗi.\\
+Exception flow & 2c.~Ngoài khung giờ: lỗi ngoài khung điểm danh (409).\newline 2d.~Backend thiếu khóa mã hóa: lỗi chưa cấu hình khóa mã hóa QR (503).\\
+\end{ucspec}
+
+% ---------------------------------------------------------------- UC-17
+\begin{ucspec}{UC-17}{Ghi nhận điểm danh thủ công}
+Description & Bổ sung có mặt khi sinh viên đến muộn, không quét được QR hoặc mất mạng.\\
+Trigger & Người tổ chức chọn ``Ghi có mặt'' cho một sinh viên.\\
+Primary Actor & Người tổ chức (chủ sự kiện).\\
+Secondary Actor & Sinh viên được xác minh.\\
+Pre-condition & Sinh viên \textit{Đã đăng ký}; từ 30 phút trước giờ bắt đầu trở đi (được ghi cả sau giờ kết thúc).\\
+Post-condition & Kết quả \textit{Có mặt}, phương thức thủ công, người ghi, lý do và snapshot trước/sau được lưu.\\
+Normal flow & 1.~Người tổ chức mở trang điểm danh, tìm sinh viên.\newline 2.~Chọn \textit{Có mặt}, nhập lý do ($\le$ 500 ký tự).\newline 3.~Client gửi version điểm danh (0 nếu chưa có) và version đăng ký.\newline 4.~Hệ thống lưu kết quả và lịch sử trong cùng transaction.\\
+Alternative flow & 4a.~Kết quả đã giống hiện trạng: trả hiện trạng, không thêm lịch sử.\newline 1a.~Mất mạng tại sự kiện: ghi tạm ngoài hệ thống, nhập lại khi có mạng kèm lý do.\\
+Exception flow & 4b.~Quá sớm: lỗi chưa tới giờ điểm danh (409).\newline 4c.~Version cũ: lỗi xung đột phiên bản (409).\newline 4d.~Không phải \textit{Đã đăng ký}: lỗi chưa đăng ký chính thức (409).\\
+\end{ucspec}
+
+% ---------------------------------------------------------------- UC-18
+\begin{ucspec}{UC-18}{Chỉnh sửa kết quả điểm danh}
+Description & Sửa kết quả điểm danh bị ghi sai.\\
+Trigger & Người tổ chức chọn sửa kết quả của một sinh viên.\\
+Primary Actor & Người tổ chức (chủ sự kiện).\\
+Secondary Actor & Sinh viên có kết quả bị sửa.\\
+Pre-condition & Như UC-17; đã có bản ghi điểm danh.\\
+Post-condition & Kết quả mới (\textit{Có mặt} hoặc \textit{Chưa ghi nhận}) được lưu; báo cáo dùng kết quả mới ở lần đọc sau.\\
+Normal flow & 1.~Người tổ chức xem lịch sử thay đổi của sinh viên.\newline 2.~Chọn kết quả mới và nhập lý do.\newline 3.~Hệ thống kiểm tra hai version và lưu cùng lịch sử (người sửa, thời điểm, trước/sau).\\
+Alternative flow & 2a.~Không đổi giá trị: không ghi lịch sử.\\
+Exception flow & 3a.~Bản ghi vừa bị sửa hoặc sinh viên vừa hủy/đăng ký lại: 409, phải tải lại.\newline 1a.~Sinh viên hoặc Admin gọi API: 403.\\
+\end{ucspec}
+
+% ---------------------------------------------------------------- UC-19
+\begin{ucspec}{UC-19}{Xem báo cáo sự kiện}
+Description & Tổng hợp số liệu tham dự từ dữ liệu trong hệ thống.\\
+Trigger & Người tổ chức mở ``Báo cáo'' và chọn sự kiện.\\
+Primary Actor & Người tổ chức (chủ sự kiện).\\
+Secondary Actor & Không có.\\
+Pre-condition & Sự kiện đã công bố.\\
+Post-condition & Hiển thị số liệu và danh sách chi tiết tại cùng một thời điểm đọc.\\
+Normal flow & 1.~Hệ thống đếm đăng ký, chờ, hủy, có mặt, chưa ghi nhận.\newline 2.~Tính tỷ lệ = có mặt / \textit{Đã đăng ký} $\times$ 100\%, làm tròn 1 chữ số.\newline 3.~Sau giờ kết thúc: vắng = \textit{Đã đăng ký} chưa có mặt.\newline 4.~Hiển thị tổng quan và danh sách chi tiết có phân trang.\\
+Alternative flow & 3a.~Chưa kết thúc: số vắng để trống, ghi rõ là số liệu tạm.\newline 2a.~Không có ai đăng ký: tỷ lệ ``Không áp dụng''.\newline 1a.~Người đã hủy hoặc đang chờ không tính vào mẫu số dù có kết quả cũ.\\
+Exception flow & 1b.~Không phải chủ sự kiện: 404. Lỗi truy vấn: không hiển thị số liệu một phần.\\
+\end{ucspec}
+
+% ---------------------------------------------------------------- UC-20
+\begin{ucspec}{UC-20}{Xuất báo cáo CSV}
+Description & Tải báo cáo và danh sách chi tiết dưới dạng tệp CSV.\\
+Trigger & Người tổ chức bấm ``Xuất CSV'' trên trang báo cáo.\\
+Primary Actor & Người tổ chức (chủ sự kiện).\\
+Secondary Actor & Không có.\\
+Pre-condition & Đang xem UC-19.\\
+Post-condition & Tệp CSV được tải về; dữ liệu gốc không đổi.\\
+Normal flow & 1.~Người tổ chức chọn phạm vi (mặc định chỉ \textit{Đã đăng ký}, hoặc tất cả trạng thái).\newline 2.~Hệ thống đọc dữ liệu trong một snapshot.\newline 3.~Hệ thống tạo CSV UTF-8 có BOM, giờ UTC+07:00, tổng quan lặp trên từng dòng chi tiết, chống công thức (ô bắt đầu bằng dấu bằng, dấu cộng, dấu trừ hoặc @).\newline 4.~Trình duyệt tải tệp.\\
+Alternative flow & 2a.~Không có người: tệp có một dòng tổng quan, tỷ lệ để trống.\\
+Exception flow & 2b.~Vượt 10.000 dòng: lỗi dữ liệu xuất quá lớn (413), không cắt dữ liệu.\\
+\end{ucspec}
+
+% ---------------------------------------------------------------- UC-21
+\begin{ucspec}{UC-21}{Tra cứu tài khoản}
+Description & Quản trị viên tìm tài khoản để hỗ trợ hoặc khóa/mở.\\
+Trigger & Quản trị viên mở ``Tài khoản''.\\
+Primary Actor & Quản trị viên.\\
+Secondary Actor & Không có.\\
+Pre-condition & Đăng nhập vai trò Quản trị viên.\\
+Post-condition & Hiển thị tài khoản; không hiển thị mật khẩu hoặc token.\\
+Normal flow & 1.~Quản trị viên nhập từ khóa (MSSV, email hoặc họ tên).\newline 2.~Chọn lọc vai trò và trạng thái (\textit{Hoạt động}/\textit{Bị khóa}).\newline 3.~Hệ thống trả kết quả có phân trang (20/trang).\newline 4.~Quản trị viên chọn tài khoản để thực hiện UC-23.\\
+Alternative flow & 3a.~Không có kết quả: danh sách rỗng.\\
+Exception flow & 1a.~Không phải Quản trị viên: 403.\\
+\end{ucspec}
+
+% ---------------------------------------------------------------- UC-22
+\begin{ucspec}{UC-22}{Cấp tài khoản người tổ chức}
+Description & Quản trị viên tạo tài khoản cho người được phân công tổ chức sự kiện.\\
+Trigger & Quản trị viên chọn ``Cấp tài khoản người tổ chức''.\\
+Primary Actor & Quản trị viên.\\
+Secondary Actor & Người tổ chức nhận tài khoản.\\
+Pre-condition & Đăng nhập vai trò Quản trị viên.\\
+Post-condition & Tài khoản Người tổ chức được tạo với cờ buộc đổi mật khẩu.\\
+Normal flow & 1.~Nhập họ tên, email, đơn vị tổ chức, mật khẩu tạm và lý do.\newline 2.~Giao diện hiện bước xác nhận, nhắc đối chiếu người được phân công.\newline 3.~Hệ thống tạo tài khoản (201).\newline 4.~Quản trị viên bàn giao mật khẩu tạm qua kênh riêng (ngoài ứng dụng).\\
+Alternative flow & 2a.~Hủy: không tạo.\\
+Exception flow & 3a.~Email đã tồn tại: 409, không tạo trùng (không có chuyển vai trò).\newline 3b.~Lỗi ghi: rollback.\\
+\end{ucspec}
+
+% ---------------------------------------------------------------- UC-23
+\begin{ucspec}{UC-23}{Khóa hoặc mở khóa tài khoản}
+Description & Tạm ngừng hoặc khôi phục quyền truy cập của một tài khoản.\\
+Trigger & Quản trị viên chọn ``Khóa'' hoặc ``Mở khóa''.\\
+Primary Actor & Quản trị viên.\\
+Secondary Actor & Chủ tài khoản bị xử lý.\\
+Pre-condition & Đã chọn tài khoản qua UC-21.\\
+Post-condition & Trạng thái mới được lưu kèm lịch sử; khi khóa, mọi phiên của tài khoản bị thu hồi. Dữ liệu đăng ký và điểm danh được giữ.\\
+Normal flow & 1.~Quản trị viên chọn thao tác và nhập lý do.\newline 2.~Hệ thống chạy preview, hiển thị trước/sau và tác động.\newline 3.~Quản trị viên xác nhận.\newline 4.~Hệ thống kiểm tra lại điều kiện và version, lưu trạng thái và thu hồi phiên.\\
+Alternative flow & 2a.~Trạng thái không đổi: không ghi lịch sử, không tăng version.\newline 3a.~Hủy: không gửi yêu cầu.\\
+Exception flow & 4a.~Tự khóa chính mình hoặc khóa Admin \textit{Hoạt động} cuối cùng: 409.\newline 4b.~Người tổ chức còn sự kiện nháp hoặc chưa kết thúc: lỗi Người tổ chức còn sự kiện đang phụ trách (409).\newline 4c.~Version cũ: lỗi xung đột phiên bản (409).\\
+\end{ucspec}
+
+% ---------------------------------------------------------------- UC-24
+\begin{ucspec}{UC-24}{Đổi mật khẩu}
+Description & Người dùng đổi mật khẩu; bắt buộc với tài khoản dùng mật khẩu tạm.\\
+Trigger & Người dùng chọn ``Đổi mật khẩu'' hoặc bị chuyển tới sau khi đăng nhập bằng mật khẩu tạm.\\
+Primary Actor & Người dùng.\\
+Secondary Actor & Không có.\\
+Pre-condition & Đã đăng nhập.\\
+Post-condition & Mật khẩu mới được lưu; mọi phiên bị thu hồi; người dùng phải đăng nhập lại.\\
+Normal flow & 1.~Nhập mật khẩu hiện tại và mật khẩu mới ($\ge$ 8 ký tự, $\le$ 72 byte).\newline 2.~Hệ thống kiểm tra mật khẩu hiện tại.\newline 3.~Hệ thống lưu mật khẩu mới, xóa cờ mật khẩu tạm, thu hồi các phiên (204).\newline 4.~Giao diện chuyển về đăng nhập.\\
+Alternative flow & 2a.~Mật khẩu hiện tại sai: báo lỗi, giữ phiên.\\
+Exception flow & 3a.~Lỗi ghi: không đổi mật khẩu, phiên giữ nguyên.\\
+\end{ucspec}

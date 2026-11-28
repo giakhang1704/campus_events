@@ -1,0 +1,66 @@
+\subsection{Task 4.1. Bàn giao sản phẩm và phân loại phạm vi}
+\label{sec:t4-delivery}
+
+\subsubsection{Sản phẩm bàn giao}
+
+\begin{table}[H]
+\centering\small
+\caption{Danh mục sản phẩm bàn giao}\label{tab:t4-deliverables}
+\begin{tabularx}{\linewidth}{@{}p{.28\linewidth}X@{}}
+\toprule
+\textbf{Sản phẩm} & \textbf{Nội dung / vị trí}\\\midrule
+Phần mềm đang chạy & \url{https://bk-events.vercel.app} (frontend Vercel, backend Render, PostgreSQL Neon, email Brevo).\\
+Mã nguồn & \url{https://github.com/giakhang1704/campus_events}, nhánh chính; báo cáo trên nhánh riêng của báo cáo.\\
+Hướng dẫn chạy & Hướng dẫn chạy local bằng Docker Compose; hướng dẫn triển khai cloud, vận hành, sao lưu và khôi phục.\\
+Tài liệu kỹ thuật & Đặc tả API của từng increment; tài liệu kiến trúc; nhật ký quyết định phạm vi.\\
+Bằng chứng chất lượng & Biên bản kết quả kiểm thử I1--I3 và rà soát hệ thống 25/11; bộ test tự động; kiểm thử tự động mỗi lần đẩy mã (CI).\\
+Hồ sơ quản lý & Báo cáo này: Baseline V1.0 (Task 2), Baseline V2.0 đề xuất, weekly log, sổ rủi ro, change log, ma trận truy vết.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsubsection{Phân loại phạm vi}
+
+\begingroup\small
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}p{.15\linewidth}p{.40\linewidth}p{.38\linewidth}@{}}
+\caption{Phạm vi hoàn thành, một phần, hoãn và loại bỏ}\label{tab:t4-scope}\\
+\toprule
+\textbf{Trạng thái} & \textbf{Hạng mục} & \textbf{Căn cứ / quyết định}\\\midrule\endfirsthead
+\toprule
+\textbf{Trạng thái} & \textbf{Hạng mục} & \textbf{Căn cứ / quyết định}\\\midrule\endhead
+\bottomrule\endfoot
+\textbf{Completed} & Tài khoản, đăng nhập, đổi mật khẩu, RBAC 3 vai trò, quản trị tài khoản (FR-01..07). & Test I1 và rà soát 25/11 đạt.\\
+ & Tạo, sửa, công bố, tìm và xem sự kiện; giới hạn khoa/năm (FR-08..11). & Test I1, I2 đạt.\\
+ & Đăng ký, hủy, danh sách chờ FIFO, 3 loại email (FR-12..18). & Test I2 đạt; thư thật gửi được.\\
+ & Điểm danh QR, điểm danh thủ công có lịch sử, báo cáo, xuất CSV (FR-19..23). & Test I3 đạt.\\
+ & Triển khai cloud qua HTTPS (NFR-12). & Kiểm tra 27/11.\\
+\midrule
+\textbf{Partially completed} & Kiểm thử nghiệm thu end-to-end trên cloud (A12.1). & Thu gọn theo CR-05: không chạy end-to-end trên cloud, không thử QR trên điện thoại thật.\\
+ & Đo chỉ tiêu M2 (hiệu năng). & Đạt ở local; hạn chế: chưa đo tốc độ thực tế trên cloud (SL-13).\\
+ & User Guide (A14.1). & Gộp vào hướng dẫn chạy theo CR-05, chưa có tài liệu riêng cho người dùng cuối.\\
+ & Phê duyệt của khách hàng cho các CR do nhóm đề xuất (CR-01..04, CR-06..10) và Baseline V2.0. & Chưa thực hiện do CR-05; trình bày tại demo.\\
+\midrule
+\textbf{Deferred} & Xuất Excel. & CR-02.\\
+ & Lọc sự kiện theo thời gian (TC-BRW-API-08). & CR-10; không thuộc chức năng bắt buộc.\\
+ & Thử nghiệm người dùng M5 (5 sinh viên, 20 lượt). & CR-05.\\
+ & Email nhắc trước sự kiện, xác minh email/SSO, quên mật khẩu, theo dõi thư đã tới hay bị trả về. & Exclusions ở Task 1.4 hoặc ngoài MVP.\\
+\midrule
+\textbf{Removed} & Sức chứa không giới hạn (Task 1.4: ``sức chứa nếu có giới hạn''). & CR-03.\\
+ & Triển khai trên AWS Lightsail (RA02). & CR-04.\\
+\end{longtable}
+\endgroup
+
+\subsubsection{Kịch bản demo}
+
+Buổi demo đi qua một luồng end-to-end duy nhất thay vì trình bày từng màn hình rời rạc:
+\begin{enumerate}
+    \item Quản trị viên cấp tài khoản Người tổ chức; Người tổ chức đăng nhập và đổi mật khẩu tạm.
+    \item Người tổ chức tạo sự kiện sức chứa 1, giới hạn một khoa, rồi công bố.
+    \item Hai sinh viên đăng ký: người thứ nhất nhận chỗ và email xác nhận, người thứ hai vào danh sách chờ.
+    \item Người thứ nhất hủy: hệ thống tự đôn người thứ hai và gửi email.
+    \item Người tổ chức mở phiên QR; sinh viên quét bằng điện thoại, xem trước rồi xác nhận.
+    \item Người tổ chức sửa điểm danh thủ công có lý do; mở báo cáo và xuất CSV.
+    \item Trình bày phần quản lý: Baseline V1.0 và V2.0, change log CR-01..10, sổ rủi ro, số liệu kế hoạch và thực tế; xin khách hàng quyết định các CR chưa được duyệt.
+\end{enumerate}
+Trước demo, nhóm mở trang khoảng 2 phút để backend Render khởi động (NR1). Phương án dự phòng là chạy bản local bằng Docker Compose.

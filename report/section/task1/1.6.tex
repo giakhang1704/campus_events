@@ -1,0 +1,127 @@
+\subsection{Identify major stakeholders and analyze their interests, influence, impact, and appropriate engagement strategy. Explain any modification to objectives, scope, or approach resulting from stakeholder analysis.}
+
+\subsubsection{Stakeholders và engagement strategy}
+
+Dựa trên đề bài và thông tin trao đổi với khách hàng, nhóm xác định các stakeholders chính của Hệ thống đăng ký và quản lý sự kiện như trong bảng dưới đây. Influence và impact của từng stakeholder được nhóm đánh giá trong phạm vi bài tập lớn.
+
+\begingroup
+\scriptsize
+\setlength{\tabcolsep}{2pt}
+\setlength{\parskip}{0pt}
+\renewcommand{\arraystretch}{1.18}
+\begin{longtable}{>{\RaggedRight\arraybackslash}p{0.150\textwidth}
+                  >{\RaggedRight\arraybackslash}p{0.225\textwidth}
+                  >{\RaggedRight\arraybackslash}p{0.130\textwidth}
+                  >{\RaggedRight\arraybackslash}p{0.130\textwidth}
+                  >{\RaggedRight\arraybackslash}p{0.280\textwidth}}
+\rowcolor{headerblue}
+\color{white}\textbf{Stakeholders} &
+\color{white}\textbf{Interests} &
+\color{white}\textbf{Influence} &
+\color{white}\textbf{Impact} &
+\color{white}\textbf{Engagement strategy} \\
+\endfirsthead
+
+\rowcolor{headerblue}
+\color{white}\textbf{Stakeholders} &
+\color{white}\textbf{Interests} &
+\color{white}\textbf{Influence} &
+\color{white}\textbf{Impact} &
+\color{white}\textbf{Engagement strategy} \\
+\endhead
+
+\rowcolor{lightgray}
+\textbf{Nhà trường, thông qua đại diện khách hàng là thầy Nguyễn Minh Tâm} &
+Hệ thống giúp quản lý sự kiện tập trung, giảm thao tác thủ công, rút ngắn thời gian tổng hợp báo cáo, hạn chế sai lệch dữ liệu và bảo vệ thông tin sinh viên. &
+\textbf{Cao.} Đại diện khách hàng xác nhận yêu cầu, phạm vi, tiêu chí nghiệm thu và các thay đổi lớn. &
+\textbf{Cao:} kết quả dự án ảnh hưởng đến khả năng cải thiện quy trình quản lý sự kiện của nhà trường. &
+Trao đổi tại các mốc xác nhận yêu cầu, phạm vi và nghiệm thu; trình các đề xuất thay đổi cùng tác động đến công sức và tiến độ; ghi lại phản hồi và quyết định trong Client Interaction Log. \\
+
+\textbf{Người tổ chức sự kiện} &
+Tạo và cập nhật sự kiện thuận tiện; quản lý danh sách đăng ký, sức chứa và danh sách chờ; điểm danh và lập báo cáo nhanh; có cách xử lý khi QR Code hoặc mạng gặp sự cố. &
+\textbf{Cao.} Người tổ chức hiểu rõ quy trình và góp ý trực tiếp về các chức năng cần xây dựng. Thay đổi lớn vẫn cần đại diện khách hàng xác nhận. &
+\textbf{Cao:} chuyển từ nhiều công cụ riêng lẻ sang một hệ thống chung và cần làm quen với quy trình quản lý mới. &
+Lấy ý kiến về các luồng nghiệp vụ; trình diễn chức năng và xác minh các tình huống như hết chỗ, hủy đăng ký, thay đổi sự kiện và lỗi điểm danh trước khi hoàn thiện. \\
+
+\rowcolor{lightgray}
+\textbf{Sinh viên} &
+Dễ tìm thông tin sự kiện, đăng ký hoặc hủy đăng ký và theo dõi trạng thái; nhận thông báo kịp thời; thông tin cá nhân được bảo vệ. &
+\textbf{Trung bình.} Sinh viên góp ý về cách sử dụng và phát hiện lỗi nhưng không phê duyệt phạm vi dự án. &
+\textbf{Cao:} thay đổi cách tìm sự kiện, đăng ký và theo dõi việc tham dự; lỗi đăng ký hoặc điểm danh ảnh hưởng trực tiếp đến sinh viên. &
+Cho người dùng đại diện thử các thao tác xem sự kiện, đăng ký, hủy và xem trạng thái; lấy ý kiến về sự rõ ràng và thuận tiện để điều chỉnh sản phẩm. \\
+
+\textbf{Quản trị viên hệ thống} &
+Quản lý tài khoản và quyền truy cập; hỗ trợ người dùng và xử lý lỗi truy cập cơ bản. &
+\textbf{Trung bình.} Quản trị viên góp ý về phân quyền và vận hành nhưng không quyết định toàn bộ yêu cầu của hệ thống. &
+\textbf{Trung bình:} có thêm công việc quản lý tài khoản, phân quyền và hỗ trợ sử dụng hệ thống trong phạm vi MVP. &
+Lấy ý kiến về quyền của từng vai trò; kiểm tra chức năng quản lý tài khoản, truy cập đúng quyền và hướng dẫn vận hành. \\
+
+\rowcolor{lightgray}
+\textbf{Cấp quản lý sử dụng báo cáo tổng hợp} &
+Theo dõi số sự kiện, lượt đăng ký và tỷ lệ tham dự theo khoảng thời gian. &
+\textbf{Thấp.} Nhu cầu báo cáo tổng hợp có ưu tiên thấp hơn các chức năng chính; chưa có quyền phê duyệt riêng được khách hàng xác nhận. &
+\textbf{Trung bình:} có thể sử dụng dữ liệu tập trung để theo dõi hoạt động nhưng báo cáo học kỳ chưa thuộc phần bắt buộc của MVP. &
+Tiếp nhận nhu cầu thông qua đại diện khách hàng; làm rõ giới hạn báo cáo hiện tại và chỉ xem xét báo cáo tổng hợp khi có đủ nguồn lực. \\
+
+\textbf{Project manager và nhóm dự án} &
+Hoàn thành sản phẩm đúng phạm vi và thời gian học phần; phân chia công việc phù hợp; bảo đảm yêu cầu, kế hoạch, phần mềm và kiểm thử thống nhất. &
+\textbf{Cao.} Nhóm trực tiếp lập kế hoạch, lựa chọn giải pháp, phát triển và kiểm thử sản phẩm. &
+\textbf{Cao:} yêu cầu và độ phức tạp của hệ thống ảnh hưởng trực tiếp đến khối lượng công việc, tiến độ và chất lượng. &
+Phân công rõ trách nhiệm; rà soát công việc hằng tuần; cập nhật vấn đề và rủi ro; báo cáo sớm các đề xuất vượt phạm vi hoặc ảnh hưởng đến tiến độ. \\
+
+\bottomrule
+\end{longtable}
+\endgroup
+
+Các engagement activities trong bảng là hoạt động dự kiến. Nếu chưa có người dùng đại diện tham gia trực tiếp, nhóm sẽ xác minh các tình huống nghiệp vụ thông qua đại diện khách hàng.
+
+\subsubsection{Modifications to objectives, scope, or approach resulting from stakeholder analysis}
+
+Stakeholder analysis cho thấy nhu cầu của từng stakeholder ảnh hưởng trực tiếp đến mức độ ưu tiên của chức năng và cách nhóm thực hiện dự án. Các resulting modifications đối với objectives, scope và approach được xác định như sau:
+
+\begingroup
+\small
+\setlength{\tabcolsep}{4pt}
+\setlength{\parskip}{0pt}
+\renewcommand{\arraystretch}{1.20}
+\begin{longtable}{>{\RaggedRight\arraybackslash}p{0.340\textwidth}
+                  >{\RaggedRight\arraybackslash}p{0.610\textwidth}}
+\rowcolor{headerblue}
+\color{white}\textbf{Nhu cầu của stakeholders} &
+\color{white}\textbf{Resulting modifications to objectives, scope, or approach} \\
+\endfirsthead
+
+\rowcolor{headerblue}
+\color{white}\textbf{Nhu cầu của stakeholders} &
+\color{white}\textbf{Resulting modifications to objectives, scope, or approach} \\
+\endhead
+
+\rowcolor{lightgray}
+\textbf{Người tổ chức cần giảm quản lý và tổng hợp thủ công.} Khách hàng xác định quản lý đăng ký, điểm danh và lập báo cáo là những bước đang gặp khó khăn. &
+\textbf{Objectives:} tập trung giảm thao tác thủ công và sai lệch dữ liệu.
+\par \textbf{Scope:} ưu tiên luồng hoàn chỉnh từ tạo sự kiện đến đăng ký, điểm danh và báo cáo.
+\par \textbf{Approach:} tự động chuyển người đầu danh sách chờ khi có chỗ trống và gửi email theo yêu cầu đã làm rõ; kiểm thử sức chứa, thứ tự danh sách chờ và số liệu báo cáo. \\
+
+\textbf{Sinh viên cần dễ tìm thông tin, đăng ký và theo dõi trạng thái tham gia.} Nhu cầu này được khách hàng xác nhận trong trao đổi Tuần~2. &
+\textbf{Objectives:} bổ sung việc cải thiện trải nghiệm sử dụng của sinh viên bên cạnh hiệu quả vận hành.
+\par \textbf{Approach:} hiển thị rõ trạng thái đăng ký/danh sách chờ, hỗ trợ hủy đăng ký và thông báo thay đổi quan trọng; lấy phản hồi qua dùng thử. Không đặt việc tăng tỷ lệ tham gia thành chỉ tiêu bắt buộc của MVP. \\
+
+\rowcolor{lightgray}
+\textbf{Nhà trường yêu cầu bảo vệ thông tin sinh viên và phân quyền phù hợp.} &
+\textbf{Scope:} giữ quản lý tài khoản và quyền truy cập trong MVP.
+\par \textbf{Approach:} xác định quyền của sinh viên, người tổ chức và quản trị viên; kiểm thử cả thao tác được phép và truy cập trái quyền. \\
+
+\textbf{Người tổ chức cần xử lý được sự cố điểm danh.} Khách hàng mong muốn dùng QR Code và cho phép xử lý thủ công khi cần. &
+\textbf{Approach:} dùng QR Code làm phương thức chính và cho người tổ chức ghi nhận hoặc chỉnh sửa điểm danh thủ công.
+\par \textbf{Scope:} không triển khai đầy đủ đồng bộ dữ liệu khi làm việc offline hoặc chống điểm danh hộ tuyệt đối trong MVP. Nhóm sử dụng phương án ghi nhận thủ công khi mất mạng và cập nhật vào hệ thống sau khi kết nối được khôi phục. \\
+
+\rowcolor{lightgray}
+\textbf{Cấp quản lý có nhu cầu báo cáo tổng hợp, nhưng nhu cầu này có ưu tiên thấp hơn việc vận hành một sự kiện.} &
+\textbf{Scope:} ưu tiên báo cáo từng sự kiện và xuất Excel/CSV; chỉ xem xét báo cáo theo học kỳ nếu còn nguồn lực. Không đưa tích hợp tính điểm rèn luyện hoặc chứng nhận hoạt động vào MVP. \\
+
+\textbf{Nhóm dự án cần phạm vi phù hợp với thời gian và nguồn lực.} Khách hàng cho phép dùng dữ liệu sinh viên giả lập và không yêu cầu kết nối MyBK hoặc cơ sở dữ liệu thật. &
+\textbf{Approach:} dùng dữ liệu giả lập, giảm công việc tích hợp và tập trung hoàn thiện các chức năng cốt lõi. Các đề xuất mở rộng phải được đánh giá về công sức và tiến độ trước khi trình đại diện khách hàng xác nhận. \\
+
+\bottomrule
+\end{longtable}
+\endgroup

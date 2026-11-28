@@ -1,0 +1,32 @@
+\subsection{Task 4.5. Bài học kinh nghiệm}
+\label{sec:t4-lessons}
+
+\subsubsection{Những điều sẽ lặp lại}
+
+\begin{itemize}
+    \item \textbf{Phát triển theo increment có checkpoint.} Mỗi increment kết thúc bằng một bộ test chạy lại được, nên I2, I3 không làm hỏng I1. Lỗi phát hiện ở increment nào được sửa ngay trong increment đó.
+    \item \textbf{Đầu tư sớm vào kiểm thử tranh chấp và transaction.} Rủi ro lớn nhất về dữ liệu (AR1) không xảy ra vì nhóm viết test đồng thời ngay khi làm I2, không đợi đến A12.
+    \item \textbf{Ghi lại quyết định phạm vi bằng văn bản.} Nhật ký quyết định phạm vi giúp truy lại lý do của từng thay đổi khi viết báo cáo.
+    \item \textbf{Bảo toàn baseline.} Baseline V1.0 được giữ nguyên, thay đổi đi qua change log, nên có thể so sánh kế hoạch và thực tế một cách trung thực.
+\end{itemize}
+
+\subsubsection{Những điều sẽ thay đổi}
+
+\begin{itemize}
+    \item \textbf{Ghi timesheet hằng ngày từ tuần đầu.} Bảng chấm công chỉ được tổng hợp vào cuối dự án nên số giờ dựa vào trí nhớ và lịch sử commit, và chỉ số CPI kém chính xác. Lần sau: mỗi người ghi giờ theo mã hoạt động hằng ngày, PM tổng hợp mỗi tuần.
+    \item \textbf{Đưa mọi quyết định nghiệp vụ qua khách hàng.} Các CR do nhóm đề xuất (CR-01..04, CR-06..10) chỉ được nhóm thống nhất. Khi bị rút ngắn thời hạn, nhóm không còn thời gian xin phê duyệt. Lần sau: gửi khách hàng ngay khi chốt, ghi vào Client Interaction Log.
+    \item \textbf{Merge vào nhánh chính sau mỗi increment.} I2, I3 nằm trên nhánh tính năng đến 25/11, khiến tích hợp dồn về cuối (NR5).
+    \item \textbf{Lập biên bản checkpoint.} CP1 có demo với khách hàng nhưng không có biên bản ký; CP2, CP3 chỉ có bằng chứng kỹ thuật.
+    \item \textbf{Theo dõi và escalate sớm khi thành viên không tham gia.} BA vắng từ I2 nhưng nhóm chỉ chia lại việc trong nội bộ. Lần sau: ghi nhận ngay vào sổ rủi ro, trao đổi trực tiếp với thành viên để thống nhất số giờ cam kết, và nếu không cải thiện thì escalate lên giảng viên theo cơ chế ở Task 1.5; đồng thời không giao vai trò trao đổi với khách hàng cho duy nhất một người.
+    \item \textbf{Chủ động sắp xếp thời gian, làm đều mỗi tuần.} Khối lượng thường dồn vào một vài ngày (12/11, 18/11, 25/11), còn môi trường (A03) và tích hợp bị đẩy về sát hạn. Lần sau: mỗi thành viên đăng ký trước các khung giờ làm việc cố định trong tuần, khớp với lịch học và lịch làm thêm; mỗi tuần đặt một mốc nội bộ giữa tuần để có sản phẩm nhỏ đưa lên repository; việc có rủi ro cao như cài đặt môi trường, tích hợp, triển khai được làm sớm thay vì để cuối.
+\end{itemize}
+
+\subsubsection{Cải tiến cách lập kế hoạch}
+
+\begin{itemize}
+    \item \textbf{Ước lượng theo nhóm hoạt động dùng chung transaction}, không tách thành các hoạt động độc lập (sai số I2 $-$30\%).
+    \item \textbf{Thêm hoạt động ``sẵn sàng vận hành''} (migration, backup, giới hạn tần suất, CI) vào WBS; dự án này phát sinh 24 giờ cho các việc đó.
+    \item \textbf{Đặt tiêu chí hoàn thành cho giao diện} trong Product Description để tránh làm lại không giới hạn (A05.2 +72\%).
+    \item \textbf{Giữ buffer lịch ở giữa dự án, không chỉ ở cuối.} Toàn bộ buffer đặt ở 04--06/12 nên mất hết khi bị rút ngắn 1 tuần (CR-05).
+    \item \textbf{Chọn nền tảng triển khai sớm bằng thử nghiệm thực} (RA02 lẽ ra phải làm ngày 05/11), thay vì chọn theo giả định.
+\end{itemize}

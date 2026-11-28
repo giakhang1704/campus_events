@@ -1,0 +1,95 @@
+\subsection{Tích hợp và triển khai}
+\label{sec:t3-deploy}
+
+\subsubsection{Mục tiêu và phạm vi}
+
+Ghép ba increment thành một bản phát hành duy nhất và đưa lên môi trường cloud truy cập được qua HTTPS, để khách hàng dùng thử và để quét QR bằng điện thoại thật.
+
+\begin{itemize}
+    \item \textbf{Yêu cầu:} NFR-10, NFR-12.
+    \item \textbf{Hoạt động:} A11, RA02 (được thay bằng CR-04).
+    \item \textbf{Checkpoint:} CP3, kế hoạch ngày 25/11/2026.
+\end{itemize}
+
+\subsubsection{Kế hoạch chi tiết}
+
+\begin{table}[H]
+\centering\small
+\caption{Kế hoạch chi tiết tích hợp và triển khai (lập ngày 25/11)}\label{tab:t3-lower-deploy}
+\begin{tabularx}{\linewidth}{@{}p{.05\linewidth}Xp{.32\linewidth}@{}}
+\toprule
+\textbf{Bước} & \textbf{Công việc} & \textbf{Tiêu chí kiểm tra}\\\midrule
+1 & Rà soát toàn hệ thống, sửa lỗi và hợp nhất I1--I3 vào nhánh chính. & Toàn bộ bộ test đạt trên nhánh chính.\\
+2 & Tạo database PostgreSQL trên Neon; schema được tạo tự động khi backend khởi động. & Đủ 15 bảng nghiệp vụ; không có dữ liệu mẫu.\\
+3 & Triển khai backend trên Render; đặt các khóa bí mật (database, mã hóa QR, email). & Kiểm tra sức khỏe hệ thống trả kết quả tốt.\\
+4 & Tạo tài khoản Quản trị viên đầu tiên rồi tắt chức năng tạo tự động. & Đăng nhập được; chức năng tạo tự động đã tắt.\\
+5 & Triển khai frontend trên Vercel, chuyển tiếp các yêu cầu API sang Render. & Đăng nhập, CSRF, đăng xuất hoạt động qua HTTPS.\\
+6 & Chạy luồng end-to-end và quét QR bằng điện thoại thật. & Không thực hiện (CR-05).\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Kế hoạch này chỉ cụ thể được sau khi chọn nền tảng (CR-04) và gặp các giới hạn thực tế của nền tảng đó.
+
+\subsubsection{Triển khai}
+
+Đến 25/11, nhánh chính vẫn chỉ chứa I1; I2 và I3 nằm trên các nhánh tính năng nối tiếp nhau. Ngày 25/11, nhóm rà soát toàn hệ thống, sửa các lỗi tìm được, bổ sung những phần cần thiết để chạy trên môi trường thật (giới hạn số lần đăng nhập sai, quản lý phiên bản database, sao lưu và khôi phục dữ liệu, kiểm thử tự động khi đẩy mã) rồi hợp nhất toàn bộ vào nhánh chính.
+
+Hệ thống được triển khai cùng ngày trên \textbf{Vercel} (giao diện), \textbf{Render} (backend), \textbf{Neon} (database) và \textbf{Brevo} (email), thay cho AWS Lightsail trong baseline (CR-04): gói miễn phí đủ cho quy mô demo và giúp nhóm không phải chi 728.000 VNĐ tiền thuê máy chủ, khoản tiền mặt duy nhất của dự án. Giao diện chuyển tiếp mọi yêu cầu API qua cùng tên miền, nhờ đó giữ nguyên cơ chế cookie phiên và CSRF đã kiểm thử ở local.
+
+\begin{table}[H]
+\centering\small
+\caption{Trạng thái chức năng sau tích hợp (27/11/2026)}\label{tab:t3-scope}
+\begin{tabularx}{\linewidth}{@{}p{.22\linewidth}p{.11\linewidth}X@{}}
+\toprule
+\textbf{Nhóm chức năng} & \textbf{Hoạt động} & \textbf{Kết quả}\\\midrule
+Tài khoản, phân quyền & A05.1 & Hoàn thành; bổ sung giới hạn số lần đăng nhập, đăng ký.\\
+Quản lý, tra cứu sự kiện & A05.2 & Hoàn thành; giới hạn khoa, năm học được chọn nhiều.\\
+Đăng ký, hủy, sức chứa & A07.1 & Hoàn thành.\\
+Danh sách chờ & A07.2 & Hoàn thành; đôn tự động khi hủy hoặc tăng sức chứa.\\
+Email thông báo & A07.3 & Hoàn thành 3 loại thư.\\
+Điểm danh QR & A09.1 & Hoàn thành; chưa thử trên điện thoại thật.\\
+Điểm danh thủ công & A09.2 & Hoàn thành, có lý do và lịch sử.\\
+Báo cáo & A10.1 & Hoàn thành.\\
+Xuất dữ liệu & A10.2 & Chỉ CSV (CR-02).\\
+Triển khai & A11 & Chạy trên Vercel, Render, Neon (CR-04).\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsubsection{Kiểm thử}
+
+\begin{itemize}
+    \item Trước khi hợp nhất: 55 test backend đạt; bài kiểm tra tổng thể trên database riêng với hơn 10.000 đăng ký đạt; diễn tập sao lưu và khôi phục ở local đạt.
+    \item Sau khi triển khai (27/11): kiểm tra sức khỏe hệ thống đạt, database kết nối được; yêu cầu chưa đăng nhập bị từ chối đúng thiết kế; chuyển tiếp API qua Vercel hoạt động.
+    \item Integration test end-to-end trên cloud (A12.1): không thực hiện do CR-05 (thu gọn nghiệm thu).
+\end{itemize}
+
+\subsubsection{Vấn đề phát sinh và xử lý}
+
+\begin{itemize}
+    \item \textbf{Tích hợp dồn về cuối} (NR5): do không hợp nhất sau mỗi increment, nhóm phải bỏ $\approx$ 10 giờ ngoài kế hoạch để rà soát toàn hệ thống.
+    \item \textbf{Build lỗi trên Render} (NR2): kho thư viện Maven Central từ chối do quá nhiều yêu cầu; chuyển sang kho dự phòng và cho phép thử lại, xử lý trong ngày.
+    \item \textbf{Cấu hình chuyển tiếp API trên Vercel} sai ở lần đầu; sửa trong ngày.
+    \item \textbf{Backend khởi động chậm} (NR1): gói Render miễn phí cho backend ngủ khi không có truy cập, yêu cầu đầu tiên mất $\approx$ 50 giây. Biện pháp: mở hệ thống trước buổi demo vài phút.
+\end{itemize}
+
+\subsubsection{Tiến độ và checkpoint}
+
+A11 kế hoạch 24--25/11 (7,0 giờ), hoàn thành 25/11 (8,0 giờ, thêm 1 giờ sửa lỗi build và chuyển tiếp API). Riêng đợt rà soát hệ thống tốn thêm $\approx$ 10 giờ ngoài kế hoạch.
+
+\begin{table}[H]
+\centering\small
+\caption{Đánh giá CP3}\label{tab:t3-cp3}
+\begin{tabularx}{\linewidth}{@{}p{.32\linewidth}p{.12\linewidth}X@{}}
+\toprule
+\textbf{Điều kiện (Mục 2.5)} & \textbf{Kết quả} & \textbf{Ghi chú}\\\midrule
+I3 tích hợp QR, thủ công, báo cáo, CSV/Excel & Đạt một phần & Chỉ CSV (CR-02).\\
+Chạy được trên môi trường cloud & Đạt & Vercel, Render, Neon thay Lightsail (CR-04).\\
+Smoke test có bằng chứng & Đạt & Kiểm tra ngày 27/11.\\
+Thử khôi phục dữ liệu & Đạt ở local & Chưa diễn tập trên cloud.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+CP3 đạt đúng hạn 25/11 về mặt kỹ thuật, với hai điều chỉnh phạm vi đã ghi nhận qua CR-02 và CR-04.

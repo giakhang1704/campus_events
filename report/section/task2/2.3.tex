@@ -1,0 +1,87 @@
+\clearpage
+\subsection{Construct a Product Flow Diagram (PFD)}
+PFD thể hiện phụ thuộc giữa các sản phẩm ở PBS 2.1 và PDs 2.2. Mũi tên đi từ sản phẩm đầu vào đến sản phẩm sử dụng đầu vào đó. Ba increment dưới đây là các instance tích lũy của phần mềm.
+\begin{table}[H]
+\centering
+\caption{Các instance phần mềm}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{|p{2.5cm}|X|}
+\hline
+\textbf{Instance} & \textbf{Phạm vi} \\ \hline
+Increment 1 & Tài khoản, phân quyền, quản lý và tìm/xem sự kiện. \\ \hline
+Increment 2 & Kế thừa I1; thêm đăng ký/hủy, waitlist và email. \\ \hline
+Increment 3 & Kế thừa I2; thêm điểm danh QR/thủ công, báo cáo và xuất CSV/Excel. \\ \hline
+\end{tabularx}
+\end{table}
+Ô xanh là deliverable; ô vàng là intermediate; ô xám là đầu vào bên ngoài. Nét đứt của mũi tên là phụ thuộc có điều kiện. Chấm đen là điểm nối; các đường giao nhau không có chấm không nối với nhau.
+
+\newgeometry{margin=1cm,includefoot}
+\begin{landscape}
+\landscapeheader
+\begin{figure}[H]
+\centering
+\begin{adjustbox}{max width=.98\linewidth,max totalheight=.70\textheight}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\draw[flowshaft] (1.2000,-6.2000) -- (0.8000,-6.2000);
+\draw[flowshaft] (0.8000,-6.2000) -- (0.8000,-15.3000);
+\draw[flow] (0.8000,-10.0000) -- (1.2000,-10.0000);
+\draw[flow] (0.8000,-15.3000) -- (1.2000,-15.3000);
+\draw[flow] (9.5000,-0.7250) -- (9.5000,-1.0000) -- (4.0000,-1.0000) -- (4.0000,-1.4000);
+\draw[flow] (12.0000,-0.7250) -- (12.0000,-1.4500);
+\draw[flow] (14.5000,-0.7250) -- (14.5000,-1.0000) -- (20.0000,-1.0000) -- (20.0000,-1.5500);
+\draw[flow] (4.0000,-2.6000) -- (4.0000,-3.6500);
+\draw[flow] (12.0000,-2.5500) -- (12.0000,-3.6000);
+\draw[flow] (14.8000,-2.0000) -- (15.8000,-2.0000) -- (15.8000,-3.0000) -- (18.6000,-3.0000) -- (18.6000,-3.6500);
+\draw[flow] (20.0000,-2.4500) -- (20.0000,-3.6500);
+\draw[flow] (6.8000,-4.1000) -- (9.2000,-4.1000);
+\draw[flow] (12.0000,-4.6000) -- (12.0000,-5.7000);
+\draw[flow] (17.2000,-2.0000) -- (16.4000,-2.0000) -- (16.4000,-5.9500) -- (14.8000,-5.9500);
+\draw[flow] (20.0000,-4.5500) -- (20.0000,-5.2000) -- (13.4000,-5.2000) -- (13.4000,-5.7000);
+\draw[flow] (12.0000,-6.7000) -- (12.0000,-7.4000);
+\draw[flow] (12.0000,-8.4000) -- (12.0000,-9.5000);
+\draw[flow] (14.8000,-6.4500) -- (16.6000,-6.4500) -- (16.6000,-9.7500) -- (17.2000,-9.7500);
+\draw[flow] (14.8000,-7.9000) -- (16.1000,-7.9000) -- (16.1000,-10.0000) -- (17.2000,-10.0000);
+\draw[flow] (14.8000,-10.2500) -- (17.2000,-10.2500);
+\draw[flow] (12.0000,-10.5000) -- (12.0000,-11.6000);
+\draw[flow] (20.0000,-10.5000) -- (20.0000,-11.0000) -- (13.4000,-11.0000) -- (13.4000,-11.6000);
+\draw[flow] (4.0000,-4.5500) -- (4.0000,-5.7500);
+\draw[flow] (6.8000,-4.3250) -- (7.5000,-4.3250) -- (7.5000,-9.0000) -- (5.4000,-9.0000) -- (5.4000,-9.5000);
+\draw[flow] (4.0000,-8.3500) -- (4.0000,-9.5000);
+\draw[flow, densely dashed] (4.0000,-10.5000) -- (4.0000,-11.6500);
+\draw[flow] (1.2000,-4.1000) -- (0.4000,-4.1000) -- (0.4000,-14.7000) -- (1.2000,-14.7000);
+\draw[flow] (6.8000,-10.0000) -- (7.6000,-10.0000) -- (7.6000,-13.4000) -- (2.6000,-13.4000) -- (2.6000,-14.4000);
+\draw[flow, densely dashed] (4.0000,-12.5500) -- (4.0000,-14.4000);
+\draw[flow] (14.8000,-12.1000) -- (17.2000,-12.1000);
+\draw[flow] (12.0000,-12.6000) -- (12.0000,-14.5500);
+\draw[flow] (20.0000,-12.6000) -- (20.0000,-13.9000) -- (13.4000,-13.9000) -- (13.4000,-14.5500);
+\draw[flow] (9.2000,-12.1000) -- (8.2000,-12.1000) -- (8.2000,-13.9000) -- (5.4000,-13.9000) -- (5.4000,-14.4000);
+\draw[flow] (9.2000,-15.0000) -- (6.8000,-15.0000);
+\fill[black!85] (0.8000,-10.0000) circle[radius=1.5pt];
+\node[deliverable,text width=280.428pt,minimum height=0.650cm,font=\fontsize{9}{10.8}\selectfont] (scope) at (12.0000,-0.4000) {Phạm vi MVP và Client Interaction Log};
+\node[deliverable,text width=155.235pt,minimum height=1.200cm,font=\fontsize{9}{10.8}\selectfont] (plan) at (4.0000,-2.0000) {Bộ kế hoạch: PBS, PDs, PFD, AON\\Ước lượng, rủi ro, nguồn lực, lịch};
+\node[intermediate,text width=155.235pt,minimum height=1.100cm,font=\fontsize{9}{10.8}\selectfont] (design) at (12.0000,-2.0000) {Database Schema\\API Specifications; UI/UX Mockups};
+\node[intermediate,text width=155.235pt,minimum height=0.900cm,font=\fontsize{9}{10.8}\selectfont] (tests) at (20.0000,-2.0000) {Test Cases / Acceptance Criteria};
+\node[deliverable,text width=155.235pt,minimum height=0.900cm,font=\fontsize{9}{10.8}\selectfont] (baseline) at (4.0000,-4.1000) {Project Baseline V1.0};
+\node[intermediate,text width=155.235pt,minimum height=1.000cm,font=\fontsize{9}{10.8}\selectfont] (code) at (12.0000,-4.1000) {Frontend / Backend Code\\và cấu hình triển khai};
+\node[intermediate,text width=155.235pt,minimum height=0.900cm,font=\fontsize{9}{10.8}\selectfont] (data) at (20.0000,-4.1000) {Dữ liệu sinh viên và nghiệp vụ giả lập};
+\node[deliverable,text width=155.235pt,minimum height=0.900cm,font=\fontsize{9}{10.8}\selectfont] (logs) at (4.0000,-6.2000) {Weekly Project Logs tuần k\\Risk Register cập nhật};
+\node[intermediate,text width=155.235pt,minimum height=1.000cm,font=\fontsize{9}{10.8}\selectfont] (i1) at (12.0000,-6.2000) {Increment 1 đã kiểm thử};
+\node[external,text width=155.235pt,minimum height=0.900cm,font=\fontsize{9}{10.8}\selectfont] (event) at (4.0000,-7.9000) {Change/event};
+\node[intermediate,text width=155.235pt,minimum height=1.000cm,font=\fontsize{9}{10.8}\selectfont] (i2) at (12.0000,-7.9000) {Increment 2 đã kiểm thử};
+\node[deliverable,text width=155.235pt,minimum height=1.000cm,font=\fontsize{9}{10.8}\selectfont] (decision) at (4.0000,-10.0000) {Change-impact Analysis\\và Management Decision Record};
+\node[intermediate,text width=155.235pt,minimum height=1.000cm,font=\fontsize{9}{10.8}\selectfont] (i3) at (12.0000,-10.0000) {Increment 3 đã kiểm thử};
+\node[deliverable,text width=155.235pt,minimum height=1.000cm,font=\fontsize{9}{10.8}\selectfont] (evidence) at (20.0000,-10.0000) {Quality/Verification Evidence\\kết quả I1, I2 và I3};
+\node[deliverable,text width=155.235pt,minimum height=0.900cm,font=\fontsize{9}{10.8}\selectfont] (v2) at (4.0000,-12.1000) {Revised Project Baseline V2.0\\nếu được duyệt sửa baseline};
+\node[deliverable,text width=155.235pt,minimum height=1.000cm,font=\fontsize{9}{10.8}\selectfont] (final) at (12.0000,-12.1000) {Final Working Software Product};
+\node[deliverable,text width=155.235pt,minimum height=1.000cm,font=\fontsize{9}{10.8}\selectfont] (repo) at (20.0000,-12.1000) {Source Code Repository\\Instructions for Running};
+\node[deliverable,text width=155.235pt,minimum height=1.200cm,font=\fontsize{9}{10.8}\selectfont] (report) at (4.0000,-15.0000) {Final PM Report\\gồm Closure Plan, Lessons Learned\\và phụ lục cá nhân};
+\node[deliverable,text width=155.235pt,minimum height=0.900cm,font=\fontsize{9}{10.8}\selectfont] (closure) at (12.0000,-15.0000) {Closure/Handover Plan};
+\end{tikzpicture}
+\end{adjustbox}
+\captionsetup{aboveskip=3pt}
+\caption{PFD tổng thể của dự án}
+\end{figure}
+
+\noindent Test cases, dữ liệu và mã nguồn được dùng lại/cập nhật qua ba increment. Quality Evidence và logs tích lũy theo từng đợt/tuần. V2.0 chỉ có khi được duyệt sửa baseline. Lessons Learned và reflection là thành phần báo cáo; Closure Plan có trước bản chốt Final PM Report theo PD 2.2.
+\end{landscape}
+\restoregeometry

@@ -1,0 +1,16 @@
+\section{Khai báo sử dụng Generative AI}
+\label{sec:ai-declaration}
+
+Theo yêu cầu của đề bài, nhóm khai báo các công cụ AI đã dùng và phạm vi sử dụng. Nhóm chỉ dùng hai công cụ: Claude và Codex. Nhóm chịu trách nhiệm về tính đúng đắn của mọi nội dung; các nội dung do AI hỗ trợ đều được thành viên rà soát, đối chiếu với mã nguồn và dữ liệu thật của dự án.
+
+\begin{table}[H]
+\centering\small
+\caption{Công cụ AI và phạm vi sử dụng}\label{tab:ai}
+\begin{tabularx}{\linewidth}{@{}p{.20\linewidth}Xp{.25\linewidth}@{}}
+\toprule
+\textbf{Công cụ} & \textbf{Nhiệm vụ được hỗ trợ} & \textbf{Cách nhóm kiểm soát}\\\midrule
+Claude (Anthropic), qua Claude Code & Soạn thảo các mục Task 3, Task 4, ma trận truy vết; rà soát đặc tả use case so với mã nguồn; tổng hợp ngày thực tế từ lịch sử Git; tổng hợp số liệu giờ công vào các bảng của báo cáo; sửa lỗi biên dịch LaTeX. & Đối chiếu từng số liệu với commit, tài liệu test; giờ công lấy từ bảng chấm công do thành viên ghi; mọi quyết định quản lý do nhóm đưa ra.\\
+Codex (OpenAI) & Hỗ trợ lập trình: gợi ý và sinh mã backend, frontend; gỡ lỗi; viết test. & Mã do AI đề xuất được thành viên đọc lại và chạy bộ test tự động trước khi đưa lên repository; thành viên phải giải thích được mã của mình trong viva.\\
+\bottomrule
+\end{tabularx}
+\end{table}

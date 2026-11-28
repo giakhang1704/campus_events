@@ -1,0 +1,142 @@
+\subsection{Quản lý thay đổi: rút ngắn thời hạn dự án (CR-05)}
+\label{sec:t3-change}
+
+Rủi ro AR10 (Task 2.8) đã dự báo khả năng giảng viên công bố thay đổi trong giai đoạn thực hiện, với xác suất 60\% và $RE = 7{,}2$ giờ công. Rủi ro này \textbf{đã xảy ra} ngay tại buổi demo CP1. Mục này phân tích thay đổi theo quy trình kiểm soát thay đổi ở Task 1.5: tiếp nhận $\to$ phân tích tác động $\to$ so sánh phương án $\to$ quyết định $\to$ cập nhật baseline.
+
+\subsubsection{Nội dung thay đổi}
+
+\begin{table}[H]
+\centering\small
+\caption{Yêu cầu thay đổi CR-05}\label{tab:t3-cr05}
+\begin{tabularx}{\linewidth}{@{}p{.24\linewidth}X@{}}
+\toprule
+Mã & CR-05\\
+Ngày nhận / kênh & 09/11/2026 -- thông báo trực tiếp tại buổi demo Increment 1 (CP1).\\
+Người yêu cầu & Thầy Nguyễn Minh Tâm (Project Authority, đại diện khách hàng).\\
+Nội dung & Thời hạn hoàn thành dự án bị rút ngắn \textbf{1 tuần}: hạn nộp báo cáo cuối kỳ đổi từ 06/12/2026 thành 29/11/2026; demo và viva theo lịch của giảng viên.\\
+Phản hồi đi kèm & Khách hàng nhận xét \textbf{tiến độ của nhóm còn chậm} (Client Interaction Log, Tuần 3) và không yêu cầu thay đổi chức năng hay phạm vi.\\
+Loại thay đổi & Thay đổi ràng buộc lịch trình; không thay đổi phạm vi chức năng.\\
+Mức ưu tiên & Bắt buộc: do Project Authority ban hành, nhóm không có quyền từ chối hay thương lượng lùi hạn (Task 1.5).\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsubsubsection{Trạng thái dự án khi nhận thay đổi}
+
+Thay đổi đến khi dự án mới hoàn thành Increment 1 và \textbf{đang chậm so với baseline}: phần lớn khối lượng phát triển còn ở phía trước.
+
+\begin{table}[H]
+\centering\small
+\caption{Trạng thái các nhóm hoạt động ngày 09/11/2026}\label{tab:t3-cr05-status}
+\begin{tabularx}{\linewidth}{@{}p{.32\linewidth}p{.17\linewidth}X@{}}
+\toprule
+\textbf{Nhóm hoạt động} & \textbf{Trạng thái} & \textbf{Ghi chú}\\\midrule
+Lập kế hoạch, thiết kế (G02--G04, A01, A02.1) & Hoàn thành & Baseline V1.0 đã duyệt.\\
+Môi trường, Increment 1 (A03--A06) & Hoàn thành & Regression 208/209 ngày 07/11; chờ review để hợp nhất. A03 trễ 4 ngày, A05.2 trễ 3 ngày.\\
+Increment 2 (A07.1--A08) & Chưa bắt đầu & Theo kế hoạch bắt đầu đúng ngày 09/11.\\
+Increment 3 (A09--A10) & Chưa bắt đầu & Kế hoạch 20--24/11.\\
+Tích hợp, kiểm thử nghiệm thu (A11, A12) & Chưa bắt đầu & Kế hoạch 24--30/11.\\
+Đánh giá, đóng dự án, báo cáo, demo & Chưa bắt đầu & Kế hoạch 30/11--03/12.\\
+Quỹ dự phòng & Còn nguyên & 63,4 giờ công; buffer lịch 04--06/12.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsubsubsection{Phạm vi ảnh hưởng}
+
+\begin{itemize}
+    \item \textbf{Không đổi:} phạm vi chức năng (FR-01..23), tiêu chí chấm của đề bài, ngân sách giờ công đã duyệt, các mốc đã qua (CP0, CP1).
+    \item \textbf{Bị ảnh hưởng:} toàn bộ lịch I2, I3, tích hợp, nghiệm thu và đóng dự án; các mốc CP4--CP6; buffer lịch 04--06/12 (nằm sau hạn mới nên mất hoàn toàn); thời gian dành cho việc xin khách hàng review các thay đổi.
+\end{itemize}
+
+\subsubsection{Phân tích tác động}
+
+Theo Bảng \ref{tab:ledger}, khối lượng còn lại từ T3 đến T6 là 204,1 giờ công (61,1 + 60,2 + 53,4 + 29,4). Thời gian để làm khối lượng này giảm từ 27 ngày (10/11--06/12) xuống còn 20 ngày (10/11--29/11), tức giảm 26\%. Nếu giữ nguyên khối lượng, nhóm cần $\approx$ 71 giờ công mỗi tuần, trong khi năng lực trung bình của cả nhóm là $\approx$ 66 giờ/tuần (395 giờ trong 6 tuần, Mục 2.10). Kế hoạch cũ vì vậy không còn khả thi nếu không điều chỉnh.
+
+\begin{table}[H]
+\centering\small
+\caption{Tác động của CR-05}\label{tab:t3-cr05-impact}
+\begin{tabularx}{\linewidth}{@{}p{.18\linewidth}X@{}}
+\toprule
+\textbf{Khía cạnh} & \textbf{Tác động}\\\midrule
+Yêu cầu / sản phẩm & Không thêm hay bớt FR. Các sản phẩm quản lý cuối kỳ (Quality Evidence, User Guide, Closure Plan, báo cáo) phải hoàn thành sớm hơn 1 tuần.\\
+Hoạt động & Chuỗi tuần tự I2 $\to$ I3 $\to$ A11 $\to$ A12 $\to$ đóng dự án không còn đủ thời gian nếu giữ nguyên thứ tự; một số hoạt động phải chạy song song.\\
+Công sức & 204,1 giờ trong 20 ngày: cần $\approx$ 71 giờ/tuần, vượt năng lực trung bình $\approx$ 66 giờ/tuần khoảng 8\%.\\
+Nguồn lực & Các tuần T3--T5 vốn đã gần đủ tải sau khi san bằng nguồn lực (Mục 2.10); không thể chỉ tăng giờ làm.\\
+Rủi ro & Tăng xác suất AR1, AR5 (lỗi phát hiện muộn do làm nhanh); ít thời gian gửi khách hàng review các thay đổi (NR7).\\
+Lịch trình & Mất toàn bộ buffer 04--06/12. Đường găng vẫn đi qua I2 $\to$ I3 $\to$ A11 $\to$ A12 nhưng không còn dự trữ.\\
+Chi phí & Không tăng ngân sách; chi phí thay đổi theo khối lượng được giữ lại.\\
+Chất lượng & Nguy cơ phải cắt bớt hoạt động kiểm thử và đo chỉ tiêu ở cuối dự án.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsubsection{Phương án và quyết định}
+
+\begin{table}[H]
+\centering\small
+\caption{So sánh phương án xử lý CR-05}\label{tab:t3-cr05-options}
+\begin{tabularx}{\linewidth}{@{}p{.13\linewidth}XXp{.10\linewidth}@{}}
+\toprule
+\textbf{Phương án} & \textbf{Mô tả} & \textbf{Ưu / nhược} & \textbf{Giờ công}\\\midrule
+PA1 \newline Crashing & Giữ nguyên mọi hoạt động và thứ tự; cả nhóm tăng giờ làm. & Đủ phạm vi và hồ sơ; nhưng vượt năng lực $\approx$ 8\% trong 3 tuần liên tục, ảnh hưởng lịch học, nguy cơ sai sót. & 204,1\\
+PA2 \newline Cắt chức năng & Bỏ điểm danh QR (A09.1, RA04), chỉ giữ điểm danh thủ công. & Giảm $\approx$ 14 giờ; nhưng mất phương thức điểm danh chính mà khách hàng yêu cầu, ảnh hưởng O1, O3. & 190,1\\
+PA3 \newline Fast-tracking + thu gọn nghiệm thu & Giữ toàn bộ chức năng. Làm gộp và song song các hoạt động phát triển; đưa giai đoạn đóng dự án lên chạy song song với kiểm thử nghiệm thu; thu gọn các hoạt động nghiệm thu không bắt buộc. & Giữ phạm vi; rút ngắn thời gian mà không vượt năng lực. Đổi lại: rủi ro phối hợp cao hơn và phạm vi bằng chứng nghiệm thu giảm. & 192,6\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\noindent\textbf{Quyết định:} nhóm chọn \textbf{PA3}. Lý do: phần mềm là phần có trọng số lớn nhất và chức năng điểm danh QR là yêu cầu cốt lõi của khách hàng, nên không cắt chức năng; PA1 không khả thi về năng lực. Quyết định nằm trong thẩm quyền của PM vì không làm thay đổi phạm vi chức năng mà Project Authority đã duyệt. Góp ý ``tiến độ còn chậm'' của khách hàng được dùng làm căn cứ để ưu tiên rút ngắn giai đoạn phát triển.
+
+\subsubsubsection{Các biện pháp cụ thể}
+
+\begin{enumerate}
+    \item \textbf{Làm gộp I2:} thực hiện A07.1, A07.2, A07.3 trong cùng một đợt, vì đăng ký, đôn chờ và email dùng chung một transaction.
+    \item \textbf{Chạy song song I2 và I3:} backend I3 bắt đầu ngay khi backend I2 xong, song song với giao diện I2, thay vì chờ CP2.
+    \item \textbf{Giữ mốc tích hợp:} A11 giữ 24--25/11 để còn thời gian xử lý sự cố triển khai.
+    \item \textbf{Đưa giai đoạn đóng dự án lên sớm:} các hoạt động T6 được thực hiện trong 27--29/11, song song với A12.
+    \item \textbf{Thu gọn nghiệm thu} theo Bảng \ref{tab:t3-cr05-plan}.
+\end{enumerate}
+
+\begin{table}[H]
+\centering\small
+\caption{Thu gọn các hoạt động nghiệm thu và đóng dự án}\label{tab:t3-cr05-plan}
+\begin{tabularx}{\linewidth}{@{}p{.13\linewidth}Xp{.10\linewidth}p{.12\linewidth}@{}}
+\toprule
+\textbf{Hoạt động} & \textbf{Điều chỉnh} & \textbf{Giờ V1.0} & \textbf{Giờ V2.0}\\\midrule
+A12.1 & Chạy song song với viết báo cáo. & 14,0 & 14,0\\
+A12.2 & Dùng số đo hiệu năng M2 đo trong lúc phát triển; hoãn thử nghiệm người dùng M5. & 8,0 & 4,0\\
+A14.1 + BL2 & Gộp User Guide vào hướng dẫn chạy trong repository. & 7,0 & 3,0\\
+A15.2, A16, A18.2 & Viết đồng thời trong báo cáo cuối kỳ (Task 4). & 15,5 & 12,0\\
+A17, A19.2 & Demo và viva theo lịch giảng viên; trình bày các CR tại buổi demo. & 7,5 & 7,5\\
+\midrule
+\multicolumn{2}{@{}r}{\textbf{Tổng}} & \textbf{52,0} & \textbf{40,5}\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Phần chênh lệch 11,5 giờ là công sức \textbf{không thực hiện}, không phải công sức tiết kiệm được nhờ làm nhanh. Nó tương ứng với các bằng chứng nghiệm thu bị cắt giảm và được báo cáo là hạn chế ở Task 4.
+
+\begin{table}[H]
+\centering\small
+\caption{Các mốc trước và sau CR-05}\label{tab:t3-cr05-milestones}
+\begin{tabularx}{\linewidth}{@{}p{.30\linewidth}p{.15\linewidth}p{.15\linewidth}X@{}}
+\toprule
+\textbf{Mốc} & \textbf{V1.0} & \textbf{V2.0} & \textbf{Thực tế}\\\midrule
+CP2 -- hoàn thành I2 & 19/11 & 19/11 & 18/11\\
+Backend I3 & 20--24/11 & Ngay sau backend I2 & 18/11\\
+CP3 -- tích hợp, triển khai & 25/11 & 25/11 & 25/11\\
+CP4 -- nghiệm thu & 30/11 & 27/11 & Thu gọn, không rà soát riêng\\
+CP5 -- hồ sơ, báo cáo & 02/12 & 29/11 & 29/11\\
+CP6 -- demo, viva & 03/12 & Theo lịch giảng viên & Theo lịch giảng viên\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsubsubsection{Kết quả của quyết định}
+
+Ngay sau CR-05, năng lực nhóm còn giảm thêm $\approx$ 35,4 giờ vì thành viên BA không tham gia từ I2 (AR9). Hai sự kiện cộng dồn là lý do nhóm phải thu gọn nghiệm thu thay vì chỉ làm song song. Các biện pháp fast-tracking có hiệu quả ở giai đoạn phát triển: backend I2 hoàn thành trong một đợt ngày 12/11, backend I3 xong ngày 18/11 (sớm 2 ngày so với ngày bắt đầu theo V1.0), hệ thống được tích hợp và triển khai đúng hạn 25/11. Cái giá phải trả là: một số lỗi chỉ được phát hiện ở đợt rà soát tích hợp 25/11 (Mục \ref{sec:t3-deploy}), kiểm thử nghiệm thu trên cloud và thử nghiệm người dùng bị cắt giảm, và các CR chưa được khách hàng phê duyệt chính thức.
+
+\subsubsubsection{So sánh với dự báo rủi ro}
+
+AR10 dự báo thay đổi từ giảng viên sẽ \textbf{tăng khối lượng} hoặc đổi yêu cầu ($h = 12$ giờ), với phương án dự phòng là dùng quỹ giờ dự phòng. Thực tế thay đổi \textbf{giảm thời gian} mà không đổi khối lượng: quỹ giờ dự phòng vẫn còn nhưng không còn thời gian để dùng. Bài học là quỹ dự phòng cần tách thành hai loại, dự phòng công sức và dự phòng thời gian, và buffer thời gian không nên dồn hết vào cuối dự án (Mục \ref{sec:t4-lessons}).

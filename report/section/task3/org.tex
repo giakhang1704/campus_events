@@ -1,0 +1,15 @@
+\subsection{Tổ chức thực hiện}
+\label{sec:i1-organization}
+
+Sau bước lập kế hoạch, quá trình phát triển hệ thống được phân chia thành ba Increment. Increment 1 (I1) xây dựng tài khoản, phân quyền và quản lý sự kiện; Increment 2 (I2) xây dựng đăng ký, danh sách chờ và email; Increment 3 (I3) xây dựng điểm danh, báo cáo và xuất dữ liệu; cuối cùng là tích hợp và triển khai. Mỗi Increment chỉ được chuyển giao sau khi vượt qua rà soát tại mốc kiểm soát (checkpoint) tương ứng.
+
+Công tác quản lý và vận hành được phân định chặt chẽ theo 5 vai trò:
+\begin{itemize}
+    \item \textbf{PM:} Theo dõi tiến độ, điều phối nhân sự, quản lý rủi ro và tổng hợp các quyết định phê duyệt.
+    \item \textbf{BA:} Trích xuất quy tắc nghiệp vụ, xây dựng tiêu chí nghiệm thu (Acceptance Criteria) và hỗ trợ thiết kế giao diện.
+    \item \textbf{BE:} Phụ trách kiến trúc backend, thiết kế CSDL và xây dựng hợp đồng API.
+    \item \textbf{FE:} Xây dựng giao diện người dùng Angular, tích hợp API và review phần UI.
+    \item \textbf{QA:} Xây dựng kịch bản kiểm thử độc lập, thực thi test suite và theo dõi lỗi phát sinh.
+\end{itemize}
+
+Mỗi increment dưới đây được trình bày theo cùng một khung: mục tiêu và phạm vi, kế hoạch chi tiết, triển khai, kiểm thử, vấn đề phát sinh, tiến độ và checkpoint.

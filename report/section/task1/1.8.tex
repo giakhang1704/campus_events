@@ -1,0 +1,205 @@
+\subsection{Analyze project characteristics, determine whether the project is primarily objective-based or product-based, identify high-level project risks, and select a suitable general development lifecycle/approach with justification.}
+
+\subsubsection{Phân tích đặc điểm dự án}
+
+Các đặc điểm chính của dự án và ảnh hưởng của chúng đến công tác lập kế hoạch được tổng hợp trong Bảng~\ref{tab:project-characteristics}.
+
+{%
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.2}
+\begin{longtable}{|p{3.1cm}|p{6.1cm}|p{5.5cm}|}
+\caption{Phân tích đặc điểm của dự án}\label{tab:project-characteristics}\\
+\hline
+\textbf{Đặc điểm dự án} & \textbf{Phân tích đối với dự án} & \textbf{Ý nghĩa đối với việc lập kế hoạch} \\
+\hline
+\endfirsthead
+\multicolumn{3}{c}{\textit{Bảng~\thetable{} (tiếp theo)}}\\
+\hline
+\textbf{Đặc điểm dự án} & \textbf{Phân tích đối với dự án} & \textbf{Ý nghĩa đối với việc lập kế hoạch} \\
+\hline
+\endhead
+\hline
+\multicolumn{3}{r}{\textit{Còn tiếp ở trang sau}}\\
+\endfoot
+\hline
+\endlastfoot
+\textbf{Quy mô và nguồn lực} & Dự án có quy mô nhỏ, do nhóm \textbf{5 thành viên} thực hiện trong thời gian bài tập lớn. Sản phẩm cần đủ hoàn chỉnh để triển khai, kiểm thử và trình diễn; phạm vi phải phù hợp với thời gian và năng lực của nhóm. & Ưu tiên các luồng nghiệp vụ cốt lõi của MVP; chức năng có mức ưu tiên thấp chỉ được thực hiện khi còn đủ thời gian và nguồn lực. \\
+\hline
+\textbf{Loại hệ thống} & Đây là hệ thống thông tin (\textit{information system}) phục vụ quản lý thông tin sự kiện, đăng ký/hủy đăng ký, sức chứa, danh sách chờ, điểm danh và báo cáo. Mã QR là phương thức hỗ trợ điểm danh; phạm vi hiện tại không yêu cầu phần cứng chuyên dụng hoặc xử lý thời gian thực đặc thù của hệ thống nhúng. & Tập trung vào yêu cầu nghiệp vụ, dữ liệu, phân quyền, tính chính xác của trạng thái và kiểm thử các luồng sử dụng. \\
+\hline
+\textbf{Phạm vi nghiệp vụ} & MVP đã được xác định tương đối rõ: tạo, quản lý và công bố sự kiện; đăng ký/hủy; quản lý sức chứa và danh sách chờ; điểm danh bằng mã QR hoặc thủ công; gửi email; báo cáo cơ bản; và quản lý tài khoản, quyền truy cập. SMS, hệ thống gợi ý, phân tích nâng cao, tích hợp MyBK và đồng bộ ngoại tuyến đầy đủ không thuộc phạm vi cốt lõi. & Có thể xác định các sản phẩm cần bàn giao và phân rã thành các thành phần nhỏ hơn để lập kế hoạch. \\
+\hline
+\textbf{Mức độ rõ của yêu cầu} & Các yêu cầu chức năng và quy tắc chính đã được làm rõ để xác định MVP. Tuy nhiên, số sự kiện thực tế, quy mô người dùng, thời gian xử lý hiện tại và mức cải thiện kỳ vọng chưa có số liệu thực tế được xác nhận. & Có thể lập \textit{baseline} cho phạm vi chức năng. Những giá trị chưa được xác nhận cần ghi nhận dưới dạng giả định và cập nhật khi có dữ liệu đáng tin cậy. \\
+\hline
+\textbf{Bên liên quan và mức độ chấp nhận} & Sinh viên quan tâm đến trải nghiệm đăng ký và trạng thái tham gia; người tổ chức quan tâm đến sự kiện, người tham dự, điểm danh và báo cáo; quản trị viên quan tâm đến tài khoản và phân quyền. Đại diện khách hàng xác nhận yêu cầu và các quyết định quan trọng. & Duy trì trao đổi với các bên liên quan chính, đặc biệt là khách hàng và người tổ chức; kiểm thử các luồng quan trọng với người dùng đại diện khi có thể. \\
+\hline
+\textbf{Công nghệ và tích hợp} & Khách hàng không áp đặt nền tảng Web/Mobile hoặc công nghệ cụ thể. Dữ liệu sinh viên có thể được giả lập; MVP không yêu cầu kết nối MyBK hoặc cơ sở dữ liệu thật của trường. Các phụ thuộc bên ngoài chủ yếu gồm môi trường triển khai và dịch vụ email. & Chọn công nghệ phù hợp với năng lực nhóm và thời gian thực hiện; tránh các tích hợp không cần thiết làm tăng độ phức tạp. \\
+\hline
+\textbf{Yêu cầu chất lượng} & Hệ thống phải bảo vệ thông tin cá nhân, kiểm soát truy cập theo vai trò và duy trì tính nhất quán của dữ liệu đăng ký, sức chứa, danh sách chờ và điểm danh. Hệ thống cần ngăn đăng ký trùng và hiển thị sai trạng thái; đồng thời có phương án điểm danh thủ công khi mã QR hoặc mạng gặp sự cố. & Chuyển yêu cầu chất lượng thành tiêu chí chấp nhận và ca kiểm thử. Kiểm tra cả luồng chính và luồng dự phòng; làm rõ cách ghi nhận tạm thời khi mất mạng và cập nhật sau đó. \\
+\hline
+\textbf{Ràng buộc tiến độ} & Dự án tuân theo các mốc của học phần và cần có bằng chứng quản lý trong quá trình thực hiện. Việc mở rộng phạm vi quá mức có thể ảnh hưởng đến khả năng hoàn thành và kiểm thử sản phẩm. & Lập \textit{baseline} phạm vi và tiến độ rõ ràng, theo dõi tiến độ thực tế và kiểm soát thay đổi để bảo vệ các chức năng cốt lõi. \\
+\hline
+\end{longtable}
+}
+
+\subsubsection{Xác định định hướng objective-based hoặc product-based}
+
+Cách tiếp cận \textit{objective-based} bắt đầu từ các mục tiêu cần đạt và có thể xem xét nhiều phương án khác nhau để đạt các mục tiêu đó. Ngược lại, cách tiếp cận \textit{product-based} bắt đầu từ sản phẩm cần tạo ra và các đặc tính chính đã được xác định. Bảng~\ref{tab:objective-product-analysis} phân tích định hướng phù hợp với dự án.
+
+{%
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.2}
+\begin{longtable}{|p{3.5cm}|p{8.5cm}|p{2.7cm}|}
+\caption{Phân tích định hướng objective-based và product-based}\label{tab:objective-product-analysis}\\
+\hline
+\textbf{Khía cạnh} & \textbf{Phân tích} & \textbf{Khuynh hướng} \\
+\hline
+\endfirsthead
+\multicolumn{3}{c}{\textit{Bảng~\thetable{} (tiếp theo)}}\\
+\hline
+\textbf{Khía cạnh} & \textbf{Phân tích} & \textbf{Khuynh hướng} \\
+\hline
+\endhead
+\hline
+\endfoot
+\hline
+\endlastfoot
+\textbf{Mục tiêu nghiệp vụ} & Dự án hướng đến giảm sự phân tán dữ liệu, giảm thao tác thủ công khi quản lý đăng ký và điểm danh, rút ngắn thời gian tổng hợp và cải thiện tính nhất quán dữ liệu. Đây là các kết quả nghiệp vụ cần đạt. & Thể hiện mục tiêu nghiệp vụ của dự án. \\
+\hline
+\textbf{Sản phẩm cần bàn giao} & Giải pháp đã được xác định là một hệ thống phần mềm tập trung hỗ trợ tổ chức và quản lý sự kiện. Nhóm không phải lựa chọn giữa nhiều loại giải pháp hoàn toàn khác nhau. & \textit{Product-based} \\
+\hline
+\textbf{Phạm vi chức năng} & Các chức năng cốt lõi và giới hạn MVP đã được làm rõ tương đối cụ thể qua \textit{Client Interaction Log}. & \textit{Product-based} \\
+\hline
+\textbf{Mức độ tự do về cách thực hiện} & Nhóm được tự chọn nền tảng và công nghệ nhưng vẫn phải xây dựng hệ thống với các chức năng đã thống nhất. Sự linh hoạt về kỹ thuật không làm thay đổi sản phẩm cần bàn giao. & Phù hợp với \textit{product-based} \\
+\hline
+\textbf{Nghiệm thu và bàn giao} & Nhóm phải bàn giao hệ thống vận hành được, có thể kiểm thử và trình diễn các chức năng thuộc phạm vi đã thống nhất. & \textit{Product-based} \\
+\hline
+\end{longtable}
+}
+
+\textbf{Dự án chủ yếu theo định hướng product-based}, vì sản phẩm cần bàn giao đã được xác định và phạm vi MVP tương đối rõ. Nhóm có thể bắt đầu lập kế hoạch từ các sản phẩm cần tạo ra, phân rã thành sản phẩm con, sau đó xác định các hoạt động xây dựng, tích hợp và kiểm thử.
+
+Dự án vẫn có các mục tiêu nghiệp vụ cần được đánh giá riêng. Việc hoàn thành đầy đủ chức năng chưa tự động chứng minh rằng hệ thống đã giảm thao tác thủ công, rút ngắn thời gian tổng hợp hoặc cải thiện tính nhất quán dữ liệu. Vì vậy, các sản phẩm bàn giao được dùng để kiểm soát việc hoàn thành sản phẩm, còn mục tiêu nghiệp vụ được đánh giá bằng các thước đo hiệu quả phù hợp.
+
+Từ kết quả phân tích, nhóm định hướng lập kế hoạch như sau:
+\begin{itemize}
+    \item sử dụng \textit{Product Breakdown Structure (PBS)} để xác định và phân rã sản phẩm cần bàn giao;
+    \item xây dựng \textit{Product Descriptions} cho các sản phẩm quan trọng để làm rõ nội dung, tiêu chí chất lượng và điều kiện hoàn thành;
+    \item sử dụng \textit{Product Flow Diagram (PFD)} để thể hiện quan hệ giữa các sản phẩm, sau đó xác định các hoạt động cần thiết;
+    \item gắn \textit{baseline} với phạm vi đã thống nhất và kiểm soát các thay đổi ảnh hưởng đến sản phẩm bàn giao;
+    \item ghi rõ giả định đối với thông tin chưa được xác nhận và cập nhật khi có dữ liệu đáng tin cậy.
+\end{itemize}
+
+\subsubsection{Rủi ro dự án ở mức tổng quát}
+
+Nhóm đánh giá khả năng xảy ra (\textit{likelihood}) và mức độ ảnh hưởng (\textit{impact}) theo ba mức: Cao, Trung bình và Thấp. Đây là đánh giá sơ bộ dựa trên yêu cầu và điều kiện thực hiện dự án.
+
+{%
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.2}
+\begin{longtable}{|p{0.7cm}|p{5.1cm}|p{1.7cm}|p{1.5cm}|p{5.4cm}|}
+\caption{Các rủi ro dự án ở mức tổng quát}\label{tab:high-level-risks}\\
+\hline
+\textbf{ID} & \textbf{Rủi ro dự án} & \textbf{Khả năng} & \textbf{Ảnh hưởng} & \textbf{Hướng xử lý sơ bộ} \\
+\hline
+\endfirsthead
+\multicolumn{5}{c}{\textit{Bảng~\thetable{} (tiếp theo)}}\\
+\hline
+\textbf{ID} & \textbf{Rủi ro dự án} & \textbf{Khả năng} & \textbf{Ảnh hưởng} & \textbf{Hướng xử lý sơ bộ} \\
+\hline
+\endhead
+\hline
+\multicolumn{5}{r}{\textit{Còn tiếp ở trang sau}}\\
+\endfoot
+\hline
+\endlastfoot
+R1 & \textbf{Phạm vi mở rộng quá mức.} Việc bổ sung bảng điều khiển theo học kỳ, chức năng nâng cao hoặc tích hợp mới có thể khiến khối lượng công việc vượt khả năng của nhóm. & Trung bình & Cao & Chốt phạm vi MVP, ưu tiên chức năng cốt lõi và đánh giá công sức, tiến độ trước khi trình khách hàng xác nhận phần bổ sung. \\
+\hline
+R2 & \textbf{Ước lượng thiếu công sức dẫn đến trễ tiến độ.} Danh sách chờ, phân quyền, điểm danh và email có nhiều tình huống cần xử lý và kiểm thử. & Trung bình & Cao & Chia nhỏ công việc, tính cả công sức kiểm thử, theo dõi tiến độ thường xuyên và dành thời gian dự phòng. \\
+\hline
+R3 & \textbf{Thiếu dữ liệu để xác định yêu cầu và đánh giá hiệu quả.} Chưa có thông tin định lượng đầy đủ về quy mô sử dụng và quy trình hiện tại nên nhóm có thể đặt yêu cầu hoặc mục tiêu chưa phù hợp. & Cao & Trung bình & Ghi rõ giả định và mục tiêu đề xuất, tiếp tục làm rõ thông tin quan trọng với khách hàng và nêu giới hạn khi đánh giá bằng dữ liệu thử nghiệm. \\
+\hline
+R4 & \textbf{Sai lệch dữ liệu nghiệp vụ.} Lỗi xử lý có thể gây đăng ký trùng, vượt sức chứa, chuyển danh sách chờ sai hoặc tạo báo cáo không chính xác. & Trung bình & Cao & Xác định quy tắc cập nhật trạng thái; kiểm thử đăng ký đồng thời, hủy và chuyển danh sách chờ; đối chiếu báo cáo với dữ liệu đã biết kết quả. \\
+\hline
+R5 & \textbf{Lỗi phân quyền hoặc lộ thông tin cá nhân.} Người dùng có thể truy cập dữ liệu hoặc thực hiện thao tác ngoài quyền được cấp. & Trung bình & Cao & Xác định quyền của từng vai trò, kiểm tra quyền ở phía hệ thống, kiểm thử truy cập trái quyền và sử dụng dữ liệu sinh viên giả lập. \\
+\hline
+R6 & \textbf{Sự cố kỹ thuật làm gián đoạn hệ thống.} Mã QR, mạng, môi trường triển khai hoặc dịch vụ email gặp lỗi có thể ảnh hưởng đến điểm danh và thông báo. & Trung bình & Cao & Kiểm tra sớm môi trường triển khai và email; chuẩn bị cách điểm danh thủ công, làm rõ cách ghi nhận tạm thời khi mất mạng và cập nhật sau; theo dõi lỗi gửi thông báo. \\
+\hline
+R7 & \textbf{Nguồn lực nhóm không đáp ứng kế hoạch.} Lịch học, công việc khác hoặc kỹ năng của thành viên có thể làm giảm thời gian thực hiện so với dự kiến. & Trung bình & Cao & Lập kế hoạch theo thời gian tham gia thực tế, phân công phù hợp với năng lực và chia sẻ tài liệu, mã nguồn để các thành viên có thể hỗ trợ nhau. \\
+\hline
+\end{longtable}
+}
+
+\subsubsection{Lựa chọn vòng đời và cách tiếp cận phát triển}
+
+\tasksubheading{Cơ sở lựa chọn}
+
+Việc lựa chọn vòng đời phát triển cần phù hợp với đặc điểm dự án và các rủi ro đã xác định. Hệ thống đăng ký và quản lý sự kiện có phạm vi MVP tương đối rõ, nhưng một số nội dung như cách xử lý tình huống ngoại lệ, giao diện sử dụng và tiêu chí kiểm chứng chi tiết vẫn cần được hoàn thiện trong quá trình triển khai. Các chức năng cũng có quan hệ phụ thuộc: đăng ký cần thông tin sự kiện và sức chứa; danh sách chờ phụ thuộc vào đăng ký và hủy; báo cáo sử dụng dữ liệu đăng ký và điểm danh. Vì vậy, nhóm cần tổ chức phát triển theo trình tự phù hợp, đồng thời kiểm tra tính nhất quán khi bổ sung từng phần.
+
+Dự án được thực hiện bởi năm thành viên trong thời gian giới hạn của học phần. Phương pháp phát triển cần giúp nhóm kiểm chứng các luồng nghiệp vụ sớm, theo dõi tiến độ bằng kết quả có thể trình diễn và tiếp nhận phản hồi trước khi hoàn thiện toàn bộ sản phẩm. Việc lựa chọn cũng phải hỗ trợ quản lý \textit{baseline}, ghi nhận công sức thực tế và kiểm soát những thay đổi ảnh hưởng đến phạm vi đã thống nhất.
+
+\tasksubheading{So sánh các cách tiếp cận}
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{|p{3.3cm}|X|X|}
+\hline
+\textbf{Cách tiếp cận} & \textbf{Điểm phù hợp với dự án} & \textbf{Hạn chế cần xem xét} \\
+\hline
+\textbf{Waterfall} & Các giai đoạn và sản phẩm trung gian rõ ràng; phù hợp với những yêu cầu đã được xác định và thuận tiện bố trí các điểm kiểm tra. & Nếu chỉ kiểm chứng sản phẩm hoàn chỉnh ở cuối quá trình, nhóm có thể phát hiện muộn sai lệch về nghiệp vụ hoặc giao diện. Việc sửa đổi khi đó có thể ảnh hưởng đến nhiều thành phần. \\
+\hline
+\textbf{Evolutionary Prototyping} & Cho phép làm rõ yêu cầu qua sản phẩm thử nghiệm và phản hồi của người dùng; hữu ích đối với các luồng tương tác chưa được thống nhất. & Nếu liên tục mở rộng nguyên mẫu mà thiếu thiết kế và kiểm soát phạm vi, nhóm có thể phát sinh công sức sửa lại hoặc khó duy trì chất lượng sản phẩm. \\
+\hline
+\textbf{Incremental Development} & Chia MVP thành các phần có thể xây dựng, tích hợp và kiểm chứng lần lượt; giúp theo dõi tiến độ và phát hiện vấn đề trước khi hoàn thành toàn bộ hệ thống. & Cần xác định kiến trúc, dữ liệu dùng chung và quan hệ phụ thuộc giữa các phần từ đầu; phải kiểm thử lại các chức năng liên quan sau mỗi lần tích hợp. \\
+\hline
+\end{tabularx}
+\caption{So sánh các cách tiếp cận phát triển}
+\label{tab:development-approach-comparison}
+\end{table}
+
+\tasksubheading{Vòng đời phát triển được lựa chọn}
+
+Nhóm lựa chọn \textbf{phát triển gia tăng (\textit{Incremental Development}), kết hợp các vòng lặp hoàn thiện trong từng phần phát triển}. Phạm vi MVP được xác định ở mức tổng thể trước khi triển khai, sau đó được chia thành các phần chức năng theo quan hệ phụ thuộc và mức độ ưu tiên. Mỗi phần trải qua các hoạt động làm rõ yêu cầu chi tiết, thiết kế, lập trình, kiểm thử và đánh giá trước khi tích hợp vào hệ thống chung.
+
+Sau mỗi phần phát triển, nhóm rà soát kết quả và tiếp nhận phản hồi để sửa lỗi hoặc hoàn thiện những nội dung thuộc phạm vi đã thống nhất. Khi còn điểm chưa rõ về giao diện hoặc cách thao tác, nhóm có thể sử dụng nguyên mẫu đơn giản để trao đổi trước khi lập trình đầy đủ. Nguyên mẫu đóng vai trò hỗ trợ làm rõ yêu cầu; kết quả bàn giao vẫn phải đáp ứng các tiêu chí chất lượng và kiểm thử của sản phẩm chính thức.
+
+Các phiên bản gia tăng trước hết được sử dụng để kiểm thử và trình diễn trong phạm vi nhóm và khách hàng. Việc đưa một phiên bản vào vận hành thực tế chỉ được thực hiện khi có sự thống nhất về phạm vi, chất lượng và điều kiện sử dụng.
+
+\tasksubheading{Định hướng tổ chức phát triển}
+
+Trước khi xây dựng các phần chức năng, nhóm thống nhất cấu trúc dữ liệu, phân quyền, quy tắc chuyển trạng thái và cách tích hợp giữa các thành phần. Những nội dung dùng chung này tạo cơ sở để các thành viên làm việc nhất quán và hạn chế sửa đổi khi tích hợp.
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{|p{3.6cm}|X|X|}
+\hline
+\textbf{Phần phát triển} & \textbf{Nội dung chính} & \textbf{Kết quả cần kiểm chứng} \\
+\hline
+\textbf{Phần 1: Quản lý và công bố sự kiện} & Tài khoản và phân quyền cơ bản; tạo, cập nhật và công bố sự kiện; sinh viên xem thông tin. & Người tổ chức quản lý sự kiện trong phạm vi quyền hạn; sinh viên xem được thông tin sự kiện đã công bố. \\
+\hline
+\textbf{Phần 2: Đăng ký và quản lý người tham gia} & Đăng ký/hủy; kiểm soát sức chứa và điều kiện tham gia; ngăn đăng ký trùng; danh sách chờ và các email quan trọng. & Luồng đăng ký hoạt động nhất quán; khi có chỗ trống, người đầu tiên trong danh sách chờ được chuyển sang danh sách chính thức và hệ thống thực hiện gửi thông báo. \\
+\hline
+\textbf{Phần 3: Điểm danh và báo cáo} & Điểm danh bằng mã QR và thủ công; chỉnh sửa kết quả điểm danh theo quyền; báo cáo cơ bản và xuất Excel/CSV. & Kết quả tham dự được ghi nhận chính xác; báo cáo và dữ liệu xuất khớp với các bản ghi đã được kiểm chứng. \\
+\hline
+\end{tabularx}
+\caption{Định hướng các phần phát triển gia tăng}
+\label{tab:development-increments}
+\end{table}
+
+Bản Increment 1 đã kiểm thử được sử dụng làm bản thử nghiệm để trình diễn và lấy phản hồi từ đại diện khách hàng tại CP1. Nhóm ghi nhận các nhận xét về giao diện, luồng thao tác và mức độ đáp ứng yêu cầu. Lỗi thuộc phạm vi đã thống nhất được sửa và kiểm thử lại trong hoạt động tương ứng. Phản hồi làm thay đổi phạm vi, tiêu chí nghiệm thu hoặc baseline phải được phân tích tác động và trình duyệt theo cơ chế tại Mục~1.5 trước khi thực hiện. Các increment tiếp theo kế thừa phiên bản đã được kiểm chứng và các điều chỉnh được chấp thuận.
+
+Sau mỗi lần tích hợp, nhóm kiểm thử lại các chức năng liên quan để phát hiện ảnh hưởng của phần mới đối với phần đã hoàn thành. Trước khi bàn giao, nhóm kiểm thử toàn bộ quy trình từ công bố sự kiện, đăng ký và xử lý danh sách chờ đến điểm danh và xuất báo cáo. Thời lượng, nhân sự và mốc hoàn thành của từng phần được xác định trong kế hoạch chi tiết tại Task 2.
+
+\tasksubheading{Giải thích sự phù hợp của phương pháp}
+
+\textbf{Phù hợp với tính chất product-based và phạm vi MVP.} Sản phẩm cần bàn giao đã được xác định tương đối rõ, nên nhóm có thể phân chia hệ thống thành các phần chức năng cụ thể và xác lập điều kiện hoàn thành cho từng phần. Cách tổ chức này hỗ trợ lập kế hoạch từ sản phẩm, xác định hoạt động cần thực hiện và kiểm tra tiến độ thông qua kết quả đã xây dựng. Các phần phát triển vẫn hướng đến cùng một hệ thống thống nhất, bảo đảm quy trình cuối cùng hoạt động xuyên suốt.
+
+\textbf{Hỗ trợ xử lý những yêu cầu cần tiếp tục làm rõ.} Mặc dù các quy tắc chính đã được xác nhận, giao diện và tình huống ngoại lệ cần được kiểm chứng khi có sản phẩm vận hành được. Việc trình diễn từng phần giúp nhóm trao đổi cụ thể với khách hàng, phát hiện cách hiểu chưa thống nhất và điều chỉnh trước khi các chức năng phụ thuộc được triển khai đầy đủ. Điều này góp phần xử lý rủi ro R3 về thông tin chưa đầy đủ, nhưng các giả định về quy mô sử dụng và hiệu quả vẫn phải được kiểm chứng riêng.
+
+\textbf{Giảm nguy cơ phát hiện muộn lỗi nghiệp vụ và tích hợp.} Đăng ký, sức chứa, danh sách chờ và điểm danh có nhiều trạng thái liên quan. Phát triển từng phần cho phép nhóm kiểm tra các quy tắc này ngay khi chức năng tương ứng được hoàn thành, sau đó kiểm thử lại khi tích hợp. Môi trường triển khai và dịch vụ email cũng cần được thử nghiệm sớm thay vì chờ đến giai đoạn bàn giao. Cách thực hiện này hỗ trợ kiểm soát các rủi ro R4, R5 và R6 về dữ liệu, phân quyền và sự cố kỹ thuật.
+
+\textbf{Phù hợp với nguồn lực và tiến độ giới hạn.} Mỗi phần phát triển có kết quả và điểm kiểm tra rõ ràng, giúp Project Manager so sánh tiến độ thực tế với kế hoạch và nhận biết sớm những công việc chậm hoặc cần hỗ trợ. Nhóm có thể ưu tiên hoàn thành các chức năng cốt lõi trước khi xem xét nội dung có mức ưu tiên thấp. Nếu xuất hiện nguy cơ vượt nguồn lực hoặc trễ tiến độ, nhóm có cơ sở phân tích phương án điều chỉnh và trình khách hàng xem xét, hỗ trợ kiểm soát các rủi ro R1, R2 và R7.
+
+\textbf{Duy trì kiểm soát kế hoạch và thay đổi.} Phát triển gia tăng được kết hợp với lập kế hoạch theo \textit{Step Wise}. Nhóm vẫn thiết lập \textit{Project Baseline V1.0}, xác định sản phẩm, hoạt động, công sức, nguồn lực, rủi ro và các điểm kiểm tra. Nguyễn Đăng Khoa điều phối việc thực hiện và cập nhật kế hoạch chi tiết trong phạm vi được giao. Phản hồi làm thay đổi yêu cầu đã cam kết, tiêu chí nghiệm thu hoặc mốc bàn giao phải được phân tích tác động và trình thầy Nguyễn Minh Tâm xem xét theo cơ chế tại Mục~1.5. Các phiên bản \textit{baseline} được lưu giữ để đối chiếu với kết quả thực tế.

@@ -1,0 +1,106 @@
+\subsection{Increment 2: Đăng ký, danh sách chờ và email}
+\label{sec:i2}
+
+\subsubsection{Mục tiêu và phạm vi}
+
+I2 xây dựng phần nghiệp vụ phức tạp nhất của hệ thống: sinh viên đăng ký trong giới hạn sức chứa, danh sách chờ được đôn tự động theo thứ tự, và email thông báo ở các mốc quan trọng.
+
+\begin{itemize}
+    \item \textbf{Yêu cầu:} FR-12 đến FR-18; NFR-02, NFR-07, NFR-08. Use case UC-06 đến UC-10, UC-15.
+    \item \textbf{Hoạt động:} A02.2, BL1, RA01, RA03, RA06, A07.1, A07.2, A07.3, A08.
+    \item \textbf{Mục tiêu đóng góp:} O1 (không còn chọn người từ danh sách chờ bằng tay), O3 (không vượt sức chứa, không sai thứ tự), O4 (sinh viên biết trạng thái của mình).
+    \item \textbf{Checkpoint:} CP2, kế hoạch ngày 19/11/2026.
+\end{itemize}
+
+\subsubsection{Kế hoạch chi tiết}
+\label{sec:t3-lower}
+
+Kế hoạch I2 bám theo các yêu cầu khách hàng đã trả lời trong Client Interaction Log (Tuần 1):
+\begin{itemize}
+    \item Sự kiện có giới hạn sức chứa; khi đủ chỗ, sinh viên được đưa vào danh sách chờ có thứ tự.
+    \item Khi có người hủy, hệ thống tự động đưa người đầu danh sách chờ vào danh sách đăng ký và thông báo cho sinh viên đó.
+    \item Sinh viên không được đăng ký một sự kiện nhiều lần; được hủy trước khi sự kiện bắt đầu.
+    \item Email là kênh thông báo, gồm ba loại: xác nhận đăng ký, thay đổi quan trọng của sự kiện, được chuyển từ danh sách chờ. Email nhắc trước sự kiện có mức ưu tiên thấp và không thuộc MVP.
+\end{itemize}
+
+\begin{table}[H]
+\centering\small
+\caption{Kế hoạch chi tiết I2}\label{tab:t3-lower-i2}
+\begin{tabularx}{\linewidth}{@{}p{.09\linewidth}Xp{.32\linewidth}@{}}
+\toprule
+\textbf{Gói} & \textbf{Phần việc chi tiết} & \textbf{Tiêu chí hoàn thành}\\\midrule
+A07.1 & Mô hình một bản ghi đăng ký hiện hành; lịch sử trạng thái; khi đăng ký lại thì đặt lại kết quả điểm danh cũ. & Đăng ký lại giữ nguyên bản ghi; lịch sử ghi đúng một lần.\\
+A07.1 & Khóa sự kiện trong transaction khi đăng ký; kiểm tra khoa và năm học, khung giờ đăng ký. & 6 sinh viên tranh 1 chỗ: chỉ 1 người được nhận.\\
+A07.2 & Đôn theo thứ tự thời gian vào danh sách chờ; bỏ qua người không hợp lệ; đôn khi tăng sức chứa. & Đúng thứ tự; người bị bỏ qua giữ vị trí.\\
+A07.3 & Hàng đợi email ghi cùng transaction nghiệp vụ, gửi sau khi lưu thành công, thử lại có giới hạn. & Lỗi ghi hàng đợi làm hủy cả thao tác đăng ký; lỗi tạm thời được thử lại.\\
+A08 & Giao diện: khung đăng ký trên trang chi tiết, trang ``Sự kiện của tôi'', danh sách người tham gia; kiểm thử I2. & Test I2 và regression I1 đạt.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Kế hoạch này không thể lập chi tiết ở Task 2 vì phụ thuộc vào kiến trúc backend và mô hình dữ liệu chỉ hình thành sau I1.
+
+\subsubsection{Triển khai}
+
+Toàn bộ backend I2 được hoàn thành ngày 12/11. Đăng ký, đưa vào danh sách chờ, đôn người chờ và ghi yêu cầu gửi email đều nằm trong \textbf{cùng một transaction}: nếu bất kỳ bước nào lỗi thì toàn bộ thao tác bị hủy, không có trường hợp đăng ký thành công nhưng mất email, hoặc gửi email cho một đăng ký không tồn tại. Email được gửi qua dịch vụ Brevo sau khi dữ liệu đã lưu; lỗi tạm thời của nhà cung cấp được thử lại tối đa 5 lần.
+
+Cùng ngày, nhóm tái cấu trúc backend thành ba tầng (điều khiển, nghiệp vụ, truy cập dữ liệu) có giao diện rõ ràng. Việc này \textbf{không có trong baseline} nhưng giúp I2 và I3 thêm chức năng mà không phải viết lại phần truy cập dữ liệu. Giao diện I2 được hoàn thành và hợp nhất ngày 18/11.
+
+\subsubsection{Kiểm thử}
+
+Kiểm thử I2 gồm 29 unit test và bộ kiểm thử tích hợp chạy qua HTTP thật, với PostgreSQL thật và một dịch vụ email giả lập để không gửi thư tới người thật.
+
+\begin{table}[H]
+\centering\small
+\caption{Kết quả kiểm thử I2 (12/11/2026)}\label{tab:i2-tests}
+\begin{tabularx}{\linewidth}{@{}p{.22\linewidth}X@{}}
+\toprule
+\textbf{Nhóm kiểm thử} & \textbf{Kết quả}\\\midrule
+Quyền và dữ liệu riêng & Chưa đăng nhập bị chặn; Admin, Người tổ chức không đăng ký thay sinh viên; thiếu CSRF bị từ chối; sinh viên không xem được danh sách người tham gia.\\
+Điều kiện tham gia & Sự kiện nháp, ngoài khung giờ, sai khoa hoặc năm học đều bị từ chối đúng mã lỗi.\\
+Sức chứa, đồng thời & 6 sinh viên tranh 1 chỗ: 1 đăng ký, 5 vào danh sách chờ. 4 yêu cầu đăng ký lại đồng thời của cùng một người: 1 bản ghi, 1 email.\\
+Hủy và đôn chờ & Hủy sau giờ đóng đăng ký vẫn đôn đúng người đầu; tăng sức chứa từ 1 lên 3 nhận đúng 2 người tiếp theo; không cho giảm sức chứa dưới số đã đăng ký.\\
+Bỏ qua người không hợp lệ & Người đầu hàng sai năm học bị bỏ qua, người sau được nhận; khi hợp lệ trở lại vẫn giữ thứ tự cũ.\\
+Toàn vẹn transaction & Cố ý gây lỗi khi ghi hàng đợi email: toàn bộ đăng ký, hủy, đôn đều bị hủy, không để lại chỗ trống sai.\\
+Email & Đủ 3 loại thư; lỗi 503 được thử lại rồi thành công; lỗi 400 dừng ngay; thư của lượt đăng ký cũ không được gửi.\\
+Regression I1 & Đạt.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Ngoài bộ test, nhóm gửi thử thành công một email thật qua Brevo.
+
+\subsubsection{Vấn đề phát sinh và xử lý}
+
+\begin{itemize}
+    \item \textbf{CR-05 và góp ý tiến độ chậm (09/11):} thời gian còn lại giảm 26\%. Ngày 09/11 dành cho demo CP1 và tiếp nhận thay đổi. Từ 10/11 nhóm áp dụng PA3: làm gộp A07.1--A07.3 trong một đợt vì chúng dùng chung một transaction (backend I2 hoàn thành ngày 12/11), và bắt đầu backend I3 ngay sau đó.
+    \item \textbf{Công việc ngoài kế hoạch:} tái cấu trúc backend tốn $\approx$ 12 giờ công (Mục \ref{sec:t3-actual}).
+    \item \textbf{Điều chuyển nhân sự:} phần backend đăng ký, email mà Task 1.7 giao cho PM được chuyển sang BE (rủi ro AR6, Mục \ref{sec:t3-risk}).
+    \item \textbf{Thiếu BA từ đầu I2} (AR9): thành viên BA bận việc làm thêm và không tham gia. Việc làm rõ quy tắc nghiệp vụ do PM đảm nhận, thiết kế test I2 do QA đảm nhận.
+    \item \textbf{Các thay đổi chưa được khách hàng xác nhận} (NR7): hệ quả trực tiếp của việc thiếu BA, người được giao trao đổi nghiệp vụ với khách hàng.
+\end{itemize}
+
+Rủi ro AR1 (vượt sức chứa, sai thứ tự) và AR4 (email lỗi) không xảy ra nhờ test đồng thời và cơ chế thử lại.
+
+\subsubsection{Tiến độ và checkpoint}
+
+\begin{table}[H]
+\centering\small
+\caption{Kế hoạch và thực tế các hoạt động I2}\label{tab:i2-actual}
+\begin{tabularx}{\linewidth}{@{}p{.08\linewidth}Xp{.15\linewidth}rrrr@{}}
+\toprule
+\textbf{Mã} & \textbf{Lịch KH} & \textbf{Hoàn thành TT} & \textbf{Lệch (ngày)} & \textbf{Giờ KH} & \textbf{Giờ TT} & \textbf{Lệch (giờ)}\\\midrule
+A07.1 & 09--11/11 & 12/11 & +1 & 22,0 & 15,0 & $-$7,0\\
+A07.2 & 12--16/11 & 12/11 & $-$4 & 14,0 & 9,0 & $-$5,0\\
+A07.3 & 17/11 & 12/11 & $-$5 & 6,0 & 5,5 & $-$0,5\\
+A08 & 18--19/11 & 18/11 & $-$1 & 13,0 & 12,0 & $-$1,0\\
+RA01 & 09/11 & 12/11 & +3 & 2,5 & 2,5 & 0\\
+RA06 & 09/11 & 12/11 & +3 & 1,2 & 1,2 & 0\\
+\midrule
+\multicolumn{4}{@{}r}{\textbf{Tổng I2}} & \textbf{58,7} & \textbf{45,2} & \textbf{$-$13,5} ($-$23,0\%)\\
+\bottomrule
+\end{tabularx}
+\end{table}
+\noindent{\footnotesize Không tính 12 giờ tái cấu trúc ngoài kế hoạch.}
+
+\textbf{CP2} (kế hoạch 19/11): các điều kiện kỹ thuật ở Mục 2.5 đều đạt (đăng ký, hủy, sức chứa, danh sách chờ, email; test đồng thời và regression I1). I2 được hợp nhất ngày 18/11, \textbf{sớm 1 ngày}. Còn thiếu biên bản review và xác nhận của khách hàng về các quy tắc nghiệp vụ.

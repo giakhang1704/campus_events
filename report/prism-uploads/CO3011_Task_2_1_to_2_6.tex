@@ -1,0 +1,790 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{float}
+\usepackage{iftex}
+\ifPDFTeX
+    \usepackage[utf8]{inputenc}
+    \usepackage[T5]{fontenc}
+    \usepackage[vietnamese]{babel}
+\else
+    \usepackage{fontspec}
+    \setmainfont{Latin Modern Roman}
+    \usepackage{babel}
+    \babelprovide[import,main]{vietnamese}
+\fi
+\usepackage{enumitem}
+\usepackage{pdflscape}
+\usepackage[pass]{geometry}
+\usepackage{adjustbox}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+\tikzset{
+ flowshaft/.style={draw=black!85,line width=0.8pt,line cap=round,line join=round,preaction={draw=white,line width=2.8pt,-}},
+ flow/.style={flowshaft,-{Stealth[length=2.5mm,width=1.6mm]},shorten <=1pt,shorten >=1pt},
+ deliverable/.style={draw=green!45!black,fill=green!7,line width=0.55pt,rounded corners=1pt,align=center,inner sep=2pt},
+ intermediate/.style={draw=orange!65!black,fill=yellow!13,dashed,line width=0.55pt,rounded corners=1pt,align=center,inner sep=2pt},
+ external/.style={draw=black!55,fill=black!4,dashed,line width=0.55pt,align=center,inner sep=2pt},
+ activity/.style={draw=black!60,fill=black!5,line width=0.55pt,align=center,inner sep=2pt},
+ checkpoint/.style={draw=black!75,fill=white,line width=0.65pt,align=center,inner sep=2pt}
+}
+\author{Minh Nhiên Hồ}
+\date{October 2026}
+
+% Self-contained source. Compile with XeLaTeX (recommended) or pdfLaTeX
+% with Vietnamese T5 fonts installed. No external image files are required.
+\title{Task 2: Product-Based Planning\\Tasks 2.1--2.6}
+\begin{document}
+\maketitle
+\setcounter{section}{2}
+\setcounter{subsection}{0}
+\subsection{Identify products and construct the PBS}
+\subsubsection{Xác định và phân nhóm sản phẩm (Identify products)}
+Dựa trên yêu cầu xây dựng MVP của Hệ thống đăng ký và quản lý sự kiện cũng như định hướng phát triển product-based đã được xác định ở Task 1.8, nhóm tiến hành phân rã dự án thành các sản phẩm cụ thể. Việc xác định sản phẩm không chỉ tập trung vào mã nguồn phần mềm mà phải bao quát toàn bộ vòng đời dự án nhằm cung cấp minh chứng cho các quyết định quản lý theo đúng yêu cầu của học phần.
+
+Cấu trúc sản phẩm (PBS) bao gồm cả sản phẩm phần mềm và hồ sơ quản lý, được phân rã thành ba nhóm chính:
+
+Sản phẩm Quản lý dự án (Management Products): Bao gồm các tài liệu thiết lập đường cơ sở (Project Baseline), hồ sơ theo dõi tiến độ hàng tuần (Weekly logs), phân tích rủi ro và các báo cáo tổng kết dự án. Đây là nhóm sản phẩm nòng cốt để minh chứng cho việc nhóm đã lập kế hoạch, giám sát và kiểm soát dự án một cách có kỷ luật.
+
+Sản phẩm Kỹ thuật \& Phần mềm (Technical \& Software Products): Bao gồm các tài liệu thiết kế hệ thống (lược đồ CSDL, đặc tả API), các thành phần mã nguồn (Frontend, Backend) và cấu hình môi trường triển khai. Nhóm sản phẩm này cấu thành nên phiên bản MVP hoàn chỉnh hỗ trợ quy trình từ tạo sự kiện, đăng ký, điểm danh đến xuất báo cáo.
+
+Sản phẩm Chất lượng (Quality Products): Bao gồm các kịch bản kiểm thử (Test cases/Acceptance criteria), bộ dữ liệu sinh viên giả lập và các minh chứng nghiệm thu chất lượng (Quality evidence). Nhóm sản phẩm này đảm bảo hệ thống đáp ứng các yêu cầu về phân quyền, tính nhất quán dữ liệu và xử lý mượt mà các luồng nghiệp vụ quan trọng.
+
+Lưu ý rằng, căn cứ vào phần giới hạn phạm vi dự án (Exclusions), các thành phần liên quan đến hệ thống gợi ý (Recommendation), gửi tin nhắn SMS, tích hợp cơ sở dữ liệu MyBK hay xuất báo cáo PDF sẽ không được đưa vào cấu trúc sản phẩm phân rã này nhằm bảo vệ nguồn lực và tiến độ dự án.
+
+\newgeometry{margin=1cm,includefoot}
+\begin{landscape}
+\subsubsection{Sơ đồ PBS}
+\begin{figure}[H]
+\centering
+\begin{adjustbox}{max width=.98\linewidth,max totalheight=.86\textheight}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\draw[draw=black!60,line width=.6pt] (12.8000,-0.8000) -- (12.8000,-1.3500);
+\draw[draw=black!60,line width=.6pt] (4.0000,-1.3500) -- (21.2000,-1.3500);
+\draw[draw=black!60,line width=.6pt] (4.0000,-1.3500) -- (4.0000,-1.7750);
+\draw[draw=black!60,line width=.6pt] (12.6000,-1.3500) -- (12.6000,-1.7750);
+\draw[draw=black!60,line width=.6pt] (21.2000,-1.3500) -- (21.2000,-1.7750);
+\draw[draw=black!60,line width=.6pt] (4.0000,-2.6250) -- (0.4000,-2.6250) -- (0.4000,-12.6000);
+\draw[draw=black!60,line width=.6pt] (12.6000,-2.6250) -- (9.0000,-2.6250) -- (9.0000,-11.8000);
+\draw[draw=black!60,line width=.6pt] (21.2000,-2.6250) -- (17.6000,-2.6250) -- (17.6000,-5.6000);
+\draw[draw=black!60,line width=.6pt] (0.4000,-3.4000) -- (1.0500,-3.4000);
+\draw[draw=black!60,line width=.6pt] (4.6000,-3.8000) -- (4.6000,-4.0000) -- (1.5000,-4.0000) -- (1.5000,-7.4000);
+\draw[draw=black!60,line width=.6pt] (1.5000,-4.4000) -- (1.9000,-4.4000);
+\draw[draw=black!60,line width=.6pt] (1.5000,-5.4000) -- (1.9000,-5.4000);
+\draw[draw=black!60,line width=.6pt] (1.5000,-6.4000) -- (1.9000,-6.4000);
+\draw[draw=black!60,line width=.6pt] (1.5000,-7.4000) -- (1.9000,-7.4000);
+\draw[draw=black!60,line width=.6pt] (0.4000,-8.5000) -- (1.0500,-8.5000);
+\draw[draw=black!60,line width=.6pt] (4.6000,-8.9000) -- (4.6000,-9.1000) -- (1.5000,-9.1000) -- (1.5000,-11.5000);
+\draw[draw=black!60,line width=.6pt] (1.5000,-9.5000) -- (1.9000,-9.5000);
+\draw[draw=black!60,line width=.6pt] (1.5000,-10.5000) -- (1.9000,-10.5000);
+\draw[draw=black!60,line width=.6pt] (1.5000,-11.5000) -- (1.9000,-11.5000);
+\draw[draw=black!60,line width=.6pt] (0.4000,-12.6000) -- (1.0500,-12.6000);
+\draw[draw=black!60,line width=.6pt] (4.6000,-13.0000) -- (4.6000,-13.2000) -- (1.5000,-13.2000) -- (1.5000,-15.6000);
+\draw[draw=black!60,line width=.6pt] (1.5000,-13.6000) -- (1.9000,-13.6000);
+\draw[draw=black!60,line width=.6pt] (1.5000,-14.6000) -- (1.9000,-14.6000);
+\draw[draw=black!60,line width=.6pt] (1.5000,-15.6000) -- (1.9000,-15.6000);
+\draw[draw=black!60,line width=.6pt] (9.0000,-3.4000) -- (9.6500,-3.4000);
+\draw[draw=black!60,line width=.6pt] (13.2000,-3.8000) -- (13.2000,-4.0000) -- (10.1000,-4.0000) -- (10.1000,-6.4000);
+\draw[draw=black!60,line width=.6pt] (10.1000,-4.4000) -- (10.5000,-4.4000);
+\draw[draw=black!60,line width=.6pt] (10.1000,-5.4000) -- (10.5000,-5.4000);
+\draw[draw=black!60,line width=.6pt] (10.1000,-6.4000) -- (10.5000,-6.4000);
+\draw[draw=black!60,line width=.6pt] (9.0000,-7.6000) -- (9.6500,-7.6000);
+\draw[draw=black!60,line width=.6pt] (13.2000,-8.0000) -- (13.2000,-8.2000) -- (10.1000,-8.2000) -- (10.1000,-10.6000);
+\draw[draw=black!60,line width=.6pt] (10.1000,-8.6000) -- (10.5000,-8.6000);
+\draw[draw=black!60,line width=.6pt] (10.1000,-9.6000) -- (10.5000,-9.6000);
+\draw[draw=black!60,line width=.6pt] (10.1000,-10.6000) -- (10.5000,-10.6000);
+\draw[draw=black!60,line width=.6pt] (9.0000,-11.8000) -- (9.6500,-11.8000);
+\draw[draw=black!60,line width=.6pt] (13.2000,-12.2000) -- (13.2000,-12.4000) -- (10.1000,-12.4000) -- (10.1000,-13.8000);
+\draw[draw=black!60,line width=.6pt] (10.1000,-12.8000) -- (10.5000,-12.8000);
+\draw[draw=black!60,line width=.6pt] (10.1000,-13.8000) -- (10.5000,-13.8000);
+\draw[draw=black!60,line width=.6pt] (17.6000,-3.4000) -- (18.2500,-3.4000);
+\draw[draw=black!60,line width=.6pt] (21.8000,-3.8000) -- (21.8000,-4.0000) -- (18.7000,-4.0000) -- (18.7000,-4.4000);
+\draw[draw=black!60,line width=.6pt] (18.7000,-4.4000) -- (19.1000,-4.4000);
+\draw[draw=black!60,line width=.6pt] (17.6000,-5.6000) -- (18.2500,-5.6000);
+\draw[draw=black!60,line width=.6pt] (21.8000,-6.0000) -- (21.8000,-6.2000) -- (18.7000,-6.2000) -- (18.7000,-7.6000);
+\draw[draw=black!60,line width=.6pt] (18.7000,-6.6000) -- (19.1000,-6.6000);
+\draw[draw=black!60,line width=.6pt] (18.7000,-7.6000) -- (19.1000,-7.6000);
+\node[activity,text width=308.880pt,minimum height=0.800cm,font=\fontsize{8.5}{10.2}\selectfont] (root) at (12.8000,-0.4000) {Hệ thống Đăng ký và Quản lý sự kiện - MVP};
+\node[activity,text width=212.141pt,minimum height=0.850cm,font=\fontsize{8.5}{10.2}\selectfont] (m) at (4.0000,-2.2000) {1. Sản phẩm Quản lý dự án};
+\node[activity,text width=212.141pt,minimum height=0.850cm,font=\fontsize{8.5}{10.2}\selectfont] (t) at (12.6000,-2.2000) {2. Sản phẩm Kỹ thuật và Phần mềm};
+\node[activity,text width=212.141pt,minimum height=0.850cm,font=\fontsize{8.5}{10.2}\selectfont] (q) at (21.2000,-2.2000) {3. Sản phẩm Chất lượng};
+\node[activity,text width=197.915pt,minimum height=0.800cm,font=\fontsize{8.5}{10.2}\selectfont] (mp) at (4.6000,-3.4000) {1.1 Tài liệu Lập kế hoạch};
+\node[deliverable,text width=172.307pt,minimum height=0.800cm,font=\fontsize{8.5}{10.2}\selectfont] (client) at (5.0000,-4.4000) {Client Interaction Log};
+\node[deliverable,text width=172.307pt,minimum height=0.800cm,font=\fontsize{8.5}{10.2}\selectfont] (plans) at (5.0000,-5.4000) {PBS, PDs, PFD, Activity Network và Estimates};
+\node[deliverable,text width=172.307pt,minimum height=0.800cm,font=\fontsize{8.5}{10.2}\selectfont] (risk) at (5.0000,-6.4000) {Risk Register};
+\node[deliverable,text width=172.307pt,minimum height=0.800cm,font=\fontsize{8.5}{10.2}\selectfont] (base) at (5.0000,-7.4000) {Project Baseline V1.0};
+\node[activity,text width=197.915pt,minimum height=0.800cm,font=\fontsize{8.5}{10.2}\selectfont] (mm) at (4.6000,-8.5000) {1.2 Tài liệu Giám sát và Điều khiển};
+\node[deliverable,text width=172.307pt,minimum height=0.800cm,font=\fontsize{8.5}{10.2}\selectfont] (logs) at (5.0000,-9.5000) {Weekly Project Logs};
+\node[deliverable,text width=172.307pt,minimum height=0.800cm,font=\fontsize{8.5}{10.2}\selectfont] (change) at (5.0000,-10.5000) {Change-impact Analysis\\Management Decision Record};
+\node[deliverable,text width=172.307pt,minimum height=0.800cm,font=\fontsize{8.5}{10.2}\selectfont] (v2) at (5.0000,-11.5000) {Revised Project Baseline V2.0 (nếu có)};
+\node[activity,text width=197.915pt,minimum height=0.800cm,font=\fontsize{8.5}{10.2}\selectfont] (mc) at (4.6000,-12.6000) {1.3 Tài liệu Đóng dự án};
+\node[deliverable,text width=172.307pt,minimum height=0.800cm,font=\fontsize{8.5}{10.2}\selectfont] (report) at (5.0000,-13.6000) {Final PM Report};
+\node[deliverable,text width=172.307pt,minimum height=0.800cm,font=\fontsize{8.5}{10.2}\selectfont] (lessons) at (5.0000,-14.6000) {Lessons Learned};
+\node[deliverable,text width=172.307pt,minimum height=0.800cm,font=\fontsize{8.5}{10.2}\selectfont] (closure) at (5.0000,-15.6000) {Closure/Handover Plan};
+\node[activity,text width=197.915pt,minimum height=0.800cm,font=\fontsize{8.5}{10.2}\selectfont] (td) at (13.2000,-3.4000) {2.1 Thiết kế hệ thống};
+\node[intermediate,text width=172.307pt,minimum height=0.800cm,font=\fontsize{8.5}{10.2}\selectfont] (schema) at (13.6000,-4.4000) {Database Schema};
+\node[intermediate,text width=172.307pt,minimum height=0.800cm,font=\fontsize{8.5}{10.2}\selectfont] (api) at (13.6000,-5.4000) {API Specifications};
+\node[intermediate,text width=172.307pt,minimum height=0.800cm,font=\fontsize{8.5}{10.2}\selectfont] (ui) at (13.6000,-6.4000) {UI/UX Mockups};
+\node[activity,text width=197.915pt,minimum height=0.800cm,font=\fontsize{8.5}{10.2}\selectfont] (tc) at (13.2000,-7.6000) {2.2 Mã nguồn và Phần mềm};
+\node[intermediate,text width=172.307pt,minimum height=0.800cm,font=\fontsize{8.5}{10.2}\selectfont] (fe) at (13.6000,-8.6000) {Frontend Code};
+\node[intermediate,text width=172.307pt,minimum height=0.800cm,font=\fontsize{8.5}{10.2}\selectfont] (be) at (13.6000,-9.6000) {Backend Code};
+\node[deliverable,text width=172.307pt,minimum height=0.800cm,font=\fontsize{8.5}{10.2}\selectfont] (final) at (13.6000,-10.6000) {Final Working Software Product};
+\node[activity,text width=197.915pt,minimum height=0.800cm,font=\fontsize{8.5}{10.2}\selectfont] (tr) at (13.2000,-11.8000) {2.3 Triển khai và Bàn giao};
+\node[deliverable,text width=172.307pt,minimum height=0.800cm,font=\fontsize{8.5}{10.2}\selectfont] (repo) at (13.6000,-12.8000) {Source Code Repository};
+\node[deliverable,text width=172.307pt,minimum height=0.800cm,font=\fontsize{8.5}{10.2}\selectfont] (run) at (13.6000,-13.8000) {Instructions for Running};
+\node[activity,text width=197.915pt,minimum height=0.800cm,font=\fontsize{8.5}{10.2}\selectfont] (qt) at (21.8000,-3.4000) {3.1 Kịch bản kiểm thử};
+\node[intermediate,text width=172.307pt,minimum height=0.800cm,font=\fontsize{8.5}{10.2}\selectfont] (test) at (22.2000,-4.4000) {Test Cases / Acceptance Criteria};
+\node[activity,text width=197.915pt,minimum height=0.800cm,font=\fontsize{8.5}{10.2}\selectfont] (qe) at (21.8000,-5.6000) {3.2 Minh chứng chất lượng};
+\node[intermediate,text width=172.307pt,minimum height=0.800cm,font=\fontsize{8.5}{10.2}\selectfont] (data) at (22.2000,-6.6000) {Dữ liệu sinh viên giả lập};
+\node[deliverable,text width=172.307pt,minimum height=0.800cm,font=\fontsize{8.5}{10.2}\selectfont] (evidence) at (22.2000,-7.6000) {Quality/Verification Evidence};
+\end{tikzpicture}
+\end{adjustbox}
+\caption{Cấu trúc phân rã sản phẩm của dự án}
+\end{figure}
+
+\noindent Ô xanh, viền liền: deliverable. Ô vàng, viền đứt: intermediate. Đường nối biểu diễn quan hệ phân rã, không biểu diễn thứ tự thực hiện.
+\end{landscape}
+\restoregeometry
+\subsubsection{Phân biệt Deliverable products và Intermediate products}
+Theo phương pháp Step Wise, việc phân định rõ hai loại sản phẩm này giúp nhóm tập trung nguồn lực vào các hạng mục cốt lõi cần nghiệm thu, đồng thời kiểm soát hiệu quả các công cụ hỗ trợ trong quá trình phát triển. Trong sơ đồ PBS, sự khác biệt này được trực quan hóa bằng màu sắc (xanh lá/vàng) và định dạng viền (liền/đứt). Căn cứ phân loại chi tiết được trình bày trong bảng sau:
+
+\begin{table}[H]
+\centering
+\caption{Phân biệt sản phẩm bàn giao và sản phẩm trung gian}
+\small
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\textwidth}{|p{2cm}|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|}
+\hline
+\textbf{Tiêu chí} & \textbf{Sản phẩm bàn giao (Deliverable Products)(Ký hiệu: Ô màu xanh lá, nét liền)} & \textbf{Sản phẩm trung gian (Intermediate Products)(Ký hiệu: Ô màu vàng, nét đứt)} \\ \hline
+Định nghĩa \& Tính chất & Là những sản phẩm đích bắt buộc phải hoàn thành và bàn giao để nghiệm thu ở các mốc của dự án. & Là các sản phẩm nội bộ, đóng vai trò làm đầu vào, công cụ kiểm soát hoặc thành phần cấu tạo để tạo ra sản phẩm bàn giao. \\ \hline
+Căn cứ xác định & Xác định dựa trên danh sách "Expected outputs" và "Submission Requirements" của đề bài. Đây là minh chứng bắt buộc để đánh giá năng lực áp dụng quy trình quản lý dự án. & Xác định dựa trên quy trình phối hợp làm việc thực tế của nhóm (BA, Dev, QA) để xây dựng hệ thống. \\ \hline
+Ví dụ nhóm Quản lý dự án & Toàn bộ tài liệu PM được xem là Deliverable vì là tiêu chí chấm điểm cốt lõi: Project Baseline V1.0, PBS, PFD, Estimates, Risk Register, Weekly Logs. & Các bản nháp, biên bản họp nội bộ (không yêu cầu nộp) được dùng để xây dựng kế hoạch chính thức. \\ \hline
+Ví dụ nhóm Kỹ thuật \& Chất lượng & Final Working Software Product, Quality Evidence, Source Code Repository, Instructions for Running. & Database Schema, Mã nguồn Frontend/Backend, Test Cases, Dữ liệu giả lập. \\ \hline
+\end{tabularx}
+\end{table}
+
+\subsection{Prepare Product Descriptions (PDs)}
+
+
+Dựa trên cấu trúc PBS đã xác định, nhóm tiến hành lập Bảng mô tả sản phẩm (Product Descriptions - PDs) cho 5 sản phẩm cốt lõi nhất đại diện cho 3 nhóm: Quản lý dự án, Kỹ thuật và Chất lượng. Các mô tả này tuân thủ phương pháp hoạch định định hướng sản phẩm của Step Wise, đảm bảo tính chặt chẽ trong việc kiểm soát chất lượng, nguồn lực và theo dõi tiến độ của dự án.
+
+% ==========================================
+% PD 1: PROJECT BASELINE V1.0
+% ==========================================
+\clearpage
+\begin{table}[H]
+    \centering
+    \caption{Product Description: Project Baseline V1.0}
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabularx}{\textwidth}{|>{\hsize=0.5\hsize\linewidth=\hsize\bfseries}X|>{\hsize=1.5\hsize\linewidth=\hsize}X|}
+        \hline
+        Product Identity & \textbf{Project Baseline V1.0} (Đường cơ sở dự án phiên bản 1.0) \\
+        \hline
+        Description & Đây là tài liệu kế hoạch nền tảng đã được nhóm và khách hàng thống nhất, dùng làm mốc đối chiếu để giám sát tiến độ, công sức, chi phí và phạm vi trong suốt quá trình thực thi dự án. \\
+        \hline
+        Derivation & Được tổng hợp từ Project brief, Client Interaction Log, phạm vi đã thống nhất và các sản phẩm lập kế hoạch Task 2. \\
+        \hline
+        Composition & 
+        \vspace{-0.8em}
+        \begin{itemize}[leftmargin=*, nosep]
+            \item PBS, PFD và các bảng mô tả sản phẩm (PDs).
+            \item Mạng lưới hoạt động và các điểm kiểm tra (Checkpoints).
+            \item Danh sách rủi ro cấp hoạt động và biện pháp ứng phó.
+            \item Kế hoạch phân bổ nguồn lực và đảm bảo chất lượng.
+            \item Lịch biểu và dự toán chi phí/công sức (Schedule and cost baseline).
+        \end{itemize}
+        \vspace{-1em} \\
+        \hline
+        Format & Báo cáo dạng văn bản PDF (kết hợp bảng biểu, sơ đồ) và được lưu trữ trên không gian làm việc Confluence của dự án. \\
+        \hline
+        Relevant Standards & Tuân thủ phương pháp lập kế hoạch Step Wise, nguyên tắc truy vết (Traceability) trong quản lý dự án phần mềm, và chuẩn quản lý tài liệu nội bộ. \\
+        \hline
+        Quality Criteria & 
+        \vspace{-0.8em}
+        \begin{itemize}[leftmargin=*, nosep]
+            \item Được nhóm rà soát và Đại diện khách hàng xem xét, phê duyệt theo thẩm quyền; chỉ ghi đã duyệt khi có xác nhận.
+            \item Các ước lượng phải phân biệt rõ công sức (effort) và thời gian trôi qua (elapsed time).
+            \item Có tính khả thi về mặt phân bổ nguồn lực (phù hợp với quy mô nhóm triển khai).
+            \item Cung cấp đầy đủ biện pháp giảm thiểu và dự phòng cho các rủi ro quan trọng.
+        \end{itemize}
+        \vspace{-1em} \\
+        \hline
+    \end{tabularx}
+\end{table}
+
+% ==========================================
+% PD 2: DATABASE SCHEMA
+% ==========================================
+\clearpage
+\begin{table}[H]
+    \centering
+    \caption{Product Description: Database Schema}
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabularx}{\textwidth}{|>{\hsize=0.5\hsize\linewidth=\hsize\bfseries}X|>{\hsize=1.5\hsize\linewidth=\hsize}X|}
+        \hline
+        Product Identity & \textbf{Database Schema} (Lược đồ Cơ sở dữ liệu) \\
+        \hline
+        Description & Bản thiết kế cấu trúc lưu trữ dữ liệu tập trung, định nghĩa cách hệ thống quản lý thông tin sự kiện, người dùng, trạng thái đăng ký, danh sách chờ và kết quả điểm danh. \\
+        \hline
+        Derivation & Bắt nguồn từ các quy tắc nghiệp vụ (Business rules) do bộ phận Phân tích nghiệp vụ thu thập, ma trận phân quyền người dùng, và yêu cầu dữ liệu của luồng đăng ký/waitlist. \\
+        \hline
+        Composition & 
+        \vspace{-0.8em}
+        \begin{itemize}[leftmargin=*, nosep]
+            \item Các thực thể chính (Event, User, Registration, Attendance).
+            \item Thuộc tính, Kiểu dữ liệu, Khóa chính (PK) / Khóa ngoại (FK).
+            \item Ràng buộc toàn vẹn (ví dụ: ngăn đăng ký trùng cùng một sự kiện).
+        \end{itemize}
+        \vspace{-1em} \\
+        \hline
+        Format & Sơ đồ thực thể kết hợp (ERD) và mã lệnh SQL (DDL) khởi tạo bảng. \\
+        \hline
+        Relevant Standards & Chuẩn hóa cơ sở dữ liệu quan hệ (ít nhất đạt chuẩn 3NF), quy tắc đặt tên (Coding Conventions) thống nhất, và cú pháp chuẩn của PostgreSQL. \\
+        \hline
+        Quality Criteria & 
+        \vspace{-0.8em}
+        \begin{itemize}[leftmargin=*, nosep]
+            \item Bao quát các trường bắt buộc đã thống nhất; có PK/FK và ràng buộc duy nhất cho cặp sinh viên--sự kiện để chống đăng ký trùng.
+            \item Script DDL thực thi thành công trên PostgreSQL với cơ sở dữ liệu sạch.
+            \item Có dữ liệu xác định thứ tự FIFO. Quy tắc sức chứa và chuyển waitlist được kiểm chứng cùng xử lý giao dịch của Backend.
+        \end{itemize}
+        \vspace{-1em} \\
+        \hline
+    \end{tabularx}
+\end{table}
+
+% ==========================================
+% PD 3: TEST CASES & ACCEPTANCE CRITERIA
+% ==========================================
+\clearpage
+\begin{table}[H]
+    \centering
+    \caption{Product Description: Test Cases \& Acceptance Criteria}
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabularx}{\textwidth}{|>{\hsize=0.5\hsize\linewidth=\hsize\bfseries}X|>{\hsize=1.5\hsize\linewidth=\hsize}X|}
+        \hline
+        Product Identity & \textbf{Test Cases \& Acceptance Criteria} (Kịch bản kiểm thử \& Tiêu chí chấp nhận) \\
+        \hline
+        Description & Tập hợp các điều kiện và thao tác giả lập để kiểm chứng hệ thống phần mềm có đáp ứng đúng các yêu cầu chức năng, yêu cầu bảo mật và quy trình vận hành đã cam kết hay không. \\
+        \hline
+        Derivation & Dựa trên Phạm vi dự án (Project Scope), Ma trận phân quyền, và bộ các thước đo hiệu quả (Measures of Effectiveness). \\
+        \hline
+        Composition & Mỗi TC có mã TC, mã yêu cầu, tên tính năng, tiền điều kiện, dữ liệu, các bước và kết quả mong đợi. Khi thực thi, ghi kết quả thực tế, Pass/Fail và liên kết bằng chứng. Bao gồm Happy path và ngoại lệ: hết chỗ, đăng ký trùng, chuyển waitlist và lỗi kết nối mạng. \\
+        \hline
+        Format & Lưu trữ dưới dạng tài liệu trên nền tảng Confluence và được quản lý thành các task kiểm thử trên hệ thống Jira Software. \\
+        \hline
+        Relevant Standards & Tuân thủ Định nghĩa hoàn thành (Definition of Done - DoD) của quy trình phát triển dự án. \\
+        \hline
+        Quality Criteria & 
+        \vspace{-0.8em}
+        \begin{itemize}[leftmargin=*, nosep]
+            \item Mỗi yêu cầu cốt lõi của MVP có TC tương ứng, gồm luồng chính và các tình huống ngoại lệ phù hợp.
+            \item Mô tả rõ ràng, đơn nghĩa, cho phép thực hiện kiểm tra chéo (Cross-testing) bởi bất kỳ thành viên nào trong nhóm.
+            \item Chứa các test case giả định sai lệch để xác minh khả năng chặn lỗi (validation) của hệ thống.
+        \end{itemize}
+        \vspace{-1em} \\
+        \hline
+    \end{tabularx}
+\end{table}
+% ==========================================
+% PD 4: FINAL WORKING SOFTWARE PRODUCT
+% ==========================================
+\clearpage
+\begin{table}[H]
+    \centering
+    \caption{Product Description: Final Working Software Product}
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabularx}{\textwidth}{|>{\hsize=0.5\hsize\linewidth=\hsize\bfseries}X|>{\hsize=1.5\hsize\linewidth=\hsize}X|}
+        \hline
+        Product Identity & \textbf{Final Working Software Product} (Phần mềm hệ thống đăng ký và quản lý sự kiện) \\
+        \hline
+        Description & Phần mềm MVP hỗ trợ quy trình khép kín (end-to-end): tạo sự kiện, đăng ký/hủy và waitlist, điểm danh QR hoặc thủ công, báo cáo và xuất CSV/Excel. Sử dụng dữ liệu sinh viên giả lập theo phạm vi đã thống nhất. \\
+        \hline
+        Derivation & Được phát triển dựa trên Đường cơ sở dự án (Project Baseline), thiết kế giao diện (UI/UX Mockups), Đặc tả API (API Specifications) và các đoạn mã nguồn cấu thành. \\
+        \hline
+        Composition & 
+        \vspace{-0.8em}
+        \begin{itemize}[leftmargin=*, nosep]
+            \item Hệ thống Frontend (Angular) cho giao diện của 3 nhóm người dùng.
+            \item Backend API (Java Spring Boot) xử lý logic nghiệp vụ.
+            \item Cơ sở dữ liệu lưu trữ tập trung PostgreSQL.
+            \item Email xác nhận đăng ký, thay đổi quan trọng của sự kiện và chuyển từ waitlist sang danh sách chính thức.
+        \end{itemize}
+        \vspace{-1em} \\
+        \hline
+        Format & Ứng dụng được triển khai trên máy chủ đám mây (AWS Lightsail) và có thể truy cập, thao tác trực tiếp qua trình duyệt web. \\
+        \hline
+        Relevant Standards & Tiêu chuẩn Clean Code, quy định nộp và tích hợp mã nguồn (Pull Request) trên hệ thống GitHub, và các ràng buộc bảo vệ quyền riêng tư của dữ liệu người dùng. \\
+        \hline
+        Quality Criteria & 
+        \vspace{-0.8em}
+        \begin{itemize}[leftmargin=*, nosep]
+            \item Ứng dụng biên dịch thành công; các luồng nghiệm thu đã thống nhất chạy được trên môi trường kiểm thử được ghi nhận.
+            \item Thể hiện luồng công việc mạch lạc (coherent end-to-end workflows), các tính năng liên kết chặt chẽ thay vì chỉ là các màn hình rời rạc.
+            \item Mã nguồn phải qua quy trình kiểm duyệt (Peer Code Review) và được chấp thuận (Approve) từ ít nhất một thành viên khác.
+            \item Đạt toàn bộ TC nghiệm thu cốt lõi đã chốt; không còn lỗi nghiêm trọng làm gián đoạn các luồng này.
+        \end{itemize}
+        \vspace{-1em} \\
+        \hline
+    \end{tabularx}
+\end{table}
+
+% ==========================================
+% PD 5: FINAL PROJECT MANAGEMENT REPORT
+% ==========================================
+\clearpage
+\begin{table}[H]
+    \centering
+    \caption{Product Description: Final Project Management Report}
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabularx}{\textwidth}{|>{\hsize=0.5\hsize\linewidth=\hsize\bfseries}X|>{\hsize=1.5\hsize\linewidth=\hsize}X|}
+        \hline
+        Product Identity & \textbf{Final Project Management Report} (Báo cáo Quản lý dự án cuối kỳ) \\
+        \hline
+        Description & Báo cáo phân tích và tổng kết hiệu suất thực tế của toàn bộ vòng đời dự án, đối chiếu kế hoạch gốc với kết quả triển khai thực tế, đồng thời rút ra bài học kinh nghiệm (Lessons Learned) cho các dự án tương lai. \\
+        \hline
+        Derivation & Tổng hợp dữ liệu thực tế từ hồ sơ giám sát hàng tuần (Weekly Logs), Project Baseline V1.0 (và V2.0 nếu có), Nhật ký rủi ro (Risk Register), và dữ liệu từ các quy trình quản lý thay đổi. \\
+        \hline
+        Composition & 
+        \vspace{-0.8em}
+        \begin{itemize}[leftmargin=*, nosep]
+            \item Bảng đối chiếu Kế hoạch so với Thực tế (công sức, lịch biểu, chi phí, phạm vi, chất lượng).
+            \item Phân tích sai số ước lượng và các quyết định quản lý đã đưa ra.
+            \item Đánh giá mức độ đạt các mục tiêu nghiệp vụ (Effectiveness measures).
+            \item Closure/Handover Plan và Lessons Learned; phụ lục hoặc liên kết đóng góp và reflection cá nhân.
+        \end{itemize}
+        \vspace{-1em} \\
+        \hline
+        Format & Báo cáo định dạng văn bản PDF, kết hợp các biểu đồ so sánh trực quan, được lưu trữ trên hệ thống quản lý tài liệu tập trung của dự án. \\
+        \hline
+        Relevant Standards & Định dạng chuẩn của báo cáo tổng kết dự án chuyên nghiệp, tuân thủ nguyên tắc trung thực và tính khả truy (Traceability) xuyên suốt các tài liệu dự án. \\
+        \hline
+        Quality Criteria & 
+        \vspace{-0.8em}
+        \begin{itemize}[leftmargin=*, nosep]
+            \item Có lập luận chặt chẽ (justification) và bằng chứng cụ thể cho mọi độ lệch về tiến độ và công sức.
+            \item Dữ liệu báo cáo nhất quán tuyệt đối với các bản ghi nhận tiến độ (logs) hàng tuần.
+            \item Tách biệt rõ ràng phần đánh giá mức độ hoàn thành chức năng phần mềm với phần đánh giá mục tiêu kinh doanh/nghiệp vụ tổng thể.
+            \item Bài học kinh nghiệm thực tế, mang tính ứng dụng cao.
+        \end{itemize}
+        \vspace{-1em} \\
+        \hline
+    \end{tabularx}
+\end{table}
+
+\clearpage
+\subsection{Construct a Product Flow Diagram (PFD)}
+PFD thể hiện phụ thuộc giữa các sản phẩm ở PBS 2.1 và PDs 2.2. Mũi tên đi từ sản phẩm đầu vào đến sản phẩm sử dụng đầu vào đó. Ba increment dưới đây là các instance tích lũy của phần mềm.
+\begin{table}[H]
+\centering
+\caption{Các instance phần mềm}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{|p{2.5cm}|X|}
+\hline
+\textbf{Instance} & \textbf{Phạm vi} \\ \hline
+Increment 1 & Tài khoản, phân quyền, quản lý và tìm/xem sự kiện. \\ \hline
+Increment 2 & Kế thừa I1; thêm đăng ký/hủy, waitlist và email. \\ \hline
+Increment 3 & Kế thừa I2; thêm điểm danh QR/thủ công, báo cáo và xuất CSV/Excel. \\ \hline
+\end{tabularx}
+\end{table}
+Ô xanh là deliverable; ô vàng là intermediate; ô xám là đầu vào bên ngoài. Nét đứt của mũi tên là phụ thuộc có điều kiện. Chấm đen là điểm nối; các đường giao nhau không có chấm không nối với nhau.
+
+\newgeometry{margin=1cm,includefoot}
+\begin{landscape}
+\begin{figure}[H]
+\centering
+\begin{adjustbox}{max width=.98\linewidth,max totalheight=.86\textheight}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\draw[flowshaft] (1.2000,-6.2000) -- (0.8000,-6.2000);
+\draw[flowshaft] (0.8000,-6.2000) -- (0.8000,-15.3000);
+\draw[flow] (0.8000,-10.0000) -- (1.2000,-10.0000);
+\draw[flow] (0.8000,-15.3000) -- (1.2000,-15.3000);
+\draw[flow] (9.5000,-0.7250) -- (9.5000,-1.0000) -- (4.0000,-1.0000) -- (4.0000,-1.4000);
+\draw[flow] (12.0000,-0.7250) -- (12.0000,-1.4500);
+\draw[flow] (14.5000,-0.7250) -- (14.5000,-1.0000) -- (20.0000,-1.0000) -- (20.0000,-1.5500);
+\draw[flow] (4.0000,-2.6000) -- (4.0000,-3.6500);
+\draw[flow] (12.0000,-2.5500) -- (12.0000,-3.6000);
+\draw[flow] (14.8000,-2.0000) -- (15.8000,-2.0000) -- (15.8000,-3.0000) -- (18.6000,-3.0000) -- (18.6000,-3.6500);
+\draw[flow] (20.0000,-2.4500) -- (20.0000,-3.6500);
+\draw[flow] (6.8000,-4.1000) -- (9.2000,-4.1000);
+\draw[flow] (12.0000,-4.6000) -- (12.0000,-5.7000);
+\draw[flow] (17.2000,-2.0000) -- (16.4000,-2.0000) -- (16.4000,-5.9500) -- (14.8000,-5.9500);
+\draw[flow] (20.0000,-4.5500) -- (20.0000,-5.2000) -- (13.4000,-5.2000) -- (13.4000,-5.7000);
+\draw[flow] (12.0000,-6.7000) -- (12.0000,-7.4000);
+\draw[flow] (12.0000,-8.4000) -- (12.0000,-9.5000);
+\draw[flow] (14.8000,-6.4500) -- (16.6000,-6.4500) -- (16.6000,-9.7500) -- (17.2000,-9.7500);
+\draw[flow] (14.8000,-7.9000) -- (16.1000,-7.9000) -- (16.1000,-10.0000) -- (17.2000,-10.0000);
+\draw[flow] (14.8000,-10.2500) -- (17.2000,-10.2500);
+\draw[flow] (12.0000,-10.5000) -- (12.0000,-11.6000);
+\draw[flow] (20.0000,-10.5000) -- (20.0000,-11.0000) -- (13.4000,-11.0000) -- (13.4000,-11.6000);
+\draw[flow] (4.0000,-4.5500) -- (4.0000,-5.7500);
+\draw[flow] (6.8000,-4.3250) -- (7.5000,-4.3250) -- (7.5000,-9.0000) -- (5.4000,-9.0000) -- (5.4000,-9.5000);
+\draw[flow] (4.0000,-8.3500) -- (4.0000,-9.5000);
+\draw[flow, densely dashed] (4.0000,-10.5000) -- (4.0000,-11.6500);
+\draw[flow] (1.2000,-4.1000) -- (0.4000,-4.1000) -- (0.4000,-14.7000) -- (1.2000,-14.7000);
+\draw[flow] (6.8000,-10.0000) -- (7.6000,-10.0000) -- (7.6000,-13.4000) -- (2.6000,-13.4000) -- (2.6000,-14.4000);
+\draw[flow, densely dashed] (4.0000,-12.5500) -- (4.0000,-14.4000);
+\draw[flow] (14.8000,-12.1000) -- (17.2000,-12.1000);
+\draw[flow] (12.0000,-12.6000) -- (12.0000,-14.5500);
+\draw[flow] (20.0000,-12.6000) -- (20.0000,-13.9000) -- (13.4000,-13.9000) -- (13.4000,-14.5500);
+\draw[flow] (9.2000,-12.1000) -- (8.2000,-12.1000) -- (8.2000,-13.9000) -- (5.4000,-13.9000) -- (5.4000,-14.4000);
+\draw[flow] (9.2000,-15.0000) -- (6.8000,-15.0000);
+\fill[black!85] (0.8000,-10.0000) circle[radius=1.5pt];
+\node[deliverable,text width=280.428pt,minimum height=0.650cm,font=\fontsize{9}{10.8}\selectfont] (scope) at (12.0000,-0.4000) {Phạm vi MVP và Client Interaction Log};
+\node[deliverable,text width=155.235pt,minimum height=1.200cm,font=\fontsize{9}{10.8}\selectfont] (plan) at (4.0000,-2.0000) {Bộ kế hoạch: PBS, PDs, PFD, AON\\Ước lượng, rủi ro, nguồn lực, lịch};
+\node[intermediate,text width=155.235pt,minimum height=1.100cm,font=\fontsize{9}{10.8}\selectfont] (design) at (12.0000,-2.0000) {Database Schema\\API Specifications; UI/UX Mockups};
+\node[intermediate,text width=155.235pt,minimum height=0.900cm,font=\fontsize{9}{10.8}\selectfont] (tests) at (20.0000,-2.0000) {Test Cases / Acceptance Criteria};
+\node[deliverable,text width=155.235pt,minimum height=0.900cm,font=\fontsize{9}{10.8}\selectfont] (baseline) at (4.0000,-4.1000) {Project Baseline V1.0};
+\node[intermediate,text width=155.235pt,minimum height=1.000cm,font=\fontsize{9}{10.8}\selectfont] (code) at (12.0000,-4.1000) {Frontend / Backend Code\\và cấu hình triển khai};
+\node[intermediate,text width=155.235pt,minimum height=0.900cm,font=\fontsize{9}{10.8}\selectfont] (data) at (20.0000,-4.1000) {Dữ liệu sinh viên và nghiệp vụ giả lập};
+\node[deliverable,text width=155.235pt,minimum height=0.900cm,font=\fontsize{9}{10.8}\selectfont] (logs) at (4.0000,-6.2000) {Weekly Project Logs tuần k\\Risk Register cập nhật};
+\node[intermediate,text width=155.235pt,minimum height=1.000cm,font=\fontsize{9}{10.8}\selectfont] (i1) at (12.0000,-6.2000) {Increment 1 đã kiểm thử};
+\node[external,text width=155.235pt,minimum height=0.900cm,font=\fontsize{9}{10.8}\selectfont] (event) at (4.0000,-7.9000) {Change/event do giảng viên giao};
+\node[intermediate,text width=155.235pt,minimum height=1.000cm,font=\fontsize{9}{10.8}\selectfont] (i2) at (12.0000,-7.9000) {Increment 2 đã kiểm thử};
+\node[deliverable,text width=155.235pt,minimum height=1.000cm,font=\fontsize{9}{10.8}\selectfont] (decision) at (4.0000,-10.0000) {Change-impact Analysis\\và Management Decision Record};
+\node[intermediate,text width=155.235pt,minimum height=1.000cm,font=\fontsize{9}{10.8}\selectfont] (i3) at (12.0000,-10.0000) {Increment 3 đã kiểm thử};
+\node[deliverable,text width=155.235pt,minimum height=1.000cm,font=\fontsize{9}{10.8}\selectfont] (evidence) at (20.0000,-10.0000) {Quality/Verification Evidence\\kết quả I1, I2 và I3};
+\node[deliverable,text width=155.235pt,minimum height=0.900cm,font=\fontsize{9}{10.8}\selectfont] (v2) at (4.0000,-12.1000) {Revised Project Baseline V2.0\\nếu được duyệt sửa baseline};
+\node[deliverable,text width=155.235pt,minimum height=1.000cm,font=\fontsize{9}{10.8}\selectfont] (final) at (12.0000,-12.1000) {Final Working Software Product};
+\node[deliverable,text width=155.235pt,minimum height=1.000cm,font=\fontsize{9}{10.8}\selectfont] (repo) at (20.0000,-12.1000) {Source Code Repository\\Instructions for Running};
+\node[deliverable,text width=155.235pt,minimum height=1.200cm,font=\fontsize{9}{10.8}\selectfont] (report) at (4.0000,-15.0000) {Final PM Report\\gồm Closure Plan, Lessons Learned\\và phụ lục cá nhân};
+\node[deliverable,text width=155.235pt,minimum height=0.900cm,font=\fontsize{9}{10.8}\selectfont] (closure) at (12.0000,-15.0000) {Closure/Handover Plan};
+\end{tikzpicture}
+\end{adjustbox}
+\caption{PFD tổng thể của dự án}
+\end{figure}
+
+\noindent Test cases, dữ liệu và mã nguồn được dùng lại/cập nhật qua ba increment. Quality Evidence và logs tích lũy theo từng đợt/tuần. V2.0 chỉ có khi được duyệt sửa baseline. Lessons Learned và reflection là thành phần báo cáo; Closure Plan có trước bản chốt Final PM Report theo PD 2.2.
+\end{landscape}
+\restoregeometry
+
+\newgeometry{margin=1cm,includefoot}
+\begin{landscape}
+\subsection{Derive activities and construct the ideal network}
+Các hoạt động được suy ra từ sản phẩm trong PFD và đặt tên theo dạng động từ + danh từ. Mạng AON xét phụ thuộc logic; checkpoint ở 2.5 và effort cùng phân công sơ bộ ở 2.6. Lịch theo nguồn lực được xây dựng ở 2.10--2.11.
+\subsubsection{Hoạt động kỹ thuật và bàn giao}
+\begin{table}[H]
+\centering
+\caption{Hoạt động kỹ thuật, kiểm thử, tổng kết và bàn giao}
+\small
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\linewidth}{|p{1.2cm}|X|p{8cm}|p{4.2cm}|}
+\hline
+\textbf{Mã} & \textbf{Hoạt động} & \textbf{Sản phẩm/kết quả} & \textbf{Tiền nhiệm/điều kiện} \\ \hline
+A01 & Thiết kế CSDL, giao diện và API & Database Schema; API Specifications; UI/UX Mockups & G01 đã có \\ \hline
+A02 & Xây dựng test case và tiêu chí chấp nhận & Test Cases / Acceptance Criteria & G01 đã có \\ \hline
+A03 & Thiết lập môi trường triển khai & Cấu hình PostgreSQL, email và triển khai & G04, A01 \\ \hline
+A04 & Tạo dữ liệu kiểm thử giả lập & Dữ liệu sinh viên và nghiệp vụ giả lập & A01, A02 \\ \hline
+A05 & Lập trình tài khoản và quản lý sự kiện & Frontend/Backend phiên bản Increment 1 & A03 \\ \hline
+A06 & Kiểm thử và sửa lỗi đợt 1 & Increment 1 đã kiểm thử; Quality Evidence I1 & A04, A05 \\ \hline
+A07 & Lập trình đăng ký/hủy, waitlist và email & Frontend/Backend phiên bản Increment 2 & A06 \\ \hline
+A08 & Kiểm thử và sửa lỗi đợt 2 & Increment 2 đã kiểm thử; Quality Evidence I2 & A07 \\ \hline
+A09 & Lập trình chức năng điểm danh & Phân hệ QR và điểm danh thủ công & A08 \\ \hline
+A10 & Lập trình báo cáo và xuất CSV/Excel & Phân hệ báo cáo và xuất tệp & A08 \\ \hline
+A11 & Tích hợp và triển khai bản nghiệm thu & Release candidate Increment 3 trên Lightsail & A09, A10 \\ \hline
+A12 & Kiểm thử nghiệm thu và sửa lỗi & Increment 3; Final Software; Quality Evidence & A11 \\ \hline
+A13 & Chốt phiên bản mã nguồn bàn giao & Source Code Repository có commit/release tag & A12 \\ \hline
+A14 & Hoàn thiện và xác minh hướng dẫn chạy & Instructions for Running đã xác minh & A13 \\ \hline
+A15 & Phân tích hiệu suất dự án và rút bài học & Phân tích planned-versus-actual; Lessons Learned & A12, G06, G07 \\ \hline
+A16 & Hoàn thiện kế hoạch đóng và bàn giao & Closure/Handover Plan & A14, A15 \\ \hline
+A19 & Hoàn thiện đóng góp cá nhân và diễn tập demo & Contribution/reflection statements; kịch bản demo & A12 \\ \hline
+A18 & Chốt báo cáo quản lý dự án cuối kỳ & Final PM Report, gồm Closure Plan và phụ lục & A16, A19 \\ \hline
+A17 & Bàn giao và trình diễn sản phẩm & Bộ sản phẩm theo PBS; biên bản bàn giao & A18 \\ \hline
+\end{tabularx}
+\end{table}
+
+\noindent A05, A07, A09 và A10 gồm Frontend/Backend, unit test và peer review; A06, A08 và A12 gồm sửa lỗi, retest và Quality Evidence. PM hỗ trợ Backend; BA hỗ trợ UI/Frontend; BE/FE giữ đầu mối kỹ thuật. Phân công ở 2.6 không đổi sản phẩm hoặc phụ thuộc logic. A15 tạo phân tích/bài học; A18 chốt báo cáo sau Closure Plan và reflection.
+\newpage
+\subsubsection{Hoạt động lập kế hoạch và kiểm soát}
+\begin{table}[H]
+\centering
+\caption{Hoạt động lập kế hoạch, theo dõi và quản lý thay đổi}
+\small
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\linewidth}{|p{1.2cm}|X|p{8cm}|p{4.2cm}|}
+\hline
+\textbf{Mã} & \textbf{Hoạt động} & \textbf{Sản phẩm/kết quả} & \textbf{Tiền nhiệm/điều kiện} \\ \hline
+G01 & Ghi nhận và làm rõ yêu cầu khách hàng & Client Interaction Log; phạm vi đã thống nhất & Project brief; đã thực hiện ở Task 1 \\ \hline
+G02 & Xác định và mô tả sản phẩm, phụ thuộc & PBS; PDs; PFD; Activity Network & G01 đã có \\ \hline
+G03 & Ước lượng và lập kế hoạch nguồn lực, rủi ro & Estimates; Risk Register; kế hoạch lịch/chi phí & G02 \\ \hline
+G04 & Tổng hợp và trình duyệt kế hoạch gốc & Project Baseline V1.0 & G03; rà soát và phê duyệt \\ \hline
+G05 & Theo dõi và ghi log tiến độ tuần k & Weekly Project Log tuần k & G04; dữ liệu thực hiện tuần k \\ \hline
+G06 & Rà soát rủi ro và cập nhật trao đổi tuần k & Risk Register; Client Interaction Log cập nhật & G05; vấn đề và trao đổi mới \\ \hline
+G07 & Phân tích tác động thay đổi và ghi quyết định & Change-impact Analysis; Management Decision Record & G04; change/event; hồ sơ hiện có \\ \hline
+G08 & Cập nhật baseline theo quyết định được duyệt & Revised Project Baseline V2.0; lưu cả V1.0 & G07; được duyệt sửa baseline \\ \hline
+\end{tabularx}
+\end{table}
+
+G01 và kết quả Task 1 là đầu vào đã có; các phần đã hoàn thành được kế thừa. G02--G04 hoàn thiện baseline sau các bước lập kế hoạch liên quan. G05 và G06 thực hiện theo tuần; G07 xử lý change/event do giảng viên giao, sử dụng baseline và hồ sơ hiện có. G08 nằm ngoài AON cơ sở, chỉ phát sinh nếu được duyệt sửa baseline. Khi đó bổ sung G08 và các phụ thuộc liên quan vào mạng cập nhật V2.0; A15 sử dụng cả hồ sơ thay đổi đã duyệt.
+
+\noindent Trên AON, hai nút tổng hợp G02--G04 và G05--G07 rút gọn cách trình bày; chi tiết vẫn giữ ở bảng trên. Nút G02--G04 kết thúc tại G04/CP0. G05--G07 không chặn các nhánh lập trình. Khi lập lịch, dùng các hoạt động G chi tiết và giờ công ở 2.6; không cộng thêm giờ cho nút tổng hợp.
+
+\medskip
+\noindent A04 không chặn A05; dữ liệu cần sẵn sàng trước A06. A09 và A10 có thể làm song song trước A11. A14, A15 và A19 có thể chuẩn bị song song khi đầu vào sẵn sàng. Các nút tài liệu cuối kỳ biểu diễn việc hoàn tất; bản nháp có thể được chuẩn bị sớm.
+\newpage
+\subsubsection{Ideal Activity Network (AON)}
+Mũi tên liền biểu diễn phụ thuộc finish-to-start; Start là mốc thời lượng 0. CP đánh dấu review trước khi mở nhánh phụ thuộc (mục 2.5). G01/Task 1 là đầu vào đã có; G08 có điều kiện, nằm ngoài mạng cơ sở.
+\begin{figure}[H]
+\centering
+\begin{adjustbox}{max width=.98\linewidth,max totalheight=.83\textheight}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\draw[flow] (12.7000,0.4000) -- (3.5000,0.4000) -- (3.5000,-3.4000);
+\draw[flow] (13.7000,0.0500) -- (13.7000,-0.4000) -- (10.3000,-0.4000) -- (10.3000,-0.8300);
+\draw[flow] (14.7000,0.4000) -- (23.9000,0.4000) -- (23.9000,-0.8300);
+\draw[flow] (6.1000,-4.0000) -- (7.7000,-4.0000);
+\draw[flow] (3.5000,-4.6000) -- (3.5000,-7.7200);
+\draw[flow] (3.5000,-8.9200) -- (3.5000,-12.1900);
+\draw[flow] (10.3000,-1.7300) -- (10.3000,-3.5500);
+\draw[flow] (12.9000,-1.2800) -- (20.0000,-1.2800) -- (20.0000,-2.8000) -- (22.6000,-2.8000) -- (22.6000,-3.5500);
+\draw[flow] (23.9000,-1.7300) -- (23.9000,-3.5500);
+\draw[flow] (10.3000,-4.4500) -- (10.3000,-4.9900);
+\draw[flow] (23.9000,-4.4500) -- (23.9000,-4.6400) -- (17.1000,-4.6400) -- (17.1000,-4.9900);
+\draw[flow] (12.9000,-5.4400) -- (14.5000,-5.4400);
+\draw[flow] (17.1000,-5.8900) -- (17.1000,-6.4300);
+\draw[flow] (19.7000,-6.8800) -- (21.3000,-6.8800);
+\draw[flow] (22.6000,-7.3300) -- (22.6000,-7.5600) -- (17.1000,-7.5600) -- (17.1000,-7.8700);
+\draw[flow] (23.9000,-7.3300) -- (23.9000,-7.8700);
+\draw[flow] (17.1000,-8.7700) -- (17.1000,-9.0400) -- (19.2000,-9.0400) -- (19.2000,-9.3100);
+\draw[flow] (23.9000,-8.7700) -- (23.9000,-9.0400) -- (21.8000,-9.0400) -- (21.8000,-9.3100);
+\draw[flow] (20.5000,-10.2100) -- (20.5000,-10.7500);
+\draw[flow] (19.2000,-11.6500) -- (19.2000,-11.7600) -- (4.8000,-11.7600) -- (4.8000,-12.1900);
+\draw[flow] (20.5000,-11.6500) -- (20.5000,-11.9600) -- (10.3000,-11.9600) -- (10.3000,-12.1900);
+\draw[flow] (21.8000,-11.6500) -- (21.8000,-11.9600) -- (23.9000,-11.9600) -- (23.9000,-12.1900);
+\draw[flow] (10.3000,-13.0900) -- (10.3000,-13.6300);
+\draw[flow] (7.7000,-14.0800) -- (6.1000,-14.0800);
+\draw[flow] (3.5000,-13.0900) -- (3.5000,-13.6300);
+\draw[flow] (3.5000,-14.5300) -- (3.5000,-14.8000) -- (15.8000,-14.8000) -- (15.8000,-15.0700);
+\draw[flow] (23.9000,-13.0900) -- (23.9000,-14.8000) -- (18.4000,-14.8000) -- (18.4000,-15.0700);
+\draw[flow] (19.7000,-15.5200) -- (21.3000,-15.5200);
+\node[activity,text width=143.854pt,minimum height=1.200cm,font=\fontsize{8.5}{10.2}\selectfont] (plan) at (3.5000,-4.0000) {Hoàn thiện và phê duyệt kế hoạch\\(G02--G04)};
+\node[activity,text width=143.854pt,minimum height=1.200cm,font=\fontsize{8.5}{10.2}\selectfont] (control) at (3.5000,-8.3200) {Theo dõi và kiểm soát dự án\\(G05--G07)};
+\node[activity,text width=143.854pt,minimum height=0.900cm,font=\fontsize{8.5}{10.2}\selectfont] (A01) at (10.3000,-1.2800) {A01 Thiết kế CSDL, API và giao diện};
+\node[activity,text width=143.854pt,minimum height=0.900cm,font=\fontsize{8.5}{10.2}\selectfont] (A02) at (23.9000,-1.2800) {A02 Xây dựng bộ test và tiêu chí};
+\node[activity,text width=143.854pt,minimum height=0.900cm,font=\fontsize{8.5}{10.2}\selectfont] (A03) at (10.3000,-4.0000) {A03 Thiết lập môi trường triển khai};
+\node[activity,text width=143.854pt,minimum height=0.900cm,font=\fontsize{8.5}{10.2}\selectfont] (A04) at (23.9000,-4.0000) {A04 Tạo dữ liệu kiểm thử};
+\node[activity,text width=143.854pt,minimum height=0.900cm,font=\fontsize{8.5}{10.2}\selectfont] (A05) at (10.3000,-5.4400) {A05 Lập trình tài khoản và sự kiện};
+\node[activity,text width=143.854pt,minimum height=0.900cm,font=\fontsize{8.5}{10.2}\selectfont] (A06) at (17.1000,-5.4400) {A06 Kiểm thử và sửa lỗi I1};
+\node[activity,text width=143.854pt,minimum height=0.900cm,font=\fontsize{8.5}{10.2}\selectfont] (A07) at (17.1000,-6.8800) {A07 Lập trình đăng ký, waitlist, email};
+\node[activity,text width=143.854pt,minimum height=0.900cm,font=\fontsize{8.5}{10.2}\selectfont] (A08) at (23.9000,-6.8800) {A08 Kiểm thử và sửa lỗi I2};
+\node[activity,text width=143.854pt,minimum height=0.900cm,font=\fontsize{8.5}{10.2}\selectfont] (A09) at (17.1000,-8.3200) {A09 Lập trình điểm danh QR/thủ công};
+\node[activity,text width=143.854pt,minimum height=0.900cm,font=\fontsize{8.5}{10.2}\selectfont] (A10) at (23.9000,-8.3200) {A10 Lập trình báo cáo và xuất tệp};
+\node[activity,text width=143.854pt,minimum height=0.900cm,font=\fontsize{8.5}{10.2}\selectfont] (A11) at (20.5000,-9.7600) {A11 Tích hợp và triển khai nghiệm thu};
+\node[activity,text width=143.854pt,minimum height=0.900cm,font=\fontsize{8.5}{10.2}\selectfont] (A12) at (20.5000,-11.2000) {A12 Kiểm thử nghiệm thu, sửa lỗi};
+\node[activity,text width=143.854pt,minimum height=0.900cm,font=\fontsize{8.5}{10.2}\selectfont] (A13) at (10.3000,-12.6400) {A13 Chốt mã nguồn bàn giao};
+\node[activity,text width=143.854pt,minimum height=0.900cm,font=\fontsize{8.5}{10.2}\selectfont] (A15) at (3.5000,-12.6400) {A15 Phân tích hiệu suất, rút bài học};
+\node[activity,text width=143.854pt,minimum height=0.900cm,font=\fontsize{8.5}{10.2}\selectfont] (A19) at (23.9000,-12.6400) {A19 Hoàn thiện reflection, diễn tập};
+\node[activity,text width=143.854pt,minimum height=0.900cm,font=\fontsize{8.5}{10.2}\selectfont] (A14) at (10.3000,-14.0800) {A14 Xác minh hướng dẫn chạy};
+\node[activity,text width=143.854pt,minimum height=0.900cm,font=\fontsize{8.5}{10.2}\selectfont] (A16) at (3.5000,-14.0800) {A16 Hoàn thiện kế hoạch đóng};
+\node[activity,text width=143.854pt,minimum height=0.900cm,font=\fontsize{8.5}{10.2}\selectfont] (A18) at (17.1000,-15.5200) {A18 Chốt báo cáo quản lý dự án};
+\node[activity,text width=143.854pt,minimum height=0.900cm,font=\fontsize{8.5}{10.2}\selectfont] (A17) at (23.9000,-15.5200) {A17 Bàn giao và trình diễn sản phẩm};
+\node[activity,minimum width=2cm,text width=42.5pt,minimum height=0.700cm,font=\fontsize{8.5}{10.2}\selectfont] (start) at (13.7000,0.4000) {Start};
+
+\node[anchor=south east,fill=white,draw=black!65,inner sep=1pt,font=\fontsize{7}{8}\selectfont] at (plan.north east) {CP0};
+\node[anchor=south east,fill=white,draw=black!65,inner sep=1pt,font=\fontsize{7}{8}\selectfont] at (A01.north east) {CPD};
+\node[anchor=south east,fill=white,draw=black!65,inner sep=1pt,font=\fontsize{7}{8}\selectfont] at (A06.north east) {CP1};
+\node[anchor=south east,fill=white,draw=black!65,inner sep=1pt,font=\fontsize{7}{8}\selectfont] at (A08.north east) {CP2};
+\node[anchor=south east,fill=white,draw=black!65,inner sep=1pt,font=\fontsize{7}{8}\selectfont] at (A11.north east) {CP3};
+\node[anchor=south east,fill=white,draw=black!65,inner sep=1pt,font=\fontsize{7}{8}\selectfont] at (A12.north east) {CP4};
+\node[anchor=south east,fill=white,draw=black!65,inner sep=1pt,font=\fontsize{7}{8}\selectfont] at (A18.north east) {CP5};
+\node[anchor=south east,fill=white,draw=black!65,inner sep=1pt,font=\fontsize{7}{8}\selectfont] at (A17.north east) {CP6};
+\end{tikzpicture}
+\end{adjustbox}
+\caption{Mạng AON cơ sở cho các hoạt động dự kiến thực hiện}
+\end{figure}
+
+\noindent G05--G07 diễn ra xuyên suốt giai đoạn thực hiện; A15 dùng hồ sơ đến thời điểm tổng kết. Sửa lỗi/retest nằm trong hoạt động kiểm thử tương ứng.
+\end{landscape}
+\restoregeometry
+
+\clearpage
+\newgeometry{margin=1cm,includefoot}
+\begin{landscape}
+\subsection{Add appropriate checkpoints}
+Các checkpoint được gắn vào AON ở mục 2.4 và dùng chung mã hoạt động. Vị trí kiểm tra được xác định theo hoạt động đầu vào và hoạt động phụ thuộc. Mốc CP có thời lượng bằng 0; công sức chuẩn bị, review, sửa và kiểm tra lại nằm trong các hoạt động tương ứng. Thời gian chờ phê duyệt có thể làm tăng elapsed time.
+\subsubsection{Checkpoint lập kế hoạch và các increment đầu}
+\begin{table}[H]
+\centering
+\caption{Checkpoint từ baseline đến Increment 2}
+\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\linewidth}{|p{1cm}|p{3.1cm}|>{\raggedright\arraybackslash}X|p{5cm}|p{5.5cm}|}
+\hline
+\textbf{Mã} & \textbf{Vị trí trong AON} & \textbf{Nội dung và điều kiện đạt} & \textbf{Người review/phê duyệt} & \textbf{Nếu chưa đạt} \\ \hline
+CP0 & Sau G04, trước A03 & Bộ kế hoạch Task 2 hoàn chỉnh, PBS/PD/PFD/AON khớp; effort khác duration; có rủi ro, nguồn lực, lịch và chất lượng để chốt V1.0 sau Task 2.12. & PM tổ chức; nhóm review; đại diện khách hàng phê duyệt theo thẩm quyền ở Task 1.5. & Sửa mâu thuẫn, hoàn thiện mục thiếu và trình lại. Chưa ghi approved hoặc mở A03; các nhánh thiết kế/test độc lập vẫn tiếp tục. \\ \hline
+CPD & Sau A01, trước A03/A04 & ERD/DDL, API và UI thống nhất với MVP; đủ trường, vai trò và quy tắc dữ liệu cần thiết; có nhận xét review thiết kế. & BA, FE và QA review chéo theo phần phụ trách; người tạo giải trình và sửa. Thay đổi scope/acceptance trình khách hàng. & Sửa thiết kế và review lại trước công việc phụ thuộc. Bộ test được review trong A02 trước khi dùng ở A04/A06. \\ \hline
+CP1 & Sau A06, trước A07 & I1 chạy được tài khoản/phân quyền và tạo/tìm/xem sự kiện; TC I1 đạt, không còn lỗi nghiêm trọng chặn luồng chính. Có test log/build, biên bản demo và ghi nhận phản hồi khách hàng. & QA kiểm chứng, BA đối chiếu nghiệp vụ; PM demo I1 cho giảng viên/đại diện khách hàng và tổng hợp phản hồi. PM điều phối chuyển increment. & Ghi lỗi, sửa và kiểm thử lại trong A06. Đánh giá tác động phản hồi trước khi điều chỉnh; thay đổi phạm vi hoặc tiêu chí nghiệm thu phải trình duyệt theo Task 1.5. \\ \hline
+CP2 & Sau A08, trước A09/A10 & I2 đạt đăng ký/hủy, sức chứa, FIFO waitlist và email đã thống nhất; test trùng/đồng thời và regression I1 đạt; có evidence. & QA và BA xác minh nghiệp vụ; BE review đăng ký/email của PM. PM điều phối chuyển increment dựa trên kết quả kiểm tra; quy tắc chưa rõ trình khách hàng. & Sửa và kiểm thử lại ở A08; phân tích ảnh hưởng tiến độ. Không tự bỏ chức năng core hoặc đổi tiêu chí để cho qua. \\ \hline
+\end{tabularx}
+\end{table}
+
+\noindent CP0 chỉ được thông qua sau khi hoàn tất các bước liên quan đến Task 2.12. Người tạo không tự phê duyệt phần mình viết: BE review Backend của PM; FE review UI của BA; QA review seed và kiểm thử độc lập. PM điều phối checkpoint dựa trên evidence; khách hàng giữ thẩm quyền nghiệm thu theo Task 1.5.
+
+\medskip
+\noindent Nhóm dự kiến demo I1 tại CP1 trong một buổi họp G05. PM và BA lưu phản hồi vào Client Interaction Log; lỗi thuộc phạm vi đã thống nhất được xử lý trong hoạt động kiểm thử tương ứng. Phản hồi làm thay đổi phạm vi, tiêu chí nghiệm thu hoặc baseline được phân tích và trình duyệt trước khi thực hiện. Lịch demo và thời điểm phản hồi được thống nhất với đại diện khách hàng.
+\newpage
+\subsubsection{Checkpoint nghiệm thu, hồ sơ và bàn giao}
+\begin{table}[H]
+\centering
+\caption{Checkpoint từ tích hợp đến đóng dự án}
+\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\linewidth}{|p{1cm}|p{3.1cm}|>{\raggedright\arraybackslash}X|p{5cm}|p{5.5cm}|}
+\hline
+\textbf{Mã} & \textbf{Vị trí trong AON} & \textbf{Nội dung và điều kiện đạt} & \textbf{Người review/phê duyệt} & \textbf{Nếu chưa đạt} \\ \hline
+CP3 & Sau A11, trước A12 & Candidate I3 đã tích hợp QR/thủ công, báo cáo và CSV/Excel; chạy được trên Lightsail; smoke test và thử khôi phục có bằng chứng. & BE/FE trình candidate; QA kiểm tra triển khai/khôi phục; PM theo dõi readiness. & Sửa lỗi tích hợp/cấu hình ở A11 và chạy lại kiểm tra. Chưa đưa candidate lỗi sang nghiệm thu chính thức. \\ \hline
+CP4 & Sau A12, trước A13/A15/A19 & Đạt toàn bộ TC nghiệm thu core, không còn lỗi nghiêm trọng làm gián đoạn; Quality Evidence xác định build và kết quả đo mục tiêu theo scope/PDs. & QA báo cáo, BA xác minh, PM điều phối; đại diện khách hàng xác nhận nghiệm thu theo Task 1.5. & Ghi điều kiện chưa đạt, sửa và retest ở A12. Chưa đánh dấu accepted; kết quả mục tiêu chưa đạt phải báo cáo trung thực, không tự đổi target. \\ \hline
+CP5 & Sau A18, trước A17 & Đã chốt repo/tag; người khác chạy được Instructions; có Closure Plan, Lessons Learned, đối chiếu planned/actual và statement cá nhân; hồ sơ đúng release. & QA xác minh chạy độc lập; PM kiểm tra hồ sơ; nhóm review chéo. Khách hàng quyết định các điều kiện bàn giao thuộc thẩm quyền. & Hoàn thiện mục thiếu. Nếu còn tồn đọng, ghi phạm vi, người xử lý và cách giải quyết được chấp thuận; không ghi chưa hoàn thành thành done. \\ \hline
+CP6 & Sau A17 & Demo end-to-end và bàn giao đủ hồ sơ; phân biệt completed/partial/deferred/removed scope; có biên bản và minh chứng đóng góp/viva. & Giảng viên/đại diện nghiệm thu đánh giá theo thẩm quyền; PM ghi nhận kết quả; cả nhóm giải trình. & Ghi nhận điểm chưa đạt và quyết định xử lý được phép. Chỉ đóng khi điều kiện nghiệm thu/bàn giao được xác nhận; không tự kéo deadline. \\ \hline
+\end{tabularx}
+\end{table}
+
+\noindent Mỗi lần review ghi ngày, sản phẩm/build, người review, kết quả, vấn đề và liên kết evidence. Khi chưa đạt, chỉ giữ lại nhánh phụ thuộc bị ảnh hưởng; sửa và retest nằm trong hoạt động hiện tại, không vẽ vòng lặp trên AON. Phần sửa vượt ước lượng phải được đánh giá lại.
+
+\medskip
+\noindent Với thay đổi: G07 phân tích và ghi quyết định; PM trình người có thẩm quyền theo Task 1.5. G08 nằm ngoài mạng cơ sở, chỉ mở khi được duyệt sửa baseline; khi đó cập nhật AON, ước lượng và lịch bị ảnh hưởng, lưu V1.0 để đối chiếu V2.0. Nếu phải sửa phần mềm, bổ sung hoạt động/effort tương ứng; 4h G08 chỉ dành cho cập nhật hồ sơ.
+\end{landscape}
+\restoregeometry
+
+\clearpage
+\newgeometry{margin=2cm,includefoot}
+\subsection{Carry out bottom-up effort estimates}
+\subsubsection{Phạm vi, giả định và phương pháp}
+Nhóm ước lượng phần việc còn lại từ hoàn thiện kế hoạch đến bàn giao trong 5 tuần. G01/Task 1 được kế thừa; G02 chỉ tính phần rà soát còn lại. Các số liệu là giờ công kế hoạch, được đối chiếu với số liệu thực tế trong giai đoạn thực hiện.
+\begin{itemize}[leftmargin=*,nosep]
+\item Nhóm có 5 thành viên với vai trò chính PM, BA, BE, FE, QA. PM hỗ trợ Backend 28h; BA hỗ trợ UI/Frontend 15h. Mỗi phần việc được tính một lần vào tải của người thực hiện.
+\item Phạm vi gồm MVP với ba increment; sử dụng Angular, Spring Boot, PostgreSQL, Lightsail và dữ liệu giả lập; không tích hợp MyBK.
+\item Giả định PM có nền tảng Spring Boot và BA có thể lập trình UI/Angular. Giờ lập trình gồm unit test/review; kiểm thử gồm một vòng sửa lỗi và kiểm thử lại. Thời gian học thêm đáng kể hoặc làm lại cần được ước lượng bổ sung.
+\item G05/G06 bao quát 5 chu kỳ cập nhật tuần; G07 tính một change/event của giảng viên. G08 là công việc có điều kiện, chỉ cập nhật baseline.
+\end{itemize}
+
+Nhóm sử dụng \textbf{bottom-up kết hợp nhận định kỹ thuật}: tách hoạt động thành phần việc có đầu ra và người thực hiện, ước lượng từng phần rồi cộng lên. Các phần việc kỹ thuật thường từ 0,5 đến 8h/người; G05/G06 cộng nhiều lần thực hiện. Người thực hiện rà soát giả định trước khi chốt baseline.
+\[
+E_{a}=\sum_{j=1}^{n_a}h_{aj},\qquad
+E_{\mathrm{base}}=\sum_{a\in\mathcal B}E_a.
+\]
+Trong đó $h_{aj}$ là giờ công của phần việc nhỏ $j$ thuộc hoạt động $a$; $\mathcal B$ gồm G02--G07 và A01--A19. G01 và G08 không thuộc tổng cơ sở.
+
+Ví dụ A07: PM $(6+4)$h + BA 3h + BE $(8+2)$h + FE $(8+6+2)$h + QA 3h = \textbf{42 giờ công}.
+
+\subsubsection{Phân biệt effort và elapsed time}
+\begin{table}[H]
+\centering
+\caption{So sánh effort và elapsed time}
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{|p{1.55cm}|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|}
+\hline
+\textbf{Nội dung} & \textbf{Effort (công sức)} & \textbf{Elapsed time (thời gian lịch)} \\ \hline
+Khái niệm & Tổng công sức của các thành viên để hoàn thành hoạt động. & Khoảng thời gian từ lúc bắt đầu đến khi kết thúc hoạt động. \\ \hline
+Đơn vị & Giờ công (person-hours). & Giờ, ngày hoặc tuần theo lịch đã xác định. \\ \hline
+Cách xác định & Cộng giờ của từng phần việc và người thực hiện. & Xét thời gian tham gia, phụ thuộc, khả năng làm song song và thời gian chờ. \\ \hline
+Ví dụ A17 & 5 người cùng demo 1h: tổng 5 giờ công. & Nếu cùng tham gia trong một buổi, thời lượng là 1h. \\ \hline
+Ví dụ A07 & Tổng 42 giờ công; riêng FE có 16h. & FE dành 4h/ngày thì phần FE cần ít nhất 4 ngày làm việc; toàn A07 còn phụ thuộc tích hợp/review. \\ \hline
+\end{tabularx}
+\end{table}
+
+\newgeometry{margin=1cm,includefoot}
+\begin{landscape}
+\subsubsection{Ước lượng các hoạt động kỹ thuật và bàn giao}
+\begin{table}[H]
+\centering
+\caption{Bottom-up từ thiết kế đến phát triển Increment 3}
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\linewidth}{|p{1.1cm}|p{5.3cm}|>{\raggedright\arraybackslash}X|p{1.25cm}|}
+\hline
+\textbf{Mã} & \textbf{Hoạt động} & \textbf{Phần việc nhỏ và giờ công ước lượng} & \textbf{Tổng (h)} \\ \hline
+A01 & Thiết kế CSDL, giao diện và API & \textbf{BA}: chốt quy tắc dữ liệu và phân quyền 2h + thiết kế mockups ba vai trò 5h; \textbf{BE}: thiết kế ERD/DDL 3h + đặc tả API 3h; \textbf{FE}: review mockups và tính khả thi UI 1h; \textbf{QA}: review tính kiểm thử của thiết kế 2h. & 16 \\ \hline
+A02 & Xây dựng test case và tiêu chí chấp nhận & \textbf{BA}: viết acceptance criteria và expected 4h; \textbf{QA}: viết test cases ba increment 6h + review độ phủ và phép đo mục tiêu 2h. & 12 \\ \hline
+A03 & Thiết lập môi trường triển khai & \textbf{PM}: cấu hình dịch vụ email và biến môi trường liên quan 2h; \textbf{BE}: cấu hình DB, triển khai và đối chiếu cấu hình 3h; \textbf{FE}: cấu hình build/kết nối API 1h; \textbf{QA}: chạy smoke test môi trường 2h. & 8 \\ \hline
+A04 & Tạo dữ liệu kiểm thử giả lập & \textbf{PM}: viết và tự kiểm tra seed dữ liệu giả lập 2h; \textbf{BA}: xác định dữ liệu và expected 2h; \textbf{QA}: review seed, kiểm tra dữ liệu và ca biên 3h. & 7 \\ \hline
+A05 & Lập trình tài khoản và quản lý sự kiện & \textbf{PM}: lập trình quản lý sự kiện và unit test phần phụ trách 6h; \textbf{BA}: làm rõ luồng I1 2h + lập trình UI tài khoản/phân quyền và unit test 6h; \textbf{BE}: lập trình tài khoản/RBAC 8h + unit test và code review 2h; \textbf{FE}: lập trình UI sự kiện, tìm/xem 8h + unit test, tích hợp và code review UI 2h; \textbf{QA}: rà soát luồng và bộ test I1 2h. & 36 \\ \hline
+A06 & Kiểm thử và sửa lỗi đợt 1 & \textbf{BA}: review nghiệp vụ I1 1h; \textbf{BE}: sửa lỗi và retest Backend I1 2h; \textbf{FE}: sửa lỗi và retest Frontend I1 2h; \textbf{QA}: chạy test I1 và lưu evidence 5h. & 10 \\ \hline
+A07 & Lập trình đăng ký/hủy, waitlist và email & \textbf{PM}: lập trình đăng ký/hủy và unit test phần phụ trách 6h + tích hợp email và unit test phần phụ trách 4h; \textbf{BA}: chốt quy tắc đăng ký, FIFO và email 3h; \textbf{BE}: xử lý sức chứa, waitlist và đồng thời 8h + unit test và code review 2h; \textbf{FE}: lập trình UI đăng ký/hủy 8h + hiển thị trạng thái, waitlist và lỗi 6h + unit test và code review 2h; \textbf{QA}: chuẩn bị ca đồng thời và email 3h. & 42 \\ \hline
+A08 & Kiểm thử và sửa lỗi đợt 2 & \textbf{BA}: review quy tắc I2 1h; \textbf{BE}: sửa lỗi và retest Backend I2 3h; \textbf{FE}: sửa lỗi và retest Frontend I2 3h; \textbf{QA}: test I2, regression I1 và lưu evidence 6h. & 13 \\ \hline
+A09 & Lập trình chức năng điểm danh & \textbf{PM}: lập trình điểm danh thủ công và unit test phần phụ trách 4h; \textbf{BA}: làm rõ QR và dự phòng thủ công 2h; \textbf{BE}: lập trình xác thực và ghi nhận QR 4h + unit test và code review 2h; \textbf{FE}: lập trình UI điểm danh 6h + unit test và code review 2h; \textbf{QA}: kiểm tra ca QR lỗi và phân quyền 2h. & 22 \\ \hline
+A10 & Lập trình báo cáo và xuất CSV/Excel & \textbf{PM}: lập trình xuất CSV/Excel và unit test phần phụ trách 4h; \textbf{BA}: xác định công thức và expected báo cáo 2h + lập trình UI báo cáo/tải tệp và unit test 4h; \textbf{BE}: lập trình truy vấn báo cáo 2h + unit test và code review 2h; \textbf{FE}: tích hợp, unit test và code review UI báo cáo 2h; \textbf{QA}: đối chiếu báo cáo và tệp xuất 2h. & 18 \\ \hline
+\multicolumn{3}{|r|}{\textbf{Cộng các dòng trên}} & \textbf{184} \\ \hline
+\end{tabularx}
+\end{table}
+
+\noindent Đơn vị: giờ công (person-hours). Nhãn thành viên dùng vai trò chính. BE review Backend của PM; FE review UI của BA trong giờ review đã dự toán. QA kiểm thử độc lập. A06/A08 bổ sung kiểm thử tích hợp/nghiệp vụ, không tính lại unit test ở A05/A07.
+\newpage
+\begin{table}[H]
+\centering
+\caption{Bottom-up từ tích hợp đến nghiệm thu và bàn giao}
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\linewidth}{|p{1.1cm}|p{5.3cm}|>{\raggedright\arraybackslash}X|p{1.25cm}|}
+\hline
+\textbf{Mã} & \textbf{Hoạt động} & \textbf{Phần việc nhỏ và giờ công ước lượng} & \textbf{Tổng (h)} \\ \hline
+A11 & Tích hợp và triển khai bản nghiệm thu & \textbf{BE}: tích hợp, migration và triển khai 3h; \textbf{FE}: build và cấu hình Frontend 2h; \textbf{QA}: smoke test và thử khôi phục 2h. & 7 \\ \hline
+A12 & Kiểm thử nghiệm thu và sửa lỗi & \textbf{PM}: điều phối nghiệm thu 1h; \textbf{BA}: xác minh tiêu chí và đo mục tiêu 4h; \textbf{BE}: sửa lỗi tích hợp và retest Backend 4h; \textbf{FE}: sửa lỗi tích hợp và retest Frontend 3h; \textbf{QA}: chạy end-to-end/regression 6h + đo mục tiêu, review và chốt evidence 4h. & 22 \\ \hline
+A13 & Chốt phiên bản mã nguồn bàn giao & \textbf{BE}: chốt commit/release tag 1h; \textbf{FE}: đối chiếu build Frontend 0,5h; \textbf{QA}: đối chiếu tag và evidence 0,5h. & 2 \\ \hline
+A14 & Hoàn thiện và xác minh hướng dẫn chạy & \textbf{BA}: rà soát hướng dẫn nghiệp vụ/demo 1h; \textbf{BE}: hoàn thiện hướng dẫn Backend/seed 1h; \textbf{FE}: hoàn thiện hướng dẫn Frontend 1h; \textbf{QA}: xác minh cài/chạy độc lập 2h. & 5 \\ \hline
+A15 & Phân tích hiệu suất dự án và rút bài học & \textbf{PM}: phân tích kế hoạch so với thực tế 3h; \textbf{BA}: đánh giá mục tiêu và bài học 2h; \textbf{BE}: đóng góp bài học Backend 0,5h; \textbf{FE}: đóng góp bài học Frontend 0,5h; \textbf{QA}: kiểm tra số liệu và bài học chất lượng 2h. & 8 \\ \hline
+A16 & Hoàn thiện kế hoạch đóng và bàn giao & \textbf{PM}: lập closure/handover checklist 2h; \textbf{BA}: kiểm tra phạm vi bàn giao 1h; \textbf{BE}: ghi nhận tồn đọng Backend 0,5h; \textbf{FE}: ghi nhận tồn đọng Frontend 0,5h; \textbf{QA}: review điều kiện bàn giao 1h. & 5 \\ \hline
+A19 & Hoàn thiện đóng góp cá nhân và diễn tập demo & \textbf{PM}: hoàn thiện reflection và diễn tập phần cá nhân 1h; \textbf{BA}: hoàn thiện reflection và diễn tập phần cá nhân 1h; \textbf{BE}: hoàn thiện reflection và diễn tập phần cá nhân 1h; \textbf{FE}: hoàn thiện reflection và diễn tập phần cá nhân 1h; \textbf{QA}: hoàn thiện reflection và diễn tập phần cá nhân 1h. & 5 \\ \hline
+A18 & Chốt báo cáo quản lý dự án cuối kỳ & \textbf{PM}: tổng hợp và chốt báo cáo 3h; \textbf{BA}: đối chiếu mục tiêu và phụ lục 2h; \textbf{BE}: review nội dung kỹ thuật Backend 0,5h; \textbf{FE}: review nội dung kỹ thuật Frontend 0,5h; \textbf{QA}: kiểm tra số liệu và liên kết evidence 1h. & 7 \\ \hline
+A17 & Bàn giao và trình diễn sản phẩm & \textbf{PM}: tham gia demo và bàn giao 1h; \textbf{BA}: tham gia demo và bàn giao 1h; \textbf{BE}: tham gia demo và bàn giao 1h; \textbf{FE}: tham gia demo và bàn giao 1h; \textbf{QA}: tham gia demo và bàn giao 1h. & 5 \\ \hline
+\multicolumn{3}{|r|}{\textbf{Cộng các dòng trên}} & \textbf{66} \\ \hline
+\end{tabularx}
+\end{table}
+
+\noindent Các giờ review checkpoint đã nằm trong hoạt động: CPD ở A01; CP1/CP2 ở A06/A08; CP3 ở A11; CP4 ở A12; CP5 ở A14/A18; CP6 ở A17. PM theo dõi các checkpoint trong G05 hoặc hoạt động điều phối tương ứng, không cộng thêm một khoản họp trùng lặp. Nội dung báo cáo/hướng dẫn có thể soạn nháp sớm; các nút ở 2.4 biểu diễn việc chốt sản phẩm.
+\newpage
+\subsubsection{Ước lượng quản lý, công việc lặp và điều kiện}
+\begin{table}[H]
+\centering
+\caption{Bottom-up cho công việc lập kế hoạch và kiểm soát}
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\linewidth}{|p{1.1cm}|p{5.3cm}|>{\raggedright\arraybackslash}X|p{1.25cm}|}
+\hline
+\textbf{Mã} & \textbf{Hoạt động} & \textbf{Phần việc nhỏ và giờ công ước lượng} & \textbf{Tổng (h)} \\ \hline
+G02 & Xác định và mô tả sản phẩm, phụ thuộc & \textbf{PM}: rà soát cấu trúc và liên kết sản phẩm 3h; \textbf{BA}: đối chiếu scope và PDs 3h; \textbf{BE}: review sản phẩm kỹ thuật 1h; \textbf{FE}: review UI và bàn giao 1h; \textbf{QA}: review tiêu chí chất lượng, truy vết 2h. & 10 \\ \hline
+G03 & Ước lượng và lập kế hoạch nguồn lực, rủi ro & \textbf{PM}: tổng hợp estimate, rủi ro, nguồn lực và lịch 5h; \textbf{BA}: rà soát giả định phạm vi 2h; \textbf{BE}: ước lượng và kiểm tra tải Backend 1h; \textbf{FE}: ước lượng và kiểm tra tải Frontend 1h; \textbf{QA}: rà soát kiểm thử và đáp ứng rủi ro 2h. & 11 \\ \hline
+G04 & Tổng hợp và trình duyệt kế hoạch gốc & \textbf{PM}: chuẩn bị hồ sơ và trình duyệt 2h; \textbf{BA}: review/phê duyệt nội bộ 0,5h; \textbf{BE}: review/phê duyệt nội bộ 0,5h; \textbf{FE}: review/phê duyệt nội bộ 0,5h; \textbf{QA}: review/phê duyệt nội bộ 0,5h. & 4 \\ \hline
+G05 & Theo dõi và ghi log tiến độ tuần k & \textbf{PM}: 10 buổi họp và hoàn thiện 5 log 10h; \textbf{BA}: tham gia 10 buổi họp và cập nhật tiến độ 5h; \textbf{BE}: tham gia 10 buổi họp và cập nhật tiến độ 5h; \textbf{FE}: tham gia 10 buổi họp và cập nhật tiến độ 5h; \textbf{QA}: tham gia 10 buổi họp và cập nhật tiến độ 5h. & 30 \\ \hline
+G06 & Rà soát rủi ro và cập nhật trao đổi tuần k & \textbf{PM}: tổng hợp rủi ro/trao đổi trong 5 tuần 3h; \textbf{BA}: theo dõi phản hồi và tác động scope 3h; \textbf{BE}: cập nhật rủi ro Backend 0,5h; \textbf{FE}: cập nhật rủi ro Frontend 0,5h; \textbf{QA}: cập nhật rủi ro chất lượng 0,5h. & 7,5 \\ \hline
+G07 & Phân tích tác động thay đổi và ghi quyết định & \textbf{PM}: so sánh phương án và ghi quyết định 3h; \textbf{BA}: phân tích tác động scope 2h; \textbf{BE}: phân tích tác động Backend 1h; \textbf{FE}: phân tích tác động Frontend 1h; \textbf{QA}: phân tích tác động kiểm thử 1h. & 8 \\ \hline
+\multicolumn{3}{|r|}{\textbf{Cộng các dòng trên}} & \textbf{70,5} \\ \hline
+\end{tabularx}
+\end{table}
+
+\noindent G05 = 5 chu kỳ $\times$ (5 người $\times$ 2 buổi $\times$ 0,5h họp + PM 1h hoàn thiện log) = 30h, theo tần suất ở Task 1.7.3. Một trong 10 buổi được dùng để demo I1 và ghi nhận phản hồi tại CP1; giả định buổi này nằm trong 30 phút đã dự toán. Người ghi biên bản luân phiên; PM tổng hợp log. G06 = 3h PM + 3h BA + 0,5h BE + 0,5h FE + 0,5h QA = 7,5h, gồm cập nhật risk/client log ngoài buổi họp. Nếu trao đổi vượt giả định hoặc phát sinh sửa đổi lớn, nhóm đánh giá lại effort. G07 chưa gồm triển khai thay đổi mới.
+
+\medskip
+\noindent \textbf{G01:} kế thừa, không tính lại effort đã thực hiện. \textbf{G08:} 2h PM cập nhật/lưu baseline + 2h FE hỗ trợ sơ đồ/lịch/tài liệu = \textbf{4h có điều kiện}, tách khỏi tổng cơ sở.
+\newpage
+\subsubsection{Tổng hợp công sức theo thành viên}
+Tổng kỹ thuật/bàn giao A01--A19 = \textbf{250h}; tổng quản lý G02--G07 = \textbf{70,5h}. Do đó $E_{\mathrm{base}}=320{,}5$ giờ công; nếu kích hoạt G08, tổng là $324{,}5$ giờ công. Ước lượng đáp ứng rủi ro được bổ sung ở 2.8--2.9. Bảng dưới tổng hợp công việc chính và kiêm nhiệm của cùng một thành viên.
+
+PM hỗ trợ Backend ở A03 2h, A04 2h, A05 6h, A07 10h, A09 4h và A10 4h, tổng \textbf{28h}. BA hỗ trợ UI/Frontend ở A01 5h, A05 6h và A10 4h, tổng \textbf{15h}. BE/FE giữ đầu mối kỹ thuật và kiểm duyệt phần mã được hỗ trợ; QA kiểm thử độc lập.
+
+Dự toán 480h ở Task 1.3 bao quát sơ bộ toàn dự án; 320,5h ở đây là ước lượng chi tiết phần việc còn lại. Chênh lệch giữa hai phạm vi không được xem là giờ công thực tế đã thực hiện. Việc đối chiếu sử dụng các bản kế hoạch đã lưu và dữ liệu thực tế khi có.
+
+\begin{table}[H]
+\centering
+\caption{Tổng hợp giờ công theo thành viên}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\linewidth}{|p{3.8cm}|X|X|X|}
+\hline
+\textbf{Thành viên (vai trò chính)} & \textbf{Cơ sở (giờ công)} & \textbf{G08 nếu có (giờ công)} & \textbf{Tổng khi có G08 (giờ công)} \\ \hline
+PM (kiêm Backend) & 65 & 2 & 67 \\ \hline
+BA (kiêm UI/Frontend) & 61,5 & 0 & 61,5 \\ \hline
+BE & 65,5 & 0 & 65,5 \\ \hline
+FE & 62 & 2 & 64 \\ \hline
+QA & 66,5 & 0 & 66,5 \\ \hline
+
+\textbf{Tổng} & \textbf{320,5} & \textbf{4} & \textbf{324,5} \\ \hline
+\end{tabularx}
+\end{table}
+\noindent Effort cơ sở mỗi người từ 61,5h đến 66,5h. Ở 2.10--2.11, phân lịch theo từng người, cộng cả vai trò chính và kiêm nhiệm; không phân hai việc trùng thời điểm cho cùng người. A09/A10 song song về logic, còn lịch khả thi phải xét availability, năng lực và thời gian chờ review/phê duyệt.
+
+\medskip
+\noindent Các ước lượng sẽ được rà soát khi có dữ liệu thực tế; bản baseline đã duyệt được giữ lại để đối chiếu.
+\end{landscape}
+\restoregeometry
+\end{document}

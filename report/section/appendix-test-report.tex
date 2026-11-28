@@ -1,0 +1,101 @@
+\section{Test Report}
+\label{sec:test-report}
+
+Phụ lục này là báo cáo kiểm thử của dự án, đáp ứng tiêu chí ``có test report theo phiên bản; sai lệch được xử lý hoặc có quyết định chấp nhận'' của hoạt động A06 và các hoạt động kiểm thử sau đó (A08, A12). Mỗi đợt kiểm thử gắn với một phiên bản mã nguồn cụ thể (mã commit) để có thể chạy lại và đối chiếu.
+
+\subsection{Môi trường và công cụ}
+
+\begin{table}[H]
+\centering\small
+\caption{Môi trường và công cụ kiểm thử}\label{tab:tr-env}
+\begin{tabularx}{\linewidth}{@{}p{.24\linewidth}X@{}}
+\toprule
+\textbf{Thành phần} & \textbf{Mô tả}\\\midrule
+Môi trường local & Docker Compose: Angular, Spring Boot (Java 21), PostgreSQL 17; múi giờ Asia/Ho\_Chi\_Minh.\\
+Database kiểm thử & Mỗi bộ kiểm thử tích hợp chạy trên một database tạm riêng, tạo mới mỗi lần chạy; không ảnh hưởng dữ liệu phát triển.\\
+Unit test & JUnit, chạy khi build backend.\\
+Kiểm thử tích hợp & Gọi API qua HTTP thật tới backend và PostgreSQL thật; dịch vụ email giả lập để không gửi thư tới người thật.\\
+Kiểm thử giao diện & Playwright trên trình duyệt Edge (desktop và màn hình 390 px); các nhóm kiểm thử giao diện với API giả lập.\\
+Môi trường cloud & Vercel (giao diện), Render (backend), Neon (database), truy cập qua HTTPS.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Tổng hợp các đợt kiểm thử}
+
+\begingroup\footnotesize
+\renewcommand{\arraystretch}{1.18}
+\begin{longtable}{@{}p{.07\linewidth}p{.08\linewidth}p{.11\linewidth}p{.17\linewidth}p{.38\linewidth}p{.11\linewidth}@{}}
+\caption{Các đợt kiểm thử theo phiên bản}\label{tab:tr-runs}\\
+\toprule
+\textbf{Mã} & \textbf{Ngày} & \textbf{Phiên bản} & \textbf{Đợt / phạm vi} & \textbf{Kết quả} & \textbf{Kết luận}\\\midrule\endfirsthead
+\toprule
+\textbf{Mã} & \textbf{Ngày} & \textbf{Phiên bản} & \textbf{Đợt / phạm vi} & \textbf{Kết quả} & \textbf{Kết luận}\\\midrule\endhead
+\midrule\multicolumn{6}{r}{\textit{Còn tiếp}}\\\endfoot
+\bottomrule\endlastfoot
+TR-01 & 03/11 & \texttt{b57b1aa} & Smoke test môi trường (A03) & Giao diện, backend, database kết nối được; schema đủ 15 bảng. & Đạt\\
+TR-02 & 04/11 & \texttt{bf9cc50} & Tự kiểm thử I1 (BE) & 17 unit test đạt; kiểm thử tích hợp tài khoản, phân quyền, quản lý và tra cứu sự kiện đạt. & Đạt\\
+TR-03 & 07/11 & \texttt{aa2494d} & Regression I1 (QA, A06, CP1) & 209 kịch bản (136 API, 71 giao diện, 2 bước chuẩn bị): 208 đạt, 1 tạm bỏ qua; 1 ca được đánh dấu lỗi dự kiến. & Đạt có điều kiện (SL-01, SL-02)\\
+TR-04 & 12/11 & \texttt{43f8c4c} & Backend I2 và regression I1 (A08, CP2) & 29 unit test đạt; kiểm thử tích hợp I2 đạt (đăng ký đồng thời, hủy và đôn chờ, toàn vẹn transaction, email); regression I1 đạt. & Đạt\\
+TR-05 & 18/11 & \texttt{1b99579} & Backend I3, rà soát bảo mật QR, regression I1--I2 & 43 unit test đạt; kiểm thử tích hợp I3 đạt (xem trước không ghi, xác nhận cũ bị từ chối, phiên hết hạn đúng lúc ghi); migration chạy lặp giữ nguyên dữ liệu; regression I1, I2 đạt sau khi sửa SL-04. & Đạt\\
+TR-06 & 25/11 & \texttt{275bfb9} & Rà soát toàn hệ thống trước triển khai & 55 test backend đạt (50 unit, 5 migration/HTTP); kiểm tra tổng thể trên database có 10.008 đăng ký đạt; 15 nhóm kiểm thử giao diện đạt; build giao diện production đạt; diễn tập sao lưu và khôi phục đạt. & Đạt sau khi sửa SL-05, SL-06\\
+TR-07 & 27/11 & Bản triển khai 25--26/11 & Kiểm tra trên cloud (A11, CP3) & Kiểm tra sức khỏe hệ thống đạt, database kết nối được; yêu cầu chưa đăng nhập bị từ chối đúng thiết kế; chuyển tiếp API qua Vercel hoạt động. & Đạt có ghi chú (SL-10)\\
+TR-08 & -- & -- & Integration test end-to-end trên cloud, quét QR bằng điện thoại thật (A12.1) & Không thực hiện do thu gọn nghiệm thu theo CR-05. & Không thực hiện (SL-11)\\
+\end{longtable}
+\endgroup
+
+\subsection{Chỉ số hiệu năng}
+
+\begin{table}[H]
+\centering\small
+\caption{Kết quả đo hiệu năng báo cáo (TR-05)}\label{tab:tr-perf}
+\begin{tabularx}{\linewidth}{@{}Xp{.18\linewidth}p{.18\linewidth}p{.14\linewidth}@{}}
+\toprule
+\textbf{Phép đo} & \textbf{Ngưỡng (M2)} & \textbf{Kết quả} & \textbf{Kết luận}\\\midrule
+Hiển thị báo cáo, 2.000 đăng ký & $\le$ 5 giây & 0,066 giây & Đạt\\
+Xuất CSV, 2.000 đăng ký & $\le$ 10 giây & 0,909 giây & Đạt\\
+Xuất CSV vượt giới hạn 10.000 dòng & Từ chối, không cắt dữ liệu & Từ chối (413) & Đạt\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Phép đo thực hiện trên môi trường local với bộ dữ liệu gấp 4 lần yêu cầu M2 (500 đăng ký). \textbf{Hạn chế:} chưa đo tốc độ thực tế trên cloud, vì database trên cloud chỉ có dữ liệu demo nhỏ; tạo đủ 500 lượt đăng ký sẽ bị giới hạn chống spam của chức năng đăng ký và để lại dữ liệu giả trong database dùng cho demo (SL-13).
+
+\subsection{Nhật ký sai lệch và quyết định}
+
+Mỗi sai lệch được phân loại: \textbf{lỗi} (hệ thống sai so với yêu cầu), \textbf{lệch yêu cầu} (test case dựa trên yêu cầu đã thay đổi), \textbf{quan sát} (không phải lỗi nhưng cần ghi nhận). Quyết định xử lý hoặc chấp nhận do PM và QA đưa ra.
+
+\begingroup\footnotesize
+\renewcommand{\arraystretch}{1.18}
+\begin{longtable}{@{}p{.07\linewidth}p{.08\linewidth}p{.10\linewidth}p{.30\linewidth}p{.36\linewidth}@{}}
+\caption{Nhật ký sai lệch}\label{tab:tr-deviations}\\
+\toprule
+\textbf{Mã} & \textbf{Đợt} & \textbf{Loại} & \textbf{Mô tả} & \textbf{Xử lý / quyết định}\\\midrule\endfirsthead
+\toprule
+\textbf{Mã} & \textbf{Đợt} & \textbf{Loại} & \textbf{Mô tả} & \textbf{Xử lý / quyết định}\\\midrule\endhead
+\midrule\multicolumn{5}{r}{\textit{Còn tiếp}}\\\endfoot
+\bottomrule\endlastfoot
+SL-01 & TR-03 & Lệch yêu cầu & TC-CAP-API-03 kiểm tra sức chứa ``không giới hạn'', hệ thống từ chối. & \textbf{Chấp nhận.} Theo CR-03, sức chứa bắt buộc là số nguyên dương; ca này được loại khỏi bộ nghiệm thu.\\
+SL-02 & TR-03 & Lệch yêu cầu & TC-BRW-API-08 kiểm tra lọc sự kiện theo thời gian, chức năng chưa có. & \textbf{Chấp nhận, hoãn.} Theo CR-10; tìm theo tên vẫn đáp ứng UC-04.\\
+SL-03 & TR-03 & Lỗi & BUG-P2-05: gõ sai đường dẫn API trả lỗi chưa đăng nhập (401), giao diện tự đăng xuất. & \textbf{Đã sửa}; kiểm thử lại trong regression I1 ở TR-04: đạt.\\
+SL-04 & TR-05 & Lỗi test & Một test email I2 phụ thuộc thời gian chạy nên lúc đạt lúc không. & \textbf{Đã sửa} cách kiểm tra trong test, không đổi logic hệ thống; kiểm thử lại: đạt.\\
+SL-05 & TR-06 & Lỗi & Màn hình QR hiển thị ``có mặt'' cũ khi sinh viên đã hủy đăng ký. & \textbf{Đã sửa}; kiểm thử giao diện bổ sung tình huống này: đạt.\\
+SL-06 & TR-06 & Lỗi & Sự kiện đã công bố bị che khi Người tổ chức có trên 100 bản nháp ở trang đầu. & \textbf{Đã sửa} cơ chế tải trang tiếp theo; kiểm thử lại: đạt.\\
+SL-07 & TR-07 & Lỗi triển khai & Build backend trên Render lỗi do kho Maven Central từ chối vì quá nhiều yêu cầu. & \textbf{Đã sửa}: dùng kho dự phòng và cho phép thử lại.\\
+SL-08 & TR-07 & Lỗi triển khai & Cấu hình chuyển tiếp API trên Vercel sai ở lần triển khai đầu. & \textbf{Đã sửa} trong ngày 25/11.\\
+SL-09 & TR-07 & Lỗi & Biểu mẫu đăng nhập giữ dữ liệu cũ sau khi đăng nhập thành công. & \textbf{Đã sửa} trong ngày 25/11.\\
+SL-10 & TR-07 & Quan sát & Backend trên gói miễn phí ngủ khi không có truy cập; yêu cầu đầu tiên mất $\approx$ 50 giây. & \textbf{Chấp nhận} (giới hạn của CR-04). Biện pháp: mở hệ thống trước buổi demo (NR1).\\
+SL-11 & TR-08 & Quan sát & Không chạy integration test end-to-end trên cloud và không thử quét QR bằng điện thoại thật. & \textbf{Chấp nhận như hạn chế} theo CR-05; rủi ro AR5 chưa được kiểm chứng; phương án dự phòng là điểm danh thủ công.\\
+SL-13 & TR-05, TR-07 & Quan sát & Chỉ số hiệu năng M2 chỉ được đo ở local, chưa đo trên cloud. & \textbf{Chấp nhận như hạn chế}: database trên cloud chỉ có dữ liệu demo nhỏ; tạo đủ 500 lượt đăng ký sẽ bị giới hạn chống spam của chức năng đăng ký và để lại dữ liệu giả trong database dùng cho demo. Kết quả local nhanh hơn ngưỡng 10--75 lần nên rủi ro vượt ngưỡng thấp; đo trên cloud được đưa vào danh sách tồn đọng.\\
+SL-12 & Tất cả & Quan sát & Báo cáo gốc của các lần chạy (log, HTML) không được lưu cùng mã nguồn. & \textbf{Chấp nhận}; kết quả được ghi trong biên bản kiểm thử từng đợt; ghi thành rủi ro NR6 và bài học.\\
+\end{longtable}
+\endgroup
+
+\subsection{Kết luận}
+
+\begin{itemize}
+    \item Trên phiên bản cuối, \textbf{toàn bộ bộ kiểm thử tự động đều đạt}: unit test, kiểm thử tích hợp I1--I3, kiểm thử giao diện và kiểm tra trên cloud.
+    \item 13 sai lệch đều đã có quyết định: 7 lỗi đã sửa và kiểm thử lại; 2 lệch yêu cầu được chấp nhận theo CR-03, CR-10; 4 quan sát được chấp nhận và ghi nhận thành rủi ro hoặc hạn chế.
+    \item Hạn chế còn lại: chưa có kiểm thử end-to-end trên cloud, chưa thử quét QR bằng điện thoại thật, chưa đo tốc độ thực tế trên cloud, chưa thử nghiệm với người dùng (M5).
+    \item \textbf{Đề xuất:} sản phẩm đủ điều kiện trình khách hàng nghiệm thu, kèm danh sách hạn chế trên.
+\end{itemize}

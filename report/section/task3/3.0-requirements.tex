@@ -1,0 +1,71 @@
+\subsection{Yêu cầu của sản phẩm được triển khai}
+\label{sec:t3-requirements}
+
+\subsubsection{Yêu cầu chức năng (Functional Requirements)}
+
+\begingroup\small
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}p{.08\linewidth}p{.52\linewidth}p{.13\linewidth}p{.17\linewidth}@{}}
+\caption{Danh mục yêu cầu chức năng}\label{tab:t3-fr}\\
+\toprule
+\textbf{Mã} & \textbf{Yêu cầu} & \textbf{Use case} & \textbf{Increment / HĐ}\\\midrule\endfirsthead
+\toprule
+\textbf{Mã} & \textbf{Yêu cầu} & \textbf{Use case} & \textbf{Increment / HĐ}\\\midrule\endhead
+\midrule\multicolumn{4}{r}{\textit{Còn tiếp}}\\\endfoot
+\bottomrule\endlastfoot
+\multicolumn{4}{@{}l}{\textit{Nhóm 1 -- Tài khoản và phân quyền}}\\
+FR-01 & Sinh viên tự tạo tài khoản (họ tên, MSSV, email, khoa, năm học, mật khẩu); vai trò luôn là Sinh viên, MSSV và email không trùng. & UC-01 & I1 / A05.1\\
+FR-02 & Đăng nhập bằng email và mật khẩu, đăng xuất, khôi phục phiên khi tải lại trang. & UC-02, UC-03 & I1 / A05.1\\
+FR-03 & Đổi mật khẩu; tài khoản dùng mật khẩu tạm bắt buộc đổi trước khi dùng các chức năng khác. & UC-24 & I1 / A05.1\\
+FR-04 & Ba vai trò cố định (Sinh viên, Người tổ chức, Quản trị viên); mọi API kiểm tra quyền ở backend; Quản trị viên không mặc nhiên có quyền Người tổ chức. & Tất cả & I1 / A05.1\\
+FR-05 & Quản trị viên tìm kiếm tài khoản theo MSSV/email/họ tên, lọc theo vai trò và trạng thái. & UC-21 & I1 / A05.1\\
+FR-06 & Quản trị viên cấp tài khoản Người tổ chức với mật khẩu tạm và lý do. & UC-22 & I1 / A05.1\\
+FR-07 & Quản trị viên khóa/mở khóa tài khoản có lý do; không tự khóa; luôn còn ít nhất một Quản trị viên đang hoạt động. & UC-23 & I1 / A05.1\\
+\multicolumn{4}{@{}l}{\textit{Nhóm 2 -- Sự kiện}}\\
+FR-08 & Người tổ chức tạo sự kiện nháp với đủ thông tin: tên, mô tả, địa điểm, đơn vị, 4 mốc thời gian, sức chứa nguyên dương, giới hạn khoa/năm (chọn nhiều). & UC-12 & I1 / A05.2\\
+FR-09 & Người tổ chức sửa sự kiện của mình; kiểm tra xung đột phiên bản; chặn thay đổi làm sai đăng ký hiện có. & UC-13 & I1, I2 / A05.2, A07.1\\
+FR-10 & Người tổ chức công bố sự kiện nháp hợp lệ; chỉ sự kiện đã công bố mới hiển thị với người dùng khác. & UC-14 & I1 / A05.2\\
+FR-11 & Người dùng đã đăng nhập tìm sự kiện đã công bố theo tên (phân trang) và xem chi tiết. & UC-04, UC-05 & I1 / A05.2\\
+\multicolumn{4}{@{}l}{\textit{Nhóm 3 -- Đăng ký, danh sách chờ và email}}\\
+FR-12 & Sinh viên đủ điều kiện đăng ký trong khung giờ đăng ký; chỉ người \textit{Đã đăng ký} chiếm chỗ; không đăng ký trùng. & UC-06 & I2 / A07.1\\
+FR-13 & Khi hết chỗ, sinh viên được đưa vào danh sách chờ (\textit{Đang chờ}) và biết vị trí của mình. & UC-07 & I2 / A07.2\\
+FR-14 & Sinh viên hủy đăng ký hoặc rời danh sách chờ trước giờ bắt đầu; được đăng ký lại trong khung giờ đăng ký. & UC-08 & I2 / A07.1\\
+FR-15 & Hệ thống tự đôn người chờ hợp lệ đầu tiên (FIFO) khi có chỗ trống, kể cả sau giờ đóng đăng ký, cho đến giờ bắt đầu. & UC-09 & I2 / A07.2\\
+FR-16 & Gửi email khi: đăng ký có chỗ, được đôn từ danh sách chờ, sự kiện đổi địa điểm hoặc thời gian. & UC-06, UC-09, UC-13 & I2 / A07.3\\
+FR-17 & Sinh viên xem danh sách sự kiện của mình theo trạng thái và kết quả điểm danh của mình. & UC-10 & I2, I3 / A07.1\\
+FR-18 & Người tổ chức xem danh sách đăng ký và danh sách chờ của sự kiện mình phụ trách. & UC-15 & I2 / A07.1\\
+\multicolumn{4}{@{}l}{\textit{Nhóm 4 -- Điểm danh, báo cáo và xuất dữ liệu}}\\
+FR-19 & Người tổ chức mở/đóng phiên QR có thời hạn 1--30 phút, trong khoảng từ 30 phút trước giờ bắt đầu đến giờ kết thúc. & UC-16 & I3 / A09.1\\
+FR-20 & Sinh viên \textit{Đã đăng ký} quét QR, xem trước thông tin rồi bấm xác nhận để ghi nhận có mặt; mỗi người một lượt. & UC-11 & I3 / A09.1\\
+FR-21 & Người tổ chức ghi nhận hoặc sửa điểm danh thủ công, bắt buộc có lý do; mọi thay đổi được lưu lịch sử. & UC-17, UC-18 & I3 / A09.2\\
+FR-22 & Báo cáo theo sự kiện: số đăng ký, chờ, hủy, có mặt, vắng và tỷ lệ tham dự; số vắng chỉ chốt sau giờ kết thúc. & UC-19 & I3 / A10.1\\
+FR-23 & Xuất báo cáo và danh sách chi tiết ra tệp CSV đọc được tiếng Việt. & UC-20 & I3 / A10.2\\
+\end{longtable}
+\endgroup
+
+\subsubsection{Yêu cầu phi chức năng (Non-functional Requirements)}
+
+\begingroup\small
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}p{.08\linewidth}p{.14\linewidth}p{.44\linewidth}p{.25\linewidth}@{}}
+\caption{Danh mục yêu cầu phi chức năng}\label{tab:t3-nfr}\\
+\toprule
+\textbf{Mã} & \textbf{Thuộc tính} & \textbf{Yêu cầu đo được} & \textbf{Cách hiện thực / kiểm chứng}\\\midrule\endfirsthead
+\toprule
+\textbf{Mã} & \textbf{Thuộc tính} & \textbf{Yêu cầu đo được} & \textbf{Cách hiện thực / kiểm chứng}\\\midrule\endhead
+\midrule\multicolumn{4}{r}{\textit{Còn tiếp}}\\\endfoot
+\bottomrule\endlastfoot
+NFR-01 & Hiệu năng & Hiển thị báo cáo $\le$ 5 giây và tạo tệp CSV $\le$ 10 giây với 500 bản ghi đăng ký (chỉ số M2, Task 1.4). & Truy vấn một snapshot; đo trên bộ 2.000 đăng ký (Mục \ref{sec:t3-quality}).\\
+NFR-02 & Toàn vẹn dữ liệu & Không vượt sức chứa, không đăng ký trùng, không đôn sai thứ tự khi có nhiều yêu cầu đồng thời; lỗi giữa chừng không để lại dữ liệu dở dang. & Khóa sự kiện trong transaction, ràng buộc duy nhất cho mỗi cặp sự kiện--sinh viên, rollback toàn bộ; test tranh chấp 6 người/1 chỗ.\\
+NFR-03 & Chống ghi đè & Hai người cùng sửa một bản ghi thì người lưu sau nhận lỗi xung đột thay vì ghi đè âm thầm. & Optimistic locking bằng số phiên bản, trả lỗi xung đột phiên bản (409).\\
+NFR-04 & Bảo mật xác thực & Mật khẩu băm BCrypt (cost 12); phiên lưu trong cookie HttpOnly, SameSite=Lax, hết hạn 8 giờ; không lưu token ở localStorage. & bảng phiên đăng nhập chỉ lưu SHA-256 của token phiên.\\
+NFR-05 & Bảo mật ứng dụng & Mọi request ghi có CSRF token; giới hạn tần suất đăng nhập/đăng ký (429); truy cập tài nguyên ngoài quyền trả 404 để không lộ sự tồn tại. & Test RBAC/CSRF ở I1--I3; rate limit kiểm thử bằng unit test và HTTP.\\
+NFR-06 & An toàn QR & Mã QR ngẫu nhiên 32 byte, chỉ hợp lệ trong phiên còn hạn; DB không lưu token thô. & Lưu SHA-256 và AES-256-GCM; guard ở database kiểm tra hạn ngay lúc ghi.\\
+NFR-07 & Tin cậy email & Lỗi email không làm hỏng thao tác nghiệp vụ; tự thử lại tối đa 5 lần với lỗi tạm thời; không gửi thư cho thao tác đã rollback. & Transactional outbox + Brevo HTTP API.\\
+NFR-08 & Riêng tư dữ liệu & Dùng dữ liệu sinh viên giả lập; sinh viên chỉ xem dữ liệu của chính mình; Người tổ chức chỉ xem sự kiện mình phụ trách. & Định danh lấy từ phiên, không nhận mã sinh viên từ client.\\
+NFR-09 & Khả dụng & Giao diện tiếng Việt, hiển thị giờ Việt Nam (UTC+07:00); dùng được trên điện thoại để quét QR. & Angular responsive; camera cần HTTPS.\\
+NFR-10 & Bảo trì & Backend phân tầng Controller--Service--Repository; schema được quản lý bằng migration; có pipeline CI. & Công cụ quản lý phiên bản database; kiểm thử tự động mỗi lần đẩy mã (CI).\\
+NFR-11 & Giới hạn tài nguyên & Một lần xuất CSV tối đa 10.000 dòng; vượt quá trả 413, không cắt dữ liệu âm thầm. & Kiểm thử 10.001 dòng bị chặn.\\
+NFR-12 & Triển khai & Chạy được trên môi trường cloud qua HTTPS và có hướng dẫn chạy lại ở local bằng Docker Compose. & Vercel + Render + Neon; hướng dẫn chạy và triển khai trong repository.\\
+\end{longtable}
+\endgroup

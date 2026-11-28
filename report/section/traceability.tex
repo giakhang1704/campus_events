@@ -1,0 +1,33 @@
+\section{Ma trận truy vết}
+\label{sec:traceability}
+
+Ma trận liên kết mục tiêu (Task 1.4), yêu cầu (Mục \ref{sec:t3-requirements}), hoạt động (Task 2), nguồn lực (Mục 1.7 và thực tế), rủi ro (Task 2.8, Mục \ref{sec:t3-risk}), kiểm chứng (Mục \ref{sec:t3-quality}) và checkpoint (Mục 2.5). Cột nguồn lực ghi vai trò theo kế hoạch; nếu thực tế khác thì ghi sau dấu $\to$.
+
+\begingroup\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\begin{longtable}{@{}p{.06\linewidth}p{.16\linewidth}p{.13\linewidth}p{.13\linewidth}p{.11\linewidth}p{.22\linewidth}p{.07\linewidth}@{}}
+\caption{Ma trận truy vết Objective -- Requirement -- Activity -- Resource -- Risk -- Test -- Checkpoint}\label{tab:traceability}\\
+\toprule
+\textbf{Obj.} & \textbf{Yêu cầu / sản phẩm} & \textbf{Hoạt động} & \textbf{Nguồn lực} & \textbf{Rủi ro} & \textbf{Kiểm chứng} & \textbf{CP}\\\midrule\endfirsthead
+\toprule
+\textbf{Obj.} & \textbf{Yêu cầu / sản phẩm} & \textbf{Hoạt động} & \textbf{Nguồn lực} & \textbf{Rủi ro} & \textbf{Kiểm chứng} & \textbf{CP}\\\midrule\endhead
+\midrule\multicolumn{7}{r}{\textit{Còn tiếp}}\\\endfoot
+\bottomrule\endlastfoot
+O1 & FR-12, FR-14 (đăng ký, hủy) & A07.1 & PM $\to$ BE & AR1, AR6 & Test 6 người/1 chỗ; hủy idempotent; version 409 & CP2\\
+O1 & FR-13, FR-15 (chờ, đôn FIFO) & A07.2, RA01, CR-06 & BE & AR1 & Đôn khi hủy, tăng sức chứa, \textit{bỏ qua}; M3 & CP2\\
+O1 & FR-21 (điểm danh thủ công) & A09.2 & PM $\to$ BE; FE & AR6 & Ghi có lý do, lịch sử trước/sau; version 409 & CP3\\
+O2 & FR-22 (báo cáo) & A10.1, RA05 & BE; BA $\to$ FE & AR8 & Tỷ lệ chỉ tính REGISTERED; M1; M2 = 0,066 s & CP3\\
+O2 & FR-23 (CSV) & A10.2 & PM $\to$ BE; BA $\to$ FE & AR8, CR-02 & BOM, chống công thức; 413 khi vượt 10.000 dòng; M2 = 0,909 s & CP3\\
+O3 & NFR-02, NFR-03 (toàn vẹn, chống ghi đè) & A07.1, A05.2 & BE & AR1 & Rollback khi lỗi outbox; version conflict; M4 (một phần) & CP2\\
+O3 & FR-19, FR-20, NFR-06 (QR) & A09.1, RA04, CR-07 & BE; FE $\to$ QA & AR5 & Preview không ghi; lỗi thông tin xác nhận đã cũ; guard hết hạn & CP3\\
+O4 & FR-11 (tìm, xem sự kiện) & A05.2 & PM; FE & AR7 & UC12-TC01, tra cứu chỉ PUBLISHED; lọc thời gian chưa làm & CP1\\
+O4 & FR-16 (email) & A07.3, RA03 & PM $\to$ BE & AR4 & 3 loại thư; retry 503; dừng 400; 1 thư thật & CP2\\
+O4 & FR-17 (sự kiện của tôi) & A07.1, A08 & FE & AR7 & Test UI I2; M5 chưa đo & CP2\\
+O1--O4 & FR-01..07, NFR-04, NFR-05 (tài khoản, RBAC) & A05.1 & BE; BA $\to$ FE & AR2 & UC01-TC01/02, RBAC-TC01, CSRF, ADM-06/07 & CP1\\
+O1--O4 & NFR-12 (triển khai) & A03, A11, RA02 $\to$ CR-04 & BE & AR3, NR1, NR3 & Smoke local 03/11; cloud health 200 (27/11) & CP3\\
+O1--O4 & Quality Evidence & A06, A08, A12.1, A12.2 & QA & NR6, CR-05 & Regression 208/209; test I2, I3; rà soát 25/11 & CP4\\
+O1--O4 & Project Baseline, báo cáo & G04, G05--G07, A18.2 & PM & AR10, NR7 & Change log CR-01..10; Baseline V2.0 & CP0, CP5\\
+\end{longtable}
+\endgroup
+
+Ma trận không có yêu cầu nào thiếu hoạt động hoặc kiểm chứng. Các ô có kiểm chứng ``chưa đo'' hoặc ``một phần'' (M4, M5, lọc thời gian) khớp với phân loại phạm vi ở Bảng \ref{tab:t4-scope} và đánh giá mục tiêu ở Bảng \ref{tab:t4-measures}.

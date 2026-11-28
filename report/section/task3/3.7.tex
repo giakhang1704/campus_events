@@ -1,0 +1,97 @@
+\subsection{Project Baseline V2.0}
+\label{sec:t3-baseline-v2}
+
+Project Baseline V1.0 (Mục 2.12) được \textbf{giữ nguyên} để so sánh; các bảng ở Task 2 không bị sửa. Baseline V2.0 chỉ ghi nhận các thay đổi đã được phê duyệt qua nhật ký thay đổi dưới đây. Các phần không được nêu trong mục này giữ giá trị của V1.0.
+
+\subsubsection{Nhật ký yêu cầu thay đổi}
+
+Trong giai đoạn thực hiện, nhóm ghi nhận 10 yêu cầu thay đổi, xếp theo thứ tự thời gian. Mỗi thay đổi được phân loại theo tác động lên phạm vi: \textbf{thu hẹp} (bỏ hoặc đơn giản hóa chức năng), \textbf{mở rộng} (thêm chức năng hoặc yêu cầu), \textbf{thay đổi thiết kế} (giữ chức năng, đổi cách thực hiện), \textbf{hoãn} (chuyển sang sau MVP) và \textbf{ràng buộc} (thay đổi về lịch, chi phí, hạ tầng).
+
+\begingroup\footnotesize
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}p{.06\linewidth}p{.07\linewidth}p{.10\linewidth}p{.27\linewidth}p{.29\linewidth}p{.13\linewidth}@{}}
+\caption{Change log}\label{tab:t3-cr-log}\\
+\toprule
+\textbf{Mã} & \textbf{Ngày} & \textbf{Loại} & \textbf{Thay đổi và lý do} & \textbf{Tác động} & \textbf{Phê duyệt}\\\midrule\endfirsthead
+\toprule
+\textbf{Mã} & \textbf{Ngày} & \textbf{Loại} & \textbf{Thay đổi và lý do} & \textbf{Tác động} & \textbf{Phê duyệt}\\\midrule\endhead
+\bottomrule\endfoot
+CR-08 & 03/11 & Mở rộng & Thêm đổi mật khẩu; tài khoản Người tổ chức được cấp mật khẩu tạm phải đổi trước khi dùng. Lý do: mật khẩu tạm do Admin bàn giao không được dùng lâu dài. & Thêm UC-24; nằm trong A05.1, không tăng giờ đáng kể; giảm rủi ro AR2. & Nhóm thống nhất; chưa trình duyệt$^{\dagger}$\\
+CR-02 & 03/11 & Thu hẹp & Chỉ xuất CSV, hoãn Excel. Lý do: CSV mở được bằng Excel, đủ cho nhu cầu tổng hợp; giảm phụ thuộc thư viện. & Giảm phạm vi A10.2 (5,0 giờ); Excel vào danh sách hoãn. & Nhóm thống nhất; chưa trình duyệt$^{\dagger}$\\
+CR-03 & 03/11 & Thu hẹp & Sức chứa bắt buộc là số nguyên dương, bỏ trường hợp ``nếu có giới hạn'' ở Task 1.4. Lý do: mọi sự kiện thực tế đều có giới hạn phòng; đơn giản hóa logic danh sách chờ. & Đơn giản hóa A07.1, A07.2; TC-CAP-API-03 loại khỏi bộ nghiệm thu. & Nhóm thống nhất; chưa trình duyệt$^{\dagger}$\\
+CR-01 & 04/11 & Thu hẹp & Mỗi tài khoản có một vai trò cố định: quyền quản lý tài khoản và truy cập của Quản trị viên (Task 1.4) gồm cấp tài khoản Người tổ chức và khóa/mở, không gồm đổi vai trò. Lý do: đổi vai trò khi tài khoản đang có dữ liệu đăng ký hoặc sự kiện gây nhiều trường hợp biên. & Giảm phạm vi A05.1; bớt một nhóm test phân quyền; giảm rủi ro AR2. & Nhóm thống nhất; chưa trình duyệt$^{\dagger}$\\
+CR-10 & 07/11 & Hoãn & Hoãn lọc sự kiện theo thời gian ở trang tìm kiếm. Lý do: không thuộc luồng chính; regression I1 cho thấy chưa kịp hoàn thiện. & Ca TC-BRW-API-08 tạm bỏ qua; tìm theo tên vẫn đáp ứng UC-04. & Nhóm thống nhất; chưa trình duyệt$^{\dagger}$\\
+CR-05 & 09/11 & Ràng buộc & Giảng viên rút ngắn thời hạn dự án 1 tuần (Mục \ref{sec:t3-change}). & Mất buffer lịch; fast-tracking I2, I3; thu gọn nghiệm thu, bỏ 11,5 giờ; hoãn M5. & Project Authority ban hành; phương án PA3 do nhóm quyết định\\
+CR-06 & 12/11 & Mở rộng & Cho tăng sức chứa khi còn người chờ và tự đôn ngay; email thay đổi sự kiện gửi cả người đang chờ. Lý do: đặc tả cũ cấm tăng sức chứa khi còn người chờ, buộc Người tổ chức xử lý bằng tay, trái mục tiêu O1. & Thêm logic và test cho A07.2 trong cùng đợt I2; không làm trễ CP2. & Nhóm thống nhất; chưa trình duyệt$^{\dagger}$\\
+CR-07 & 18/11 & Thay đổi thiết kế & Điểm danh QR thành hai bước: xem trước rồi bấm xác nhận. Lý do: tránh ghi nhầm khi camera đọc mã ngoài ý muốn và chặn xác nhận dựa trên thông tin cũ. & A09.1 tăng $\approx$ 4 giờ; thêm test tình huống tranh chấp; giảm rủi ro AR5. & Nhóm thống nhất; chưa trình duyệt$^{\dagger}$\\
+CR-04 & 25/11 & Ràng buộc & Triển khai trên Vercel, Render, Neon (gói miễn phí) thay AWS Lightsail. Lý do: chi phí hạ tầng là khoản tiền mặt duy nhất của dự án (phân tích bên dưới). & RA02 không thực hiện; chi phí hạ tầng 728.000 $\to$ 0 VNĐ; thêm rủi ro NR1, NR3; thêm cấu hình chuyển tiếp API. & Nhóm thống nhất; chưa trình duyệt$^{\dagger}$\\
+CR-09 & 25/11 & Mở rộng & Bổ sung yêu cầu vận hành: giới hạn đăng nhập sai, quản lý phiên bản database, sao lưu và khôi phục, kiểm thử tự động. Lý do: cần thiết khi hệ thống chạy trên môi trường công khai. & $\approx$ 10 giờ ngoài kế hoạch (Bảng \ref{tab:t3-unplanned}); tăng độ tin cậy, giảm rủi ro AR3. & Nhóm thống nhất; chưa trình duyệt$^{\dagger}$\\
+\end{longtable}
+\endgroup
+
+\noindent{\footnotesize $^{\dagger}$ Xem mục Hạn chế bên dưới.}
+
+\begin{table}[H]
+\centering\small
+\caption{Tổng hợp change log theo loại}\label{tab:t3-cr-summary}
+\begin{tabularx}{\linewidth}{@{}p{.20\linewidth}p{.18\linewidth}X@{}}
+\toprule
+\textbf{Loại} & \textbf{CR} & \textbf{Ảnh hưởng ròng}\\\midrule
+Thu hẹp & CR-01, 02, 03 & Giảm khối lượng phát triển và kiểm thử.\\
+Mở rộng & CR-06, 08, 09 & $\approx$ +10 giờ (chủ yếu CR-09); tăng chất lượng và mức tự động hóa.\\
+Thay đổi thiết kế & CR-07 & $\approx$ +4 giờ; giảm rủi ro ghi nhận sai.\\
+Hoãn & CR-10 & Một chức năng phụ chuyển sang sau MVP.\\
+Ràng buộc & CR-04, 05 & Chi phí hạ tầng về 0; mất 1 tuần lịch, cắt 11,5 giờ nghiệm thu.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Phần mở rộng (CR-06, CR-08, CR-09) được bù bởi phần thu hẹp (CR-01..03), nên tổng công sức vẫn nằm trong quỹ dự phòng.
+
+\subsubsection{Phân tích CR-04: lựa chọn hạ tầng triển khai}
+
+Baseline V1.0 dự trù 728.000 VNĐ cho AWS Lightsail trong hai kỳ thanh toán. Trong tổng ngân sách 26.592.800 VNĐ, đây chỉ là 2,7\%, nhưng là \textbf{khoản tiền mặt thực tế duy nhất}: chi phí nhân sự là chi phí quy đổi theo giờ công của sinh viên, còn tiền thuê máy chủ nhóm phải tự chi. Vì vậy nhóm so sánh lại các phương án khi bắt đầu triển khai.
+
+\begin{table}[H]
+\centering\small
+\caption{So sánh phương án hạ tầng}\label{tab:t3-cr04-options}
+\begin{tabularx}{\linewidth}{@{}p{.17\linewidth}p{.13\linewidth}XX@{}}
+\toprule
+\textbf{Phương án} & \textbf{Chi phí} & \textbf{Ưu điểm} & \textbf{Nhược điểm}\\\midrule
+AWS Lightsail (V1.0) & 728.000 VNĐ & Máy chủ chạy liên tục, không bị ngủ; toàn quyền cấu hình. & Tốn tiền thật; nhóm phải tự cài đặt, cập nhật, cấu hình HTTPS và sao lưu.\\
+Vercel + Render + Neon (gói miễn phí) & 0 VNĐ & Có sẵn HTTPS, tự build khi đẩy mã, database được quản lý; ít việc vận hành. & Backend ngủ khi không có truy cập (yêu cầu đầu $\approx$ 50 giây); giới hạn tài nguyên của gói miễn phí.\\
+Chỉ chạy local & 0 VNĐ & Không phụ thuộc dịch vụ ngoài. & Không có HTTPS công khai nên không quét QR bằng điện thoại được; khách hàng không tự truy cập được.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\noindent\textbf{Quyết định:} chọn gói miễn phí. Quy mô sử dụng trong dự án (dữ liệu giả lập, demo cho giảng viên) nằm trong giới hạn gói miễn phí, và gói này giảm việc vận hành, phù hợp khi thời gian đã bị rút ngắn bởi CR-05. Nhược điểm backend ngủ được xử lý bằng biện pháp làm nóng trước demo (NR1); nếu hệ thống được dùng thật, nhóm khuyến nghị chuyển sang gói trả phí hoặc máy chủ riêng.
+
+\subsubsection{Hạn chế: chưa có xác nhận của khách hàng}
+\label{sec:t3-limitation-review}
+
+Tại buổi demo CP1 (09/11), khách hàng xem I1 (đã áp dụng CR-01, CR-03, CR-08) và không yêu cầu thay đổi, nhưng các CR chưa được trình duyệt chính thức. Sau khi thời hạn bị rút ngắn 1 tuần (CR-05), để dồn thời gian cho phát triển và kiểm thử, nhóm \textbf{chưa gửi khách hàng review} các nội dung sau:
+\begin{itemize}
+    \item Các yêu cầu thay đổi do nhóm đề xuất (CR-01..04, CR-06..10): hiện chỉ có sự thống nhất trong nhóm, chưa có phê duyệt của Project Authority theo quy trình ở Task 1.5.
+    \item Bản đặc tả use case đã chỉnh sửa theo mã nguồn (Mục \ref{sec:t3-usecase}).
+    \item Project Baseline V2.0 trong mục này.
+\end{itemize}
+Hệ quả: các thay đổi trên là \textbf{đề xuất của nhóm}, chưa phải phạm vi đã được khách hàng chấp thuận. Rủi ro là khách hàng không đồng ý với một số điểm (ví dụ chỉ xuất CSV, bỏ sức chứa không giới hạn) khi nghiệm thu. Nhóm xử lý bằng cách trình bày change log và lý do ngay trong buổi demo (CP6) để khách hàng quyết định trực tiếp, và ghi nhận phản hồi vào Client Interaction Log.
+
+\subsubsection{So sánh Baseline V1.0 và V2.0}
+
+\begin{table}[H]
+\centering\small
+\caption{Thành phần baseline trước và sau thay đổi}\label{tab:t3-v1-v2}
+\begin{tabularx}{\linewidth}{@{}p{.18\linewidth}XX@{}}
+\toprule
+\textbf{Thành phần} & \textbf{V1.0 (29/10/2026)} & \textbf{V2.0 (đề xuất, chưa duyệt)}\\\midrule
+Phạm vi & Phạm vi MVP ở Task 1.4: xuất Excel/CSV; sức chứa nếu có giới hạn. & 24 use case, gồm đổi mật khẩu (CR-08); vai trò cố định (CR-01); chỉ CSV (CR-02); sức chứa nguyên dương (CR-03); tăng sức chứa tự đôn (CR-06); QR hai bước (CR-07); thêm yêu cầu vận hành (CR-09); hoãn lọc theo thời gian (CR-10).\\
+Hạ tầng & AWS Lightsail. & Vercel + Render + Neon + Brevo (CR-04).\\
+Công sức & 331,6 giờ công (320,5 + 11,1 RA). & 320,1 giờ công (331,6 $-$ 11,5 giờ cắt giảm theo CR-05). Phần thu hẹp (CR-01..03) bù cho phần mở rộng (CR-06..09) và công việc phát sinh (Bảng \ref{tab:t3-unplanned}).\\
+Chi phí & 26.592.800 VNĐ (nhân sự 25.864.800 + hạ tầng 728.000). & 24.967.800 VNĐ (nhân sự 320,1 $\times$ 78.000; hạ tầng 0 VNĐ).\\
+Lịch trình & Khởi động 26/10; bàn giao 03/12; nộp báo cáo 06/12. & Nộp báo cáo 29/11 (CR-05); demo theo lịch giảng viên; không còn schedule buffer.\\
+Quỹ dự phòng & 63,4 giờ; buffer lịch 04--06/12. & 63,4 giờ; đến 27/11 đã dùng $\approx$ 4,0 giờ (306,2 giờ thực tế so với 302,2 giờ kế hoạch T1--T5).\\
+\bottomrule
+\end{tabularx}
+\end{table}

@@ -1,0 +1,97 @@
+
+\subsection{Revise the activity structure to make activities controllable: decompose activities that are too long and bundle very short activities where appropriate.}
+
+Khi đối chiếu sơ đồ AON ở Mục 2.4 với khối lượng ước lượng tại Mục 2.6, nhóm nhận thấy A05, A07, A09, A10 và A12 gồm nhiều phần việc có thể kiểm tra riêng. Một số việc khác chỉ cần 1,5–4 giờ công. Nhóm tách các hoạt động lớn theo đầu ra và gộp những việc ngắn, liên tiếp, cùng người thực hiện thành gói có checklist. Việc này thay đổi cách theo dõi và quan hệ phụ thuộc, không làm thay đổi phạm vi hay tổng công sức đã ước lượng.
+
+\subsubsection{Tiêu chí đánh giá tính kiểm soát được}
+
+Nhóm áp dụng các tiêu chí sau để xác định hoạt động nào cần tách hoặc gộp:
+
+\begin{itemize}
+    \item \textbf{Tách} hoạt động khi có công sức lớn hơn 16 giờ công, hoặc khi hoạt động tạo ra từ hai kết quả có thể kiểm tra riêng và do những người khác nhau phụ trách chính. Mỗi gói sau khi tách có một đầu ra kiểm tra được, tiến độ thường được đánh giá trong một tuần.
+    \item \textbf{Gộp} các hoạt động có công sức không quá 4 giờ công khi chúng có cùng người thực hiện, cùng đầu vào, nằm sát nhau trên lịch và cùng được xác nhận bằng một danh sách kiểm tra.
+    \item \textbf{Giữ nguyên} các hoạt động đã có đầu ra rõ ràng và công sức vừa phải (A01, A03, A06, A08, A11), cũng như các hoạt động định kỳ G05 và G06 vốn đã được theo dõi theo chu kỳ tuần.
+    \item Tổng giờ công của các gói con bằng đúng giờ công của hoạt động gốc ở Mục 2.6. Hoạt động chỉ được xem là hoàn thành khi đầu ra của gói đạt điều kiện đã nêu.
+\end{itemize}
+
+Các hoạt động A02, A04, A14, A15, A18 và A19 đã được chia theo từng increment trong kế hoạch san bằng nguồn lực ở Mục 2.10.3, nên được giữ nguyên trong lần rà soát này.
+
+\subsubsection{Tách các hoạt động dài}
+
+Nhóm chia A05, A07, A09, A10 và A12 thành các gói có đầu ra riêng, như trình bày ở Bảng~\ref{tab:p27-split}. Giờ công của các gói được phân bổ từ những phần việc đã ước lượng ở Bảng 29 và Bảng 30; không bổ sung công sức cho các hoạt động này.
+
+{\small
+\begin{longtable}{@{}Y{1.15cm}Y{4.0cm}Y{0.7cm}Y{0.7cm}Y{0.7cm}Y{0.7cm}Y{0.7cm}Y{0.9cm}Y{2.0cm}@{}}
+\caption{Các gói công việc sau khi tách hoạt động dài (giờ công)}\label{tab:p27-split}\\
+\toprule
+\textbf{Mã} & \textbf{Gói công việc và đầu ra} & \textbf{PM} & \textbf{BA} & \textbf{BE} & \textbf{FE} & \textbf{QA} & \textbf{Tổng} & \textbf{Tiền nhiệm} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Mã} & \textbf{Gói công việc và đầu ra} & \textbf{PM} & \textbf{BA} & \textbf{BE} & \textbf{FE} & \textbf{QA} & \textbf{Tổng} & \textbf{Tiền nhiệm} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+A05.1 & Lập trình tài khoản và phân quyền theo ba vai trò; đăng nhập, RBAC, màn hình tài khoản & 0 & 8 & 10 & 0 & 0 & 18 & A03 \\
+A05.2 & Lập trình quản lý sự kiện; tạo, sửa, công bố, tìm và xem sự kiện & 6 & 0 & 0 & 10 & 2 & 18 & A03 \\
+\addlinespace
+A07.1 & Lập trình đăng ký, hủy đăng ký và kiểm soát sức chứa & 6 & 1 & 5 & 9 & 1 & 22 & A06 \\
+A07.2 & Lập trình danh sách chờ FIFO và tự động chuyển trạng thái khi có chỗ trống & 0 & 1 & 5 & 7 & 1 & 14 & A07.1, RA01 \\
+A07.3 & Lập trình email xác nhận, thay đổi quan trọng và chuyển từ danh sách chờ & 4 & 1 & 0 & 0 & 1 & 6 & A07.2, RA03 \\
+\addlinespace
+A09.1 & Lập trình điểm danh bằng mã QR; sinh mã, xác thực và ghi nhận & 0 & 1 & 6 & 4 & 1 & 12 & A08, RA04 \\
+A09.2 & Lập trình điểm danh và chỉnh sửa thủ công theo quyền người tổ chức & 4 & 1 & 0 & 4 & 1 & 10 & A08 \\
+\addlinespace
+A10.1 & Lập trình báo cáo cơ bản sau sự kiện; truy vấn, giao diện và công thức tỷ lệ & 0 & 6 & 4 & 2 & 1 & 13 & A08 \\
+A10.2 & Lập trình xuất dữ liệu sang CSV/Excel & 4 & 0 & 0 & 0 & 1 & 5 & A10.1 \\
+\addlinespace
+A12.1 & Chạy kiểm thử end-to-end, regression và sửa lỗi tích hợp & 1 & 0 & 4 & 3 & 6 & 14 & A11 \\
+A12.2 & Đo các chỉ tiêu mục tiêu và chốt Quality Evidence & 0 & 4 & 0 & 0 & 4 & 8 & A12.1, RA05 \\
+\end{longtable}
+}
+
+Tổng giờ công theo vai trò của từng hoạt động gốc được giữ nguyên so với phân công ở Mục 2.10.2. Các tiền nhiệm RA01, RA03, RA04 và RA05 là hoạt động ứng phó rủi ro được bổ sung ở Mục 2.9.
+
+\subsubsection{Gộp các hoạt động ngắn}
+
+Hai cặp hoạt động ngắn sau được gộp thành gói có checklist, vì cùng người thực hiện, nằm liền nhau trên lịch và cùng đóng một điều kiện.
+
+{\small
+\begin{longtable}{@{}Y{1.1cm}Y{2.8cm}Y{1.2cm}Y{3.6cm}Y{5.0cm}@{}}
+\caption{Các gói công việc sau khi gộp hoạt động ngắn}\label{tab:p27-bundle}\\
+\toprule
+\textbf{Mã gói} & \textbf{Thành phần} & \textbf{Giờ công} & \textbf{Lý do gộp} & \textbf{Checklist hoàn thành} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Mã gói} & \textbf{Thành phần} & \textbf{Giờ công} & \textbf{Lý do gộp} & \textbf{Checklist hoàn thành} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+BL1 & A04.2 (1,5 giờ) và A04.3 (2,0 giờ): dữ liệu thử I2 và I3 & 3,5 &
+Cùng PM, BA và QA; cùng nguồn là bộ test case; được thực hiện vào hai ngày liền nhau (10/11 và 11/11). &
+Seed khớp schema sau migration; mỗi ca có expected result; có ca đăng ký trùng, hết chỗ, hủy, chuyển danh sách chờ và vắng mặt; QA đã review seed. \\
+\addlinespace
+BL2 & A13 (2,0 giờ) và A14.2 (2,0 giờ): chốt phiên bản mã nguồn và xác minh hướng dẫn chạy & 4,0 &
+Cùng BE, FE và QA; A14.2 chỉ xác minh trên đúng phiên bản vừa chốt; hai hoạt động cùng nằm trên một chuỗi liên tiếp. &
+Có commit và release tag; build Frontend và Backend khớp tag; người không viết hướng dẫn chạy thành công trên môi trường sạch; evidence được lưu. \\
+\end{longtable}
+}
+
+BL1 kế thừa các tiền nhiệm của A04.2 và A04.3 (A01, A02.2, A02.3), đồng thời là tiền nhiệm của A08 và A12.1. BL2 kế thừa các tiền nhiệm A12.2 và A14.1, sau đó làm điều kiện để bắt đầu A16. Các phần việc trong mỗi gói được thực hiện liên tiếp và kết thúc bằng một lần kiểm tra checklist.
+
+\subsubsection{Cấu trúc hoạt động sau điều chỉnh}
+
+Sau khi tách và gộp, các quan hệ phụ thuộc của chuỗi chính thay đổi như sau:
+
+\begin{itemize}
+    \item A05.1 và A05.2 cùng bắt đầu sau A03 và được thực hiện song song vì có người phụ trách chính khác nhau (BE, BA và PM, FE). Trong lúc chưa tích hợp, A05.2 sử dụng tài khoản giả lập. A06 chỉ bắt đầu khi cả hai gói và dữ liệu thử I1 đã sẵn sàng (A05.1, A05.2, A04.1, A02.1).
+    \item A07.1 $\rightarrow$ A07.2 $\rightarrow$ A07.3 theo thứ tự, vì danh sách chờ phụ thuộc vào đăng ký và hủy, còn email chuyển trạng thái phụ thuộc vào kết quả xử lý danh sách chờ. A08 bắt đầu sau A07.3, A02.2 và BL1.
+    \item A09.1, A09.2 và A10.1 cùng bắt đầu sau A08. A10.2 bắt đầu sau A10.1. A11 chỉ bắt đầu khi A09.1, A09.2 và A10.2 hoàn thành.
+    \item A12.1 bắt đầu sau A11, A02.3 và BL1. A12.2 bắt đầu sau A12.1. Từ đây, mọi hoạt động trước đây phụ thuộc A12 (A13/BL2, A15.2, A19.2) phụ thuộc vào A12.2.
+    \item Các checkpoint không đổi vị trí: CP1 sau A06, CP2 sau A08, CP3 sau A11 và CP4 sau A12.2.
+\end{itemize}
+
+Sau khi tách và gộp, tổng công sức của các hoạt động trong Mục 2.6 vẫn là 320,5 giờ. Sáu hoạt động ứng phó rủi ro được tính riêng tại Mục 2.9.

@@ -1,0 +1,99 @@
+\subsection{Increment 3: Điểm danh, báo cáo và xuất dữ liệu}
+\label{sec:i3}
+
+\subsubsection{Mục tiêu và phạm vi}
+
+I3 hoàn thiện vòng đời sự kiện: ghi nhận ai thực sự có mặt (bằng QR hoặc thủ công) và tổng hợp báo cáo ngay từ dữ liệu trong hệ thống.
+
+\begin{itemize}
+    \item \textbf{Yêu cầu:} FR-19 đến FR-23; NFR-01, NFR-06, NFR-11. Use case UC-11, UC-16 đến UC-20.
+    \item \textbf{Hoạt động:} A02.3, RA04, RA05, A09.1, A09.2, A10.1, A10.2.
+    \item \textbf{Mục tiêu đóng góp:} O1 và O2 (không còn tổng hợp báo cáo thủ công), O3 (kết quả điểm danh nhất quán, có lịch sử).
+    \item \textbf{Checkpoint:} CP3, kế hoạch ngày 25/11/2026 (chung với tích hợp và triển khai).
+\end{itemize}
+
+\subsubsection{Kế hoạch chi tiết}
+
+Kế hoạch I3 bám theo yêu cầu điểm danh trong Client Interaction Log (Tuần 1): QR Code là phương thức điểm danh chính; Người tổ chức điểm danh và chỉnh sửa thủ công khi QR hoặc mạng gặp sự cố, và chỉ Người tổ chức được sửa thủ công; không yêu cầu đồng bộ offline đầy đủ và chống điểm danh hộ tuyệt đối.
+
+\begin{table}[H]
+\centering\small
+\caption{Kế hoạch chi tiết I3}\label{tab:t3-lower-i3}
+\begin{tabularx}{\linewidth}{@{}p{.09\linewidth}Xp{.32\linewidth}@{}}
+\toprule
+\textbf{Gói} & \textbf{Phần việc chi tiết} & \textbf{Tiêu chí hoàn thành}\\\midrule
+A09.1 & Phiên QR có thời hạn 1--30 phút, mỗi sự kiện tối đa một phiên mở; mã ngẫu nhiên, không lưu dạng thô trong database. & Mã cũ không dùng được sau khi đóng hoặc hết hạn.\\
+A09.1 & Tách bước xem trước (chỉ đọc) và bước xác nhận (có kiểm tra phiên bản dữ liệu). & Xác nhận dựa trên thông tin cũ bị từ chối; không ghi dữ liệu dở dang.\\
+A09.1 & Trang quét QR trên điện thoại: bật camera, đọc mã, màn hình xác nhận. & Không tự ghi điểm danh khi vừa đọc được mã.\\
+A09.2 & Ghi và sửa điểm danh thủ công, lý do bắt buộc, lưu giá trị trước và sau. & Báo cáo cập nhật ngay sau khi sửa.\\
+A10.1 & Báo cáo đọc trong một lần nhất quán; vắng mặt chỉ tính sau giờ kết thúc; mẫu số là số người đã đăng ký chính thức. & Khớp với bộ dữ liệu biết trước kết quả.\\
+A10.2 & Xuất CSV đọc được tiếng Việt trong Excel, chống chèn công thức, tối đa 10.000 dòng. & 10.001 dòng bị từ chối, không cắt dữ liệu.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Chi tiết này không thể có ở Task 2 vì thiết kế điểm danh dựa trên mô hình đăng ký của I2.
+
+\subsubsection{Triển khai}
+
+Luồng điểm danh được xây dựng như sau:
+\begin{enumerate}
+    \item Người tổ chức mở phiên QR có thời hạn (không vượt giờ kết thúc sự kiện); có thể đóng sớm hoặc đóng rồi mở lại để đổi mã.
+    \item Sinh viên đăng nhập, quét mã bằng camera điện thoại; hệ thống hiển thị tên, địa điểm, thời gian sự kiện để kiểm tra.
+    \item Sinh viên bấm xác nhận; hệ thống kiểm tra lại mọi điều kiện. Nếu sự kiện hoặc đăng ký vừa thay đổi kể từ lúc xem trước, hệ thống yêu cầu xem lại thay vì ghi nhận.
+    \item Khi QR hoặc mạng gặp sự cố, Người tổ chức ghi điểm danh thủ công kèm lý do; mọi lần sửa đều được lưu lịch sử.
+    \item Báo cáo tính số đăng ký, có mặt, vắng, tỷ lệ tham dự và xuất ra CSV.
+\end{enumerate}
+
+Backend I3 hoàn thành ngày 18/11. Giao diện được làm theo ba phần: trang điểm danh của Người tổ chức (18--19/11), trang báo cáo và xuất CSV (22/11), trang quét QR của sinh viên (23/11).
+
+\subsubsection{Kiểm thử}
+
+\begin{table}[H]
+\centering\small
+\caption{Kết quả kiểm thử I3}\label{tab:i3-tests}
+\begin{tabularx}{\linewidth}{@{}p{.22\linewidth}X@{}}
+\toprule
+\textbf{Nhóm kiểm thử} & \textbf{Kết quả}\\\midrule
+Unit test & 43 test đạt (18/11); 55 test đạt sau đợt rà soát hệ thống (25/11).\\
+Phiên QR & Mã đã đóng, hết hạn hoặc sai bị từ chối; chỉ sinh viên đã đăng ký chính thức được điểm danh.\\
+Xem trước và xác nhận & Bước xem trước không ghi dữ liệu; xác nhận dựa trên thông tin cũ bị từ chối; xác nhận lặp lại không ghi trùng.\\
+Tình huống tranh chấp & Phiên hết hạn đúng lúc đang ghi: hệ thống từ chối và không ghi dữ liệu một phần.\\
+Báo cáo & Báo cáo là 0 trước khi xác nhận, 1 sau khi xác nhận; sửa thủ công cập nhật ngay vào báo cáo.\\
+Hiệu năng & 2.000 đăng ký: báo cáo 0,066 giây, CSV 0,909 giây (ngưỡng M2: 5 và 10 giây).\\
+Giao diện & 15 nhóm kiểm thử giao diện đạt, gồm các tình huống phân trang và dữ liệu cũ khi quét QR.\\
+Regression I1, I2 & Đạt.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsubsection{Vấn đề phát sinh và xử lý}
+
+\begin{itemize}
+    \item \textbf{Phát hiện khi rà soát bảo mật QR:} thiết kế ban đầu ghi điểm danh ngay khi quét. Nhóm tách thành hai bước xem trước và xác nhận, thêm kiểm tra hạn phiên ngay tại database; tốn thêm $\approx$ 4 giờ công cho A09.1.
+    \item \textbf{Hai lỗi phát hiện ở đợt rà soát 25/11:} màn hình QR hiển thị ``có mặt'' cũ khi sinh viên đã hủy đăng ký; sự kiện đã công bố bị che khi Người tổ chức có trên 100 bản nháp. Cả hai đã được sửa và kiểm thử lại.
+    \item \textbf{Thiếu BA} (AR9): phần giao diện vốn giao cho BA ở Task 1.7 chuyển sang FE; để cân bằng, QA nhận thêm trang quét QR của sinh viên vốn thuộc FE; thiết kế test I3 do QA đảm nhận.
+    \item \textbf{Test email không ổn định:} một test I2 phụ thuộc thời gian chạy nên lúc đạt lúc không; nhóm sửa cách kiểm tra trong test, không đổi logic hệ thống.
+    \item \textbf{Camera cần HTTPS:} chỉ thử được trên điện thoại thật sau khi triển khai cloud; việc này không thực hiện do CR-05 (thu gọn nghiệm thu); rủi ro AR5 vì vậy chưa được kiểm chứng.
+\end{itemize}
+
+\subsubsection{Tiến độ và checkpoint}
+
+\begin{table}[H]
+\centering\small
+\caption{Kế hoạch và thực tế các hoạt động I3}\label{tab:i3-actual}
+\begin{tabularx}{\linewidth}{@{}p{.08\linewidth}Xp{.15\linewidth}rrrr@{}}
+\toprule
+\textbf{Mã} & \textbf{Lịch KH} & \textbf{Hoàn thành TT} & \textbf{Lệch (ngày)} & \textbf{Giờ KH} & \textbf{Giờ TT} & \textbf{Lệch (giờ)}\\\midrule
+A09.1 & 21--24/11 & 23/11 & $-$1 & 12,0 & 16,0 & +4,0\\
+A09.2 & 20--23/11 & 19/11 & $-$4 & 10,0 & 10,0 & 0\\
+A10.1 & 20--21/11 & 22/11 & +1 & 13,0 & 13,0 & 0\\
+A10.2 & 23/11 & 22/11 & $-$1 & 5,0 & 5,0 & 0\\
+RA05 & 23/11 & 18/11 & $-$5 & 1,9 & 1,0 & $-$0,9\\
+\midrule
+\multicolumn{4}{@{}r}{\textbf{Tổng I3}} & \textbf{41,9} & \textbf{45,0} & \textbf{+3,1} (+7,4\%)\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Các chức năng I3 hoàn thành trước kế hoạch, nhưng CP3 được đánh giá chung với tích hợp và triển khai (Mục \ref{sec:t3-deploy}).

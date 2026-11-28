@@ -1,0 +1,75 @@
+\clearpage
+\subsection{Rà soát và thiết lập đường cơ sở dự án (Project Baseline)}
+\label{sec:baseline-review}
+
+Trước khi phê duyệt Project Baseline V1.0, nhóm dự án tiến hành kiểm tra độc lập tính đầy đủ, tính nhất quán và độ khả thi của toàn bộ hệ thống kế hoạch (gồm Phạm vi, WBS, Rủi ro, Nguồn lực, Lịch trình và Chi phí). Đường cơ sở V1.0 là căn cứ kỹ thuật và quản lý duy nhất để theo dõi tiến độ, kiểm soát chi phí và đánh giá các yêu cầu thay đổi trong suốt quá trình thực thi.
+
+\subsubsection{Rà soát chất lượng kế hoạch}
+
+\begingroup\small
+\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}p{.22\linewidth}p{.70\linewidth}@{}}
+\caption{Nội dung đánh giá chất lượng trước khi phê duyệt Project Baseline}\label{tab:review}\\
+\toprule
+\textbf{Hạng mục rà soát} & \textbf{Kết quả đánh giá \& Yêu cầu xác minh} \\
+\midrule\endfirsthead
+\toprule
+\textbf{Hạng mục rà soát} & \textbf{Kết quả đánh giá \& Yêu cầu xác minh} \\
+\midrule\endhead
+\midrule\multicolumn{2}{r}{\textit{Còn tiếp}}\\\endfoot
+\bottomrule\endlastfoot
+Phạm vi (Scope) & Toàn bộ công việc sau Activity Splitting đều ánh xạ $1-1$ về WBS gốc; các tác vụ ứng phó rủi ro (RA) xác định rõ tiêu chí nghiệm thu. \\
+Công sức (Effort) & Tổng khối lượng 331,6 giờ công phân bổ cân đối theo vai trò: PM (66,4h), BA (62,3h), BE (68,9h), FE (65,0h) và QA (69,0h). \\
+Nguồn lực & Bảo toàn tổng Capacity 395,0 giờ công; loại bỏ hoàn toàn tình trạng quá tải nguồn lực ($O_{i,w}=0$) sau san bằng. \\
+Lịch trình & Khớp nối chặt chẽ giữa các gói thi công; bảo toàn quỹ thời gian dự phòng (Schedule Buffer) ở cuối dự án. \\
+Sơ đồ mạng (CPM) & Sơ đồ PDM xác định độ dài Đường găng (Critical Path) là 47 phiên; tính toán chính xác thời gian dự trữ (Float). \\
+Chi phí (Cost) & Tổng ngân sách 26.592.800 VNĐ bao gồm chi phí nhân sự và chi phí hạ tầng AWS Lightsail. \\
+Điều kiện vận hành & Thống nhất thời khóa biểu cá nhân, môi trường triển khai và các cột mốc làm việc định kỳ với đại diện khách hàng. \\
+\end{longtable}\endgroup
+
+\subsubsection{Thành phần Project Baseline V1.0}
+
+\begingroup\small
+\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}p{.22\linewidth}p{.70\linewidth}@{}}
+\caption{Cấu trúc các thành phần cấu thành Project Baseline V1.0}\label{tab:baseline}\\
+\toprule
+\textbf{Thành phần Baseline} & \textbf{Giá trị chuẩn hóa} \\
+\midrule\endfirsthead
+\toprule
+\textbf{Thành phần Baseline} & \textbf{Giá trị chuẩn hóa} \\
+\midrule\endhead
+\midrule\multicolumn{2}{r}{\textit{Còn tiếp}}\\\endfoot
+\bottomrule\endlastfoot
+Phiên bản & Project Baseline V1.0 (Áp dụng chính thức từ ngày ký phê duyệt). \\
+Đường cơ sở phạm vi & WBS chi tiết, danh mục Deliverables và tiêu chí nghiệm thu (Mục 2.7--2.9). \\
+Đường cơ sở công sức & 331,6 giờ công (320,5h công việc cơ sở + 11,1h tác vụ rủi ro RA). \\
+Đường cơ sở lịch trình & Ngày khởi động: 26/10/2026; Bàn giao: 03/12/2026; Hạn nộp báo cáo: 06/12/2026. \\
+Đường cơ sở chi phí & 26.592.800 VNĐ (Nhân sự: 25.864.800 VNĐ; Hạ tầng AWS: 728.000 VNĐ). \\
+Quỹ dự phòng (Buffer) & Dự phòng nguồn lực: 63,4 giờ công; Schedule Buffer: 04/12--06/12/2026. \\
+Hồ sơ đính kèm & Báo cáo kế hoạch, bảng phân bổ, biểu đồ Gantt, ma trận CPM và biên bản rà soát. \\
+\end{longtable}\endgroup
+
+\subsubsection{Thống nhất và phê duyệt đường cơ sở}
+
+\begingroup\small
+\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}p{.20\linewidth}p{.42\linewidth}p{.30\linewidth}@{}}
+\caption{Phân công trách nhiệm phê duyệt và bằng chứng xác nhận}\label{tab:agreement}\\
+\toprule
+\textbf{Bên tham gia} & \textbf{Trách nhiệm phê duyệt} & \textbf{Bằng chứng xác nhận} \\
+\midrule\endfirsthead
+\toprule
+\textbf{Bên tham gia} & \textbf{Trách nhiệm phê duyệt} & \textbf{Bằng chứng xác nhận} \\
+\midrule\endhead
+\midrule\multicolumn{3}{r}{\textit{Còn tiếp}}\\\endfoot
+\bottomrule\endlastfoot
+Quản lý dự án (PM) & Rà soát tính logic toàn diện về khối lượng công việc, lịch trình và chi phí. & Biên bản rà soát kế hoạch dự án. \\
+Thành viên nhóm & Cam kết phân công công sức, tuân thủ tiến độ và đảm bảo chất lượng. & Xác nhận phê duyệt nội bộ V1.0. \\
+Đại diện khách hàng & Phê duyệt Phạm vi, các cột mốc Milestones và tiêu chí nghiệm thu sản phẩm. & Biên bản họp / Email phê duyệt. \\
+\end{longtable}\endgroup
+
+\subsubsection{Lưu trữ và kiểm soát phiên bản}
+\enlargethispage{3\baselineskip}
+
+Sau khi thu thập đầy đủ phê duyệt, PM tiến hành đóng gói và đóng đếm Project Baseline V1.0 làm mốc tham chiếu duy nhất cho công tác đo lường hiệu quả thực thi trong các giai đoạn tiếp theo. Mọi điều chỉnh về Phạm vi, Lịch trình hay Chi phí phát sinh phải tuân thủ nghiêm ngặt quy trình Quản lý thay đổi (G07) và chỉ có hiệu lực khi ban hành phiên bản Baseline điều chỉnh chính thức (V1.1, V2.0).

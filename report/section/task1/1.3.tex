@@ -1,0 +1,245 @@
+\subsection{Identify expected benefits and possible disbenefits, major costs, strategic/organizational contribution, and provide a justified go/no-go recommendation. Apply appropriate financial evaluation techniques where meaningful.}
+
+\subsubsection{Lợi ích kỳ vọng}
+
+\tasksubheading{Lợi ích có thể định lượng}
+
+\begin{itemize}
+    \item \textbf{Giảm khối lượng công việc hành chính cho người tổ chức sự kiện:} Hiện tại, thông tin sự kiện, đăng ký tham gia và điểm danh được quản lý thông qua nhiều công cụ khác nhau. Khi các hoạt động này được tập trung trên một hệ thống, người tổ chức có thể giảm các thao tác thủ công như tổng hợp danh sách đăng ký, kiểm tra thông tin người tham dự, cập nhật điểm danh và tổng hợp dữ liệu sau sự kiện. Lợi ích được đánh giá bằng chênh lệch tổng giờ công thực hiện cùng một nhóm nghiệp vụ trước và sau khi sử dụng hệ thống, có xét đến quy mô và độ phức tạp của từng buổi.
+
+    \item \textbf{Giảm công sức xử lý dữ liệu trùng lặp:} Việc sử dụng một nguồn dữ liệu thống nhất giúp hạn chế sao chép danh sách giữa biểu mẫu đăng ký, bảng tính và công cụ gửi thông báo. Người tổ chức không cần cập nhật cùng một thay đổi tại nhiều nơi, đồng thời giảm thời gian kiểm tra các phiên bản danh sách khác nhau. Công sức tiết kiệm từ hoạt động này được tính trong tổng giờ công của từng nghiệp vụ và không được cộng thành một khoản lợi ích riêng để tránh tính trùng.
+
+    \item \textbf{Rút ngắn thời gian tổng hợp và xuất báo cáo:} Hệ thống tổng hợp số lượng đăng ký, tham dự, vắng mặt và các danh sách liên quan từ dữ liệu đã ghi nhận, đồng thời hỗ trợ xuất Excel/CSV. Người tổ chức vẫn thực hiện các bước lựa chọn sự kiện, kiểm tra kết quả và tải tệp nhưng không phải tổng hợp lại dữ liệu từ nhiều nguồn. Mức tiết kiệm được đo bằng công sức lập báo cáo trước và sau khi sử dụng hệ thống, thay vì chỉ đo thời gian phần mềm tạo tệp.
+
+    \item \textbf{Tự động hóa xử lý danh sách chờ:} Khi một người hủy đăng ký và có chỗ trống hợp lệ, hệ thống tự động chuyển người đầu tiên trong waitlist sang danh sách chính thức và gửi email thông báo. Cơ chế này giảm công sức kiểm tra sức chứa, lựa chọn người thay thế và gửi thông báo thủ công. Lợi ích thực tế phụ thuộc vào số lượt hủy và số lượt chuyển từ danh sách chờ, do đó được ghi nhận trong nhóm nghiệp vụ đăng ký/hủy; nhóm không giả định mọi sự kiện đều phát sinh cùng số lượt xử lý.
+\end{itemize}
+
+\tasksubheading{Lợi ích chưa quy đổi thành tiền}
+
+\begin{itemize}
+    \item \textbf{Cải thiện trải nghiệm sử dụng của sinh viên:} Sinh viên có thể tìm kiếm thông tin sự kiện, đăng ký, hủy đăng ký và theo dõi trạng thái tham gia trong cùng một quy trình. Việc hiển thị trạng thái rõ ràng giúp giảm nhu cầu liên hệ riêng với ban tổ chức để xác nhận đăng ký. Lợi ích này được đánh giá thông qua mức độ dễ sử dụng và phản hồi trong quá trình thử nghiệm. Việc tăng tỷ lệ tham gia không được xem là KPI bắt buộc của MVP và không được đưa vào phép tính tài chính.
+
+    \item \textbf{Cải thiện tính nhất quán và khả năng kiểm chứng dữ liệu:} Dữ liệu sự kiện, đăng ký và điểm danh được quản lý tập trung, giúp đối chiếu báo cáo với các bản ghi gốc và hạn chế trạng thái không hợp lệ. Các chỉ số có thể theo dõi gồm số bản ghi trùng, số trường hợp vượt sức chứa và sai lệch giữa báo cáo với dữ liệu kiểm chứng. Cần phân biệt lỗi dữ liệu với trường hợp sinh viên đăng ký nhưng không tham dự; chênh lệch giữa hai số lượng này không tự động chứng minh hệ thống có sai sót.
+
+    \item \textbf{Hỗ trợ quản lý và giảm nguy cơ sai sót:} Người tổ chức có thể theo dõi danh sách chính thức, danh sách chờ và kết quả điểm danh theo từng sự kiện, qua đó giảm sự phụ thuộc vào các bảng tính cá nhân. Việc hạn chế nhập lại dữ liệu cũng giúp giảm nguy cơ bỏ sót hoặc cập nhật nhầm thông tin. Do chưa có số liệu về tần suất và chi phí xử lý sai sót hiện tại, nhóm không quy đổi lợi ích này thành tiền; việc đánh giá dựa trên kiểm thử dữ liệu và phản hồi của người tổ chức.
+\end{itemize}
+
+\subsubsection{Bất lợi tiềm ẩn và biện pháp kiểm soát}
+
+\begin{itemize}
+    \item \textbf{Khó khăn khi thay đổi thói quen sử dụng:} Người tổ chức có thể tiếp tục sử dụng công cụ cũ hoặc chỉ sử dụng một phần chức năng, khiến dữ liệu tiếp tục bị phân tán và mức tiết kiệm thấp hơn kỳ vọng. Để hạn chế bất lợi này, nhóm cần cung cấp hướng dẫn sử dụng, thu thập phản hồi trong các buổi thử nghiệm và thống nhất nguồn dữ liệu chính.
+
+    \item \textbf{Phát sinh trách nhiệm vận hành và bảo trì:} Hệ thống tập trung cần được cập nhật, kiểm tra sao lưu, xử lý lỗi và hỗ trợ người sử dụng sau khi bàn giao. Nếu chưa xác định được bên tiếp nhận, sản phẩm chỉ phù hợp với phạm vi MVP thử nghiệm và chưa đủ cơ sở để vận hành lâu dài. Mô hình tài chính dự trù 8 giờ công bảo trì mỗi tháng; mức này cần được kiểm chứng bằng công sức hỗ trợ thực tế và không bao gồm việc phát triển chức năng mới.
+
+    \item \textbf{Tăng trách nhiệm bảo vệ thông tin cá nhân:} Việc tập trung danh sách sinh viên và lịch sử tham gia làm tăng yêu cầu kiểm soát truy cập và xuất dữ liệu. Nhóm cần giới hạn thông tin thu thập, phân quyền theo vai trò và kiểm thử các trường hợp truy cập trái quyền. Trong phạm vi bài tập lớn, hệ thống sử dụng dữ liệu giả lập; việc sử dụng dữ liệu thật phải được nhà trường thống nhất. Dự toán hiện tại chưa bao gồm chi phí riêng cho chương trình tuân thủ hoặc đánh giá bảo mật chuyên sâu.
+
+    \item \textbf{Phụ thuộc vào khả năng hoạt động của hệ thống:} Sự cố mạng, máy chủ hoặc dịch vụ email có thể làm gián đoạn hoạt động đăng ký, điểm danh và thông báo. Nhóm cần thực hiện sao lưu, kiểm tra khả năng khôi phục, theo dõi lỗi và chuẩn bị phương án điểm danh thủ công. Chi phí snapshot đã được tính vào dự toán, nhưng phương án hiện tại chưa bao gồm máy chủ dự phòng hoặc cam kết sẵn sàng cao cho vận hành quy mô lớn.
+\end{itemize}
+
+\subsubsection{Đóng góp chiến lược và tổ chức}
+
+\begin{itemize}
+    \item \textbf{Số hóa và chuẩn hóa quy trình quản lý sự kiện:} Dự án đưa các hoạt động công bố sự kiện, đăng ký, quản lý danh sách chờ, điểm danh và báo cáo vào một quy trình thống nhất. Các đơn vị sử dụng có thể áp dụng cùng quy tắc về trạng thái đăng ký và cách ghi nhận kết quả, qua đó giảm sự phụ thuộc vào cách làm riêng của từng người tổ chức. Đóng góp này phù hợp với nhu cầu tập trung dữ liệu và giảm thao tác thủ công đã được khách hàng xác nhận.
+
+    \item \textbf{Nâng cao hiệu quả sử dụng nguồn lực:} Công sức được giải phóng có thể dành cho việc chuẩn bị nội dung chương trình, hỗ trợ sinh viên và xử lý các tình huống cần quyết định của con người. Đây là giá trị sử dụng thời gian của tổ chức và không mặc định trở thành khoản giảm chi ngân sách khi số nhân sự và mức chi trả không thay đổi. Vì vậy, kết quả tài chính được diễn giải là lợi ích kinh tế quy đổi.
+
+    \item \textbf{Tạo nền tảng dữ liệu cho công tác quản lý và phát triển tiếp theo:} Dữ liệu tập trung giúp tra cứu lịch sử sự kiện, số lượt đăng ký và kết quả tham dự, đồng thời tạo cơ sở để mở rộng chức năng thống kê khi có đủ nguồn lực. Trong tương lai, dữ liệu này có thể hỗ trợ ghi nhận hoạt động ngoại khóa hoặc điểm rèn luyện. Tuy nhiên, các tích hợp này không thuộc MVP, không phải cam kết bàn giao và không được sử dụng để làm tăng lợi ích trong mô hình tài chính hiện tại.
+\end{itemize}
+
+\subsubsection{Chi phí chính}
+
+\tasksubheading{Đơn giá công sức}
+
+Nhóm tham khảo mức lương Fresher bình quân 480 USD/tháng trong báo cáo \href{https://employerbranding.vn/wp-content/uploads/2025/01/VIETNAM-IT-TECH-TALENT-LANDSCAPE-2024-2025.pdf}{\textit{Vietnam IT \& Tech Talent Landscape 2024--2025} của TopDev}, trang in số 26. Với tỷ giá kế hoạch 26.000 đồng/USD và 160 giờ công/tháng:
+
+\begin{equation*}
+    \text{Đơn giá công sức} = \frac{480 \times 26.000}{160} = 78.000\;\text{đồng/giờ công}.
+\end{equation*}
+
+
+\tasksubheading{Chi phí phát triển và thiết lập (Năm 0)}
+
+Tổng công sức dự kiến là 480 giờ công để hoàn thành MVP. Chi phí dịch vụ được quy đổi theo tỷ giá 26.000 đồng/USD.
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{|X|>{\raggedleft\arraybackslash}p{2cm}|>{\raggedleft\arraybackslash}p{3.2cm}|}
+\hline
+\textbf{Hạng mục} & \textbf{Giờ công} & \textbf{Chi phí (đồng)} \\
+\hline
+Làm rõ yêu cầu và tiêu chí nghiệm thu & 40 & 3.120.000 \\
+\hline
+Thiết kế giao diện, dữ liệu, giải pháp & 40 & 3.120.000 \\
+\hline
+Backend, phân quyền, đăng ký, waitlist & 120 & 9.360.000 \\
+\hline
+Giao diện các vai trò & 100 & 7.800.000 \\
+\hline
+Tích hợp QR/email/báo cáo, kiểm thử, sửa lỗi & 80 & 6.240.000 \\
+\hline
+Triển khai, sao lưu, kiểm tra khôi phục & 40 & 3.120.000 \\
+\hline
+Lập kế hoạch, theo dõi, phối hợp & 40 & 3.120.000 \\
+\hline
+Tài liệu bàn giao, hướng dẫn & 20 & 1.560.000 \\
+\hline
+\textbf{Công sức nhóm} & \textbf{480} & \textbf{37.440.000} \\
+\hline
+Máy chủ thử nghiệm 2 tháng (12 USD $\times$ 2) & & 624.000 \\
+\hline
+Sao lưu 2 tháng (40 GB $\times$ 0,05 USD $\times$ 2) & & 104.000 \\
+\hline
+\textbf{Đầu tư ban đầu $I_0$} & & \textbf{38.168.000} \\
+\hline
+\end{tabularx}
+\caption{Chi phí phát triển và đầu tư ban đầu}
+\label{tab:initial-cost}
+\end{table}
+
+Dự toán 480 giờ công tại Task 1 là ước lượng sơ bộ cho toàn bộ dự án. Task 2.6 sử dụng phương pháp bottom-up để ước lượng chi tiết phần việc còn lại từ hoàn thiện kế hoạch đến bàn giao, với tổng cơ sở 320,5 giờ công. Hai con số có phạm vi và thời điểm lập khác nhau; phần chênh lệch không được coi là công sức thực tế đã thực hiện. Nhóm lưu các bản kế hoạch để đối chiếu với dữ liệu thực tế và giải thích điều chỉnh khi có căn cứ. Phần đáp ứng rủi ro và lịch khả thi tiếp tục được hoàn thiện tại Task 2.8--2.11.
+
+
+
+\tasksubheading{Phương án công cụ và hạ tầng}
+
+\begin{itemize}
+    \item \textbf{Máy chủ:} \href{https://aws.amazon.com/lightsail/pricing/}{AWS Lightsail Linux} (2 GB RAM, 2 vCPU, 60 GB SSD, IPv4 công cộng) giá 12 USD/tháng; ứng dụng và PostgreSQL chạy chung máy để giảm chi phí. Snapshot tính 0,05 USD/GB-tháng với giả định 40 GB. Cấu hình cần được kiểm thử theo tải đăng ký và điểm danh đồng thời.
+
+    \item \textbf{Email:} Dùng \href{https://help.brevo.com/hc/en-us/articles/208589409-About-Brevo-s-pricing-plans}{Brevo Free} (tối đa 300 email/ngày) qua \href{https://www.brevo.com/products/transactional-email/}{API hoặc SMTP} để gửi thông báo đăng ký, thay đổi sự kiện và chuyển từ waitlist. Với dữ liệu giả lập và quy mô nhỏ, phí email có thể bằng 0.
+
+    \item \textbf{Công cụ khác:} \href{https://www.postgresql.org/about/licence/}{PostgreSQL}, \href{https://github.com/pricing}{GitHub Free} và chứng chỉ TLS từ \href{https://letsencrypt.org/about/}{Let's Encrypt} không phát sinh phí giấy phép.
+\end{itemize}
+
+\tasksubheading{Chi phí vận hành hằng năm ($O$)}
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{|X|p{6cm}|>{\raggedleft\arraybackslash}p{3cm}|}
+\hline
+\textbf{Hạng mục} & \textbf{Cách tính} & \textbf{Chi phí/năm (đồng)} \\
+\hline
+Máy chủ Lightsail & 12 USD $\times$ 12 $\times$ 26.000 & 3.744.000 \\
+\hline
+Snapshot & 40 GB $\times$ 0,05 USD $\times$ 12 $\times$ 26.000 & 624.000 \\
+\hline
+Bảo trì, hỗ trợ & 8 giờ/tháng $\times$ 12 $\times$ 78.000 & 7.488.000 \\
+\hline
+Email, PostgreSQL, GitHub Free, TLS & Theo phương án trên & 0 \\
+\hline
+\textbf{Tổng $O$} & & \textbf{11.856.000} \\
+\hline
+\end{tabularx}
+\caption{Chi phí vận hành hằng năm}
+\label{tab:annual-operating-cost}
+\end{table}
+
+
+
+\subsubsection{Lợi ích quy đổi và đánh giá tài chính}
+
+\tasksubheading{Mô hình giờ công tiết kiệm}
+
+Trường và các đơn vị tổ chức nhiều hoạt động như \href{https://cse.hcmut.edu.vn/blog/hoat-dong-sinh-vien-5/mo-form-dang-ky-cuoc-thi-bdc-data-hackathon-2025-22}{BDC Data Hackathon}, \href{https://fme.hcmut.edu.vn/cuoc-thi-bach-khoa-toa-sang-2025-chinh-thuc-mo-don-dang-ky.html}{Bách khoa Tỏa sáng}, \href{https://fme.hcmut.edu.vn/thu-moi-tham-gia-ngay-hoi-viec-lam-bach-khoa-career-fair-2025.html}{Ngày hội việc làm Bách khoa}, seminar và workshop. Nhóm giả định hệ thống được dùng cho \textbf{60 buổi trong năm đầu} và \textbf{100 buổi/năm từ năm thứ hai}, với cơ cấu \textbf{60\% buổi nhỏ, 30\% vừa, 10\% lớn}. Mức tiết kiệm theo nghiệp vụ và quy mô như Bảng~\ref{tab:labor-saving-model}.
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{|X|>{\centering\arraybackslash}p{3cm}|>{\centering\arraybackslash}p{3cm}|>{\centering\arraybackslash}p{3cm}|}
+\hline
+\textbf{Nghiệp vụ (giờ công/buổi)} & \textbf{Nhỏ ($\leq 100$ người)} & \textbf{Vừa (101--300)} & \textbf{Lớn ($>300$)} \\
+\hline
+Đăng ký, hủy, danh sách chờ & 1 & 3 & 6 \\
+\hline
+Thông báo email & 0,5 & 1 & 2 \\
+\hline
+Ghi nhận, đối soát điểm danh & 1 & 3 & 7 \\
+\hline
+Tổng hợp, xuất báo cáo & 1,5 & 3 & 5 \\
+\hline
+\textbf{Tổng tiết kiệm/buổi} & \textbf{4} & \textbf{10} & \textbf{20} \\
+\hline
+Số buổi/năm khi ổn định & 60 & 30 & 10 \\
+\hline
+\end{tabularx}
+\caption{Mô hình giờ công tiết kiệm theo quy mô sự kiện}
+\label{tab:labor-saving-model}
+\end{table}
+
+Giờ công được tính cho toàn bộ nhân sự thực hiện, chẳng hạn với ba người đối soát, mỗi người làm trong hai giờ sẽ quy đổi thànhsáu giờ công. Nhóm giả định giá trị công việc hành chính là \textbf{60.000 đồng/giờ công}, thấp hơn đơn giá lập trình 78.000 đồng để đảm bảo tính thận trọng:
+
+\begin{align*}
+\text{Tiết kiệm bình quân}
+    &= 60\% \times 4 + 30\% \times 10 + 10\% \times 20 = 7{,}4\;\text{giờ công/buổi},\\
+B_1 &= 60 \times 7{,}4 \times 60.000 = 26.640.000\;\text{đồng},\\
+B_2 = B_3 &= 100 \times 7{,}4 \times 60.000 = 44.400.000\;\text{đồng/năm}.
+\end{align*}
+
+
+
+\tasksubheading{Dòng tiền, NPV, ROI và hoàn vốn}
+
+Nhóm đánh giá trong \textbf{ba năm sau bàn giao} với tỷ suất chiết khấu giả định \textbf{10\%/năm}. Chi phí phát triển ghi nhận tại Năm 0; lợi ích và chi phí vận hành ghi nhận cuối mỗi năm, đơn giá giữ cố định. Với $CF_t = B_t - O_t$ và $DF_t = 1/(1+0{,}10)^t$:
+
+\begin{table}[H]
+\centering
+\setlength{\tabcolsep}{2pt}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{|>{\centering\arraybackslash}p{0.8cm}|>{\raggedleft\arraybackslash}X|>{\raggedleft\arraybackslash}X|>{\raggedleft\arraybackslash}X|>{\centering\arraybackslash}p{1.7cm}|>{\raggedleft\arraybackslash}X|>{\raggedleft\arraybackslash}X|}
+\hline
+\textbf{Năm} & \textbf{Lợi ích} & \textbf{Vận hành} & \textbf{$CF$ thuần} & \textbf{$DF$} & \textbf{$CF$ chiết khấu} & \textbf{$CF$ cộng dồn} \\
+\hline
+0 & 0 & 0 & $-38.168.000$ & 1,000000 & $-38.168.000$ & $-38.168.000$ \\
+\hline
+1 & 26.640.000 & 11.856.000 & 14.784.000 & 0,909091 & 13.440.000 & $-23.384.000$ \\
+\hline
+2 & 44.400.000 & 11.856.000 & 32.544.000 & 0,826446 & 26.895.868 & 9.160.000 \\
+\hline
+3 & 44.400.000 & 11.856.000 & 32.544.000 & 0,751315 & 24.450.789 & 41.704.000 \\
+\hline
+\multicolumn{5}{|r|}{\textbf{NPV}} & \textbf{26.618.657} & \\
+\hline
+\end{tabularx}
+\caption{Dòng tiền và giá trị hiện tại thuần trong ba năm}
+\label{tab:cash-flow}
+\end{table}
+
+ROI được tính theo lợi nhuận bình quân năm trên vốn đầu tư ban đầu, và thời gian hoàn vốn không chiết khấu được nội suy trong Năm 2:
+
+\begin{align*}
+ROI &= \frac{41.704.000 / 3}{38.168.000} \approx 36{,}42\%,\\
+\text{Payback} &= 1 + \frac{23.384.000}{32.544.000} \approx 1{,}72\;\text{năm (khoảng 1 năm 9 tháng)}.
+\end{align*}
+
+
+
+\subsubsection{Phân tích độ nhạy}
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{|p{3.4cm}|X|>{\raggedleft\arraybackslash}p{3cm}|>{\raggedleft\arraybackslash}p{2cm}|}
+\hline
+\textbf{Kịch bản} & \textbf{Thay đổi} & \textbf{NPV (đồng)} & \textbf{ROI} \\
+\hline
+Cơ sở & Không đổi & 26.618.657 & 36,42\% \\
+\hline
+Chi phí vận hành tăng & $O + 20\% = 14.227.200$ & 20.721.833 & 30,21\% \\
+\hline
+Lợi ích giảm còn 60\% & Số buổi dùng hoặc mức tiết kiệm chỉ bằng 60\% mục tiêu & $-11.089.653$ & $-3,91\%$ \\
+\hline
+\end{tabularx}
+\caption{Phân tích độ nhạy của các chỉ tiêu tài chính}
+\label{tab:sensitivity-analysis}
+\end{table}
+
+\textbf{Ngưỡng hòa vốn:} NPV không âm khi lợi ích đạt tối thiểu khoảng \textbf{71,76\%} kịch bản cơ sở (giả định lợi ích giảm đều và chi phí giữ nguyên). Đây là ngưỡng tham chiếu do nhóm đề xuất, không phải tiêu chí nghiệm thu của khách hàng.
+
+Chi phí vận hành tăng 20\% vẫn cho NPV dương, còn lợi ích chỉ đạt 60\% làm NPV âm. Vì vậy quyết định mở rộng cần dựa trên mức sử dụng và công sức tiết kiệm thực tế, không chỉ dựa trên chi phí hosting thấp. Trong giai đoạn thử nghiệm, nhóm cần đo tổng công sức trước/sau (gồm xử lý ngoại lệ, sửa lỗi, kiểm tra kết quả) trên các buổi có quy mô tương đương, đồng thời ghi nhận số buổi, lưu lượng email, tải đồng thời và công sức hỗ trợ để cập nhật dự toán.
+
+\subsubsection{Khuyến nghị Go/No-Go}
+
+\textbf{GO đối với việc phát triển và thử nghiệm MVP.} Dự án giải quyết nhu cầu tập trung dữ liệu và giảm thao tác thủ công đã được khách hàng xác nhận, có quy trình tương đối đầy đủ từ công bố sự kiện đến báo cáo và không phụ thuộc tích hợp với hệ thống nội bộ của trường. Với 480 giờ công cho nhóm 5 thành viên, hạ tầng chi phí thấp và kịch bản cơ sở cho NPV khoảng 26,6 triệu đồng, ROI 36,42\%, hoàn vốn 1,72 năm, việc phát triển MVP có cơ sở khả thi. 
+
+\textbf{GO có điều kiện đối với vận hành mở rộng.} Trước khi mở rộng, nhóm cần: (1) xác nhận nhu cầu của các đơn vị và đo mức tiết kiệm thực tế để cập nhật mô hình tài chính; (2) chỉ đưa vào các hoạt động đã có hệ thống riêng, như sinh hoạt công dân, khi các bên thống nhất phần nghiệp vụ MVP hỗ trợ; (3) xác định bên tiếp nhận vận hành, nguồn chi trả dịch vụ, công sức bảo trì, điều kiện email và tên miền; (4) đáp ứng các tiêu chí về phân quyền, nhất quán dữ liệu, tải sử dụng, sao lưu và khôi phục trước khi phục vụ dữ liệu thật.

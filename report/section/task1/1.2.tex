@@ -1,0 +1,59 @@
+\subsection{Describe the organizational/business context, current problem or opportunity, proposed software product, major assumptions, and project constraints.}
+
+\subsubsection{Organizational and Business Context}
+
+Trường đại học thường xuyên tổ chức các hoạt động học thuật và ngoại khóa như seminar, workshop và các chương trình dành cho sinh viên. Quy trình quản lý sự kiện gồm công bố thông tin, tiếp nhận đăng ký, quản lý người tham gia, điểm danh và tổng hợp báo cáo sau sự kiện.
+
+Theo Client Interaction Log, hệ thống phục vụ ba nhóm người dùng chính. Sinh viên xem thông tin sự kiện, đăng ký/hủy đăng ký và theo dõi trạng thái tham gia. Người tổ chức sự kiện tạo và quản lý sự kiện, danh sách đăng ký, attendance và báo cáo. Quản trị viên hệ thống quản lý tài khoản, quyền truy cập và hỗ trợ vận hành.
+
+Các nhóm người dùng cùng tham gia vào một quy trình nghiệp vụ nhưng hiện chưa có một hệ thống dữ liệu thống nhất. Dự án hướng đến việc hỗ trợ phối hợp các hoạt động này trên một nền tảng chung.
+
+\subsubsection{Current Problem or Opportunity}
+
+Quy trình hiện tại sử dụng form trực tuyến để tiếp nhận đăng ký, Excel để quản lý danh sách và điểm danh, cùng email để gửi thông báo. Dữ liệu nằm ở nhiều công cụ khiến người tổ chức phải đối soát và tổng hợp thông tin thủ công.
+
+Client xác định các điểm nghẽn chính là quản lý danh sách đăng ký, attendance và tổng hợp báo cáo sau sự kiện. Việc xử lý dữ liệu từ nhiều nguồn làm tăng số thao tác thủ công, thời gian đối soát và khả năng sai lệch thông tin.
+
+Dự án có cơ hội cải thiện quy trình bằng cách tập trung dữ liệu sự kiện, đăng ký và attendance, đồng thời tự động hóa việc chuyển waitlist và tổng hợp báo cáo. Client đã xác nhận các hướng cải thiện này nhưng chưa cung cấp baseline định lượng để xác định mức tiết kiệm thời gian hoặc mức giảm sai lệch thực tế.
+
+\subsubsection{Proposed Software Product}
+
+Sản phẩm đề xuất là \emph{Hệ thống đăng ký và quản lý sự kiện} (University Event Registration System). MVP tập trung hỗ trợ một quy trình hoàn chỉnh từ tạo và công bố sự kiện đến đăng ký, điểm danh và báo cáo.
+
+\textbf{Quản lý sự kiện:} Người tổ chức có thể tạo, công bố và cập nhật sự kiện với các thông tin như tên, mô tả, thời gian, địa điểm, đơn vị/người tổ chức, thời gian đăng ký và sức chứa nếu có giới hạn. Hệ thống hỗ trợ giới hạn đối tượng tham gia theo khoa hoặc năm học.
+
+\textbf{Quản lý đăng ký và waitlist:} Sinh viên có thể xem sự kiện, đăng ký, hủy đăng ký trước khi sự kiện bắt đầu và theo dõi trạng thái. Hệ thống ngăn đăng ký trùng, kiểm soát sức chứa và đưa sinh viên vào waitlist khi hết chỗ. Khi có người hủy, hệ thống tự động chuyển sinh viên đầu waitlist sang danh sách đăng ký chính thức và gửi email thông báo.
+
+\textbf{Thông báo qua email:} Hệ thống gửi email xác nhận đăng ký, thông báo thay đổi quan trọng của sự kiện và thông báo chuyển từ waitlist sang registered.
+
+\textbf{Ghi nhận attendance:} Hệ thống sử dụng QR Code làm phương thức chính và cho phép người tổ chức ghi nhận hoặc chỉnh sửa attendance thủ công khi cần. Khi mất mạng, người tổ chức ghi nhận tạm bằng phương thức thủ công và cập nhật vào hệ thống sau khi kết nối được khôi phục.
+
+\textbf{Báo cáo cơ bản:} Người tổ chức có thể xem số người đăng ký, tham dự, vắng mặt, danh sách người tham gia và tỷ lệ attendance theo từng sự kiện. Báo cáo được tổng hợp từ dữ liệu trong hệ thống và hỗ trợ xuất Excel/CSV.
+
+\textbf{Quản lý tài khoản và phân quyền:} Hệ thống hỗ trợ ba vai trò sinh viên, người tổ chức và quản trị viên, với quyền truy cập phù hợp cho từng vai trò.
+
+Nhóm không đưa recommendation, SMS, phân tích nâng cao, xuất PDF, email nhắc trước sự kiện, báo cáo học kỳ, cơ chế ưu tiên đăng ký phức tạp, đồng bộ offline đầy đủ và chống điểm danh hộ tuyệt đối vào scope MVP hiện tại. Các giới hạn này được trình bày chi tiết tại mục 1.4.2.
+
+\subsubsection{Major Assumptions}
+
+Client đã xác nhận objectives giảm thao tác thủ công, rút ngắn thời gian tổng hợp và hạn chế sai lệch dữ liệu. Tuy nhiên, client chưa cung cấp baseline hoặc target định lượng. Vì vậy, các mức cải thiện và điều kiện đo do nhóm đề xuất được xem là assumptions/proposed targets, không phải số liệu thực tế hoặc chỉ tiêu đã được client phê duyệt.
+
+Nhóm giả định địa điểm tổ chức có kết nối Internet đủ để hỗ trợ điểm danh QR trong điều kiện vận hành bình thường. Khi xảy ra sự cố mạng hoặc QR, người tổ chức sử dụng phương án ghi nhận thủ công. MVP không triển khai đồng bộ offline đầy đủ.
+
+Do chưa có thông tin cụ thể về số người dùng và tải đồng thời, nhóm tạm thời lập kế hoạch cho quy mô phù hợp với BTL. Quy mô dữ liệu và môi trường kiểm thử được ghi rõ khi đánh giá hệ thống; kết quả thử nghiệm không được dùng để khẳng định khả năng đáp ứng ở quy mô toàn trường.
+
+Phương án giả định PM có kiến thức nền Java Spring Boot và BA có khả năng thiết kế UI, lập trình Angular ở các màn hình được phân công. Nhóm cần xác nhận năng lực và thời gian tham gia trước khi chốt baseline. Nếu cần thời gian học công nghệ đáng kể, nhóm sẽ bổ sung vào ước lượng hoặc điều chỉnh người thực hiện; không phân việc chỉ để làm bằng số giờ.
+
+\subsubsection{Project Constraints}
+
+\begin{itemize}
+    \item \textbf{Bảo mật và phân quyền:} Hệ thống phải bảo vệ thông tin cá nhân của sinh viên và kiểm soát truy cập phù hợp với ba vai trò. Các yêu cầu này cần được kiểm tra trong quá trình phát triển và nghiệm thu.
+
+    \item \textbf{Lựa chọn nền tảng và công nghệ:} Client không bắt buộc Web/Mobile, không giới hạn technology stack và không đưa ra yêu cầu riêng về nơi lưu trữ dữ liệu. Nhóm được lựa chọn giải pháp nhưng phải giải thích sự phù hợp với scope, thời gian và năng lực thực hiện.
+
+    \item \textbf{Giới hạn tích hợp:} Trong phạm vi BTL, nhóm sử dụng dữ liệu sinh viên giả lập và không tích hợp trực tiếp với MyBK hoặc cơ sở dữ liệu thật của trường. Việc tích hợp tính điểm rèn luyện hoặc công nhận hoạt động ngoại khóa không thuộc MVP.
+
+    \item \textbf{Giới hạn scope:} Nhóm ưu tiên hoàn thành các chức năng vận hành một sự kiện, gồm quản lý sự kiện, đăng ký/waitlist, email, attendance, báo cáo và phân quyền. Chức năng ngoài scope hiện tại chỉ được bổ sung sau khi đánh giá công sức, nguồn lực, tiến độ và được đại diện client xác nhận.
+
+    \item \textbf{Thời gian và nguồn lực:} Dự án do nhóm 5 thành viên thực hiện và phải tuân theo các mốc của học phần. Việc phân công và lập kế hoạch cần tính đến thời gian tham gia thực tế, lịch học và năng lực của từng thành viên để bảo đảm đủ thời gian triển khai, kiểm thử và trình diễn MVP.
+\end{itemize}
